@@ -142,21 +142,12 @@ function InputKontenInner() {
   // Build formatted main_content & script from structured inputs
   const buildStructuredContentPayload = () => {
     if (isReelFormat) {
-      const formattedPoints = reelPoints
+      const cleanedPoints = reelPoints
         .map((pt) => pt.trim())
-        .filter(Boolean)
-        .map((pt, idx) => {
-          const label =
-            idx === 0
-              ? "Poin 1 (Hook Pembuka)"
-              : idx === reelPoints.length - 1 && reelPoints.length > 1
-              ? `Poin ${idx + 1} (CTA / Penutup)`
-              : `Poin ${idx + 1} (Isi Script)`;
-          return `${label}: ${pt}`;
-        })
-        .join("\n");
+        .filter(Boolean);
+      const formattedPoints = cleanedPoints.join("\n\n");
 
-      const firstHook = reelPoints[0]?.trim() || "";
+      const firstHook = cleanedPoints[0]?.split("\n")[0]?.trim() || "";
       return {
         hook: firstHook,
         script: formattedPoints,

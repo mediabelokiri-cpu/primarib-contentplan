@@ -801,29 +801,29 @@ function TalentScheduleViewInner() {
 
             <div className="mt-4 space-y-3.5 text-xs leading-relaxed text-slate-700">
               {(selectedContent.script || selectedContent.main_content) && (
-                <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-3.5">
+                <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-4">
                   <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                     {selectedContent.format_id === "fmt-reels"
-                      ? "Poin-per-Poin Script Video"
+                      ? "Script Video"
                       : "Isi Materi / Slide"}
                   </p>
-                  <div className="mt-2.5 space-y-2">
+                  <div className="mt-2.5 rounded-xl border border-slate-200/80 bg-white p-4 text-xs sm:text-sm font-medium leading-relaxed text-slate-800 whitespace-pre-line shadow-2xs">
                     {(
                       selectedContent.script ||
                       selectedContent.main_content ||
                       ""
                     )
                       .split(/\r?\n/)
-                      .map((line) => line.trim())
+                      .map((line) =>
+                        line
+                          .replace(
+                            /^Poin\s*\d+\s*\((Hook Pembuka|Isi Script|CTA\s*\/\s*Penutup)\)\s*:\s*/i,
+                            ""
+                          )
+                          .trim()
+                      )
                       .filter(Boolean)
-                      .map((line, idx) => (
-                        <div
-                          key={idx}
-                          className="rounded-xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-xs font-semibold leading-relaxed text-slate-800 shadow-2xs"
-                        >
-                          {line}
-                        </div>
-                      ))}
+                      .join("\n")}
                   </div>
                 </div>
               )}
