@@ -1396,50 +1396,23 @@ export function loadStore(): AppDatabaseState {
   }
 }
 
-const CLOUD_ROW_ID = "primarib_main_v1";
 let isPushingToCloud = false;
 let lastLocalSaveMs = 0;
-
-function getSupabaseRestConfig(): { url: string; key: string } {
-  const url =
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    "https://daspzztaezihzknwncxt.supabase.co";
-  const key =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "sb_publishable_DNFw7yvW0nh5RJQSizL9_Q_yCAV_G2s";
-  return { url: url.replace(/\/$/, ""), key };
-}
-
-function buildSupabaseHeaders(key: string, extra?: Record<string, string>): Record<string, string> {
-  const headers: Record<string, string> = {
-    apikey: key,
-    ...extra,
-  };
-  if (key.startsWith("eyJ")) {
-    headers.Authorization = `Bearer ${key}`;
-  }
-  return headers;
-}
 
 export async function pushStateToSupabaseCloud(
   state: AppDatabaseState
 ): Promise<void> {
   if (typeof window === "undefined") return;
-  const cfg = getSupabaseRestConfig();
   isPushingToCloud = true;
   lastLocalSaveMs = Date.now();
   try {
-    await fetch(`${cfg.url}/rest/v1/primarib_cloud_state?on_conflict=id`, {
+    await fetch("/api/cloud-state", {
       method: "POST",
-      headers: buildSupabaseHeaders(cfg.key, {
+      headers: {
         "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal",
-      }),
+      },
       body: JSON.stringify({
-        id: CLOUD_ROW_ID,
         state_json: state,
-        updated_at: new Date().toISOString(),
       }),
     });
   } catch {
@@ -1455,25 +1428,18 @@ export async function pullStateFromSupabaseCloud(): Promise<AppDatabaseState | n
   if (isPushingToCloud || Date.now() - lastLocalSaveMs < 3000) {
     return null;
   }
-  const cfg = getSupabaseRestConfig();
   try {
-    const res = await fetch(
-      `${cfg.url}/rest/v1/primarib_cloud_state?id=eq.${CLOUD_ROW_ID}&select=state_json,updated_at`,
-      {
-        method: "GET",
-        headers: buildSupabaseHeaders(cfg.key, {
-          "Cache-Control": "no-cache",
-        }),
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`/api/cloud-state?t=${Date.now()}`, {
+      method: "GET",
+      cache: "no-store",
+    });
     if (!res.ok) return null;
-    const rows = await res.json();
+    const data = await res.json();
     if (isPushingToCloud || Date.now() - lastLocalSaveMs < 3000) {
       return null;
     }
-    if (Array.isArray(rows) && rows.length > 0 && rows[0]?.state_json) {
-      const cloudState = rows[0].state_json as AppDatabaseState;
+    if (data?.state_json) {
+      const cloudState = data.state_json as AppDatabaseState;
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudState));
       return cloudState;
     }
