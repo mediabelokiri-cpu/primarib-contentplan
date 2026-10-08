@@ -1396,10 +1396,102 @@ export function loadStore(): AppDatabaseState {
   }
 }
 
+const CLOUD_ROW_ID = "primarib_main_v1";
+let isPushingToCloud = false;
+let lastLocalSaveMs = 0;
+
+function getSupabaseRestConfig(): { url: string; key: string } {
+  const url =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    "https://daspzztaezihzknwncxt.supabase.co";
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    "sb_publishable_DNFw7yvW0nh5RJQSizL9_Q_yCAV_G2s";
+  return { url: url.replace(/\/$/, ""), key };
+}
+
+function buildSupabaseHeaders(key: string, extra?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = {
+    apikey: key,
+    ...extra,
+  };
+  if (key.startsWith("eyJ")) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+  return headers;
+}
+
+export async function pushStateToSupabaseCloud(
+  state: AppDatabaseState
+): Promise<void> {
+  if (typeof window === "undefined") return;
+  const cfg = getSupabaseRestConfig();
+  isPushingToCloud = true;
+  lastLocalSaveMs = Date.now();
+  try {
+    await fetch(`${cfg.url}/rest/v1/primarib_cloud_state?on_conflict=id`, {
+      method: "POST",
+      headers: buildSupabaseHeaders(cfg.key, {
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      }),
+      body: JSON.stringify({
+        id: CLOUD_ROW_ID,
+        state_json: state,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+  } catch {
+    // Abaikan jika sedang offline, data tetap aman di localStorage
+  } finally {
+    isPushingToCloud = false;
+  }
+}
+
+export async function pullStateFromSupabaseCloud(): Promise<AppDatabaseState | null> {
+  if (typeof window === "undefined") return null;
+  // Jangan timpa state lokal jika user baru saja melakukan perubahan < 3 detik lalu
+  if (isPushingToCloud || Date.now() - lastLocalSaveMs < 3000) {
+    return null;
+  }
+  const cfg = getSupabaseRestConfig();
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/primarib_cloud_state?id=eq.${CLOUD_ROW_ID}&select=state_json,updated_at`,
+      {
+        method: "GET",
+        headers: buildSupabaseHeaders(cfg.key, {
+          "Cache-Control": "no-cache",
+        }),
+        cache: "no-store",
+      }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (isPushingToCloud || Date.now() - lastLocalSaveMs < 3000) {
+      return null;
+    }
+    if (Array.isArray(rows) && rows.length > 0 && rows[0]?.state_json) {
+      const cloudState = rows[0].state_json as AppDatabaseState;
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudState));
+      return cloudState;
+    }
+    // Jika tabel di Supabase masih kosong, unggah state awal sekarang
+    const currentLocal = loadStore();
+    await pushStateToSupabaseCloud(currentLocal);
+    return currentLocal;
+  } catch {
+    return null;
+  }
+}
+
 export function saveStore(state: AppDatabaseState): void {
   if (typeof window === "undefined") return;
+  lastLocalSaveMs = Date.now();
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   window.dispatchEvent(new Event(STORE_EVENT));
+  void pushStateToSupabaseCloud(state);
 }
 
 export function resetStoreToDefault(): AppDatabaseState {
@@ -2348,14 +2440,35 @@ export function useAppStore() {
     setState(loadStore());
     setHydrated(true);
 
+    // Tarik data terbaru dari Supabase Cloud saat halaman dibuka
+    const syncFromCloud = async () => {
+      const cloudState = await pullStateFromSupabaseCloud();
+      if (cloudState) {
+        setState(cloudState);
+      }
+    };
+    void syncFromCloud();
+
     const handleUpdate = () => {
       setState(loadStore());
     };
+    const handleFocus = () => {
+      void syncFromCloud();
+    };
+
+    // Sinkronisasi berkala setiap 6 detik agar tampilan di HP Talent (/talent) selalu up-to-date
+    const intervalId = window.setInterval(() => {
+      void syncFromCloud();
+    }, 6000);
+
     window.addEventListener(STORE_EVENT, handleUpdate);
     window.addEventListener("storage", handleUpdate);
+    window.addEventListener("focus", handleFocus);
     return () => {
+      window.clearInterval(intervalId);
       window.removeEventListener(STORE_EVENT, handleUpdate);
       window.removeEventListener("storage", handleUpdate);
+      window.removeEventListener("focus", handleFocus);
     };
   }, []);
 
