@@ -118,7 +118,7 @@ export function Sidebar({
           <Link
             href="/content"
             onClick={onCloseMobile}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#6D4AFF] px-3.5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#5B38E8]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#284078] px-3.5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#1e305a]"
           >
             <Plus className="h-4 w-4" />
             <span>Buat Konten Baru</span>
@@ -141,14 +141,14 @@ export function Sidebar({
                 onClick={onCloseMobile}
                 className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${
                   item.active
-                    ? "bg-[#F3F0FF] text-[#6D4AFF]"
+                    ? "bg-blue-50 text-[#284078]"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${
                     item.active
-                      ? "bg-[#6D4AFF] text-white"
+                      ? "bg-[#284078] text-white"
                       : "bg-slate-100 text-slate-500 group-hover:bg-slate-200/70 group-hover:text-slate-700"
                   }`}
                 >
@@ -180,10 +180,10 @@ export function Sidebar({
           href="/talent"
           target="_blank"
           onClick={onCloseMobile}
-          className="flex items-center justify-between rounded-xl border border-[#DCD4FF] bg-[#F3F0FF]/80 px-3 py-2.5 text-xs font-bold text-[#6D4AFF] transition hover:bg-[#6D4AFF] hover:text-white"
+          className="flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50/80 px-3 py-2.5 text-xs font-bold text-[#284078] transition hover:bg-[#284078] hover:text-white"
         >
           <span>Halaman View Talent</span>
-          <span className="rounded-md bg-white/90 px-1.5 py-0.5 text-[10px] font-extrabold text-[#6D4AFF]">
+          <span className="rounded-md bg-white/90 px-1.5 py-0.5 text-[10px] font-extrabold text-[#284078]">
             View-Only ↗
           </span>
         </Link>
@@ -201,7 +201,7 @@ export function Sidebar({
             </div>
             <div className="flex items-center justify-between text-slate-600">
               <span>Selasa & Kamis</span>
-              <span className="rounded bg-[#F3F0FF] px-1.5 py-0.5 text-[10px] font-semibold text-[#6D4AFF] border border-[#DCD4FF]">
+              <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-[#284078] border border-blue-200">
                 Reel
               </span>
             </div>

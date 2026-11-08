@@ -21,6 +21,7 @@ import {
   UserCheck,
   GraduationCap,
   Users,
+  Lightbulb,
 } from "lucide-react";
 import {
   useAppStore,
@@ -34,6 +35,7 @@ import {
 import { REEL_TALENT_CATEGORIES } from "@/lib/constants";
 import { ContentWithRelations, IdeaWithRelations } from "@/types/database";
 import { AiScriptBuilderModal } from "@/components/content/AiScriptBuilderModal";
+import { AiIdeaTitleGeneratorModal } from "@/components/content/AiIdeaTitleGeneratorModal";
 
 function parsePointsFromText(raw: string, defaultCount = 3): string[] {
   const trimmed = (raw || "").trim();
@@ -99,6 +101,7 @@ function InputKontenInner() {
 
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isScriptBuilderOpen, setIsScriptBuilderOpen] = useState(false);
+  const [isIdeaGeneratorOpen, setIsIdeaGeneratorOpen] = useState(false);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,6 +122,46 @@ function InputKontenInner() {
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const handleSelectTitleFromAi = (
+    chosenTitle: string,
+    chosenHook?: string,
+    chosenFormatId?: string
+  ) => {
+    setTitle(chosenTitle);
+    if (chosenHook && isReelFormat) {
+      setReelPoints((prev) => {
+        const next = [...prev];
+        next[0] = chosenHook;
+        return next;
+      });
+    }
+    if (chosenFormatId) {
+      setFormatId(chosenFormatId);
+    }
+    showToast("Judul ide konten berhasil diterapkan!");
+  };
+
+  const handleSelectAndOpenScriptBuilder = (
+    chosenTitle: string,
+    chosenHook?: string,
+    chosenFormatId?: string
+  ) => {
+    setTitle(chosenTitle);
+    if (chosenHook && isReelFormat) {
+      setReelPoints((prev) => {
+        const next = [...prev];
+        next[0] = chosenHook;
+        return next;
+      });
+    }
+    if (chosenFormatId) {
+      setFormatId(chosenFormatId);
+    }
+    setIsIdeaGeneratorOpen(false);
+    setIsScriptBuilderOpen(true);
+    showToast("Membuka AI Script Builder untuk judul terpilih...");
   };
 
   const togglePlatform = (platId: string) => {
@@ -340,7 +383,7 @@ function InputKontenInner() {
 
   const getTalentBadgeClass = (talent?: string | null) => {
     if (talent === "Talent Model") {
-      return "bg-[#ECE7FF] text-[#7E60FF] border-[#D5C8FF]";
+      return "bg-blue-50 text-[#284078] border-blue-200";
     }
     if (talent === "Mentor / Pengajar") {
       return "bg-[#E5F3FF] text-[#1D74F5] border-[#BBDFFF]";
@@ -369,13 +412,13 @@ function InputKontenInner() {
           </h2>
           <p className="mt-0.5 text-xs text-slate-500">
             Pola Rutin: <strong className="text-slate-700">Senin, Rabu, Jumat</strong> = Feed (Single Post / Carousel) •{" "}
-            <strong className="text-[#6D4AFF]">Selasa & Kamis</strong> = Reel (Pilih Talent Model, Mentor / Pengajar, atau Siswa)
+            <strong className="text-[#284078]">Selasa & Kamis</strong> = Reel (Pilih Talent Model, Mentor / Pengajar, atau Siswa)
           </p>
         </div>
 
         <Link
           href="/production"
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#6D4AFF] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#5B38E8]"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#284078] px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#1e305a]"
         >
           <Kanban className="h-4 w-4" />
           <span>Lanjut ke Production Board</span>
@@ -392,7 +435,7 @@ function InputKontenInner() {
       >
         <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-3.5">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F3F0FF] text-[#6D4AFF]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-[#284078]">
               {editingId ? (
                 <Pencil className="h-4 w-4" />
               ) : (
@@ -412,11 +455,20 @@ function InputKontenInner() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setIsScriptBuilderOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#284078] hover:bg-[#1e305a] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition"
+              onClick={() => setIsIdeaGeneratorOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#284078] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-[#1e305a]"
             >
-              <FileText className="h-3.5 w-3.5 text-[#DDB02E]" />
-              <span>AI Script Builder</span>
+              <Lightbulb className="h-3.5 w-3.5 text-[#DDB02E]" />
+              <span>1. AI Ide & Judul</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsScriptBuilderOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[#284078] bg-white px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-xs transition hover:bg-blue-50"
+            >
+              <FileText className="h-3.5 w-3.5 text-[#284078]" />
+              <span>2. AI Script Builder</span>
             </button>
 
             {editingId && (
@@ -435,16 +487,26 @@ function InputKontenInner() {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
           {/* Judul Konten */}
           <div className="md:col-span-6">
-            <label className="mb-1.5 block text-xs font-bold text-slate-700">
-              Judul / Topik Ide Konten <span className="text-rose-500">*</span>
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700">
+                Judul / Topik Ide Konten <span className="text-rose-500">*</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setIsIdeaGeneratorOpen(true)}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#284078] hover:underline"
+              >
+                <Lightbulb className="h-3 w-3 text-[#284078]" />
+                <span>Bantu Buatkan Judul AI →</span>
+              </button>
+            </div>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Contoh: Trik Jawab Soal TIU Deret Angka < 30 Detik"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:border-[#6D4AFF] focus:bg-white focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:border-[#284078] focus:bg-white focus:outline-none"
             />
           </div>
 
@@ -456,7 +518,7 @@ function InputKontenInner() {
             <select
               value={programId}
               onChange={(e) => setProgramId(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 focus:border-[#6D4AFF] focus:bg-white focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 focus:border-[#284078] focus:bg-white focus:outline-none"
             >
               {activePrograms.map((prog) => (
                 <option key={prog.id} value={prog.id}>
@@ -474,7 +536,7 @@ function InputKontenInner() {
             <select
               value={pillarId}
               onChange={(e) => setPillarId(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 focus:border-[#6D4AFF] focus:bg-white focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 focus:border-[#284078] focus:bg-white focus:outline-none"
             >
               {activePillars.map((pil) => (
                 <option key={pil.id} value={pil.id}>
@@ -499,7 +561,7 @@ function InputKontenInner() {
                   fmt.id === "fmt-carousel" ||
                   fmt.name.toLowerCase().includes("carousel");
                 const activeFmtColor = isReel
-                  ? "border-[#6D4AFF] bg-[#F3F0FF] text-[#6D4AFF]"
+                  ? "border-[#284078] bg-blue-50 text-[#284078]"
                   : isCarousel
                   ? "border-emerald-500 bg-emerald-50 text-emerald-700"
                   : "border-pink-500 bg-pink-50 text-pink-700";
@@ -540,7 +602,7 @@ function InputKontenInner() {
                   const isSel = talentCategory === tc;
                   const activeColors =
                     tc === "Talent Model"
-                      ? "border-[#6D4AFF] bg-[#F3F0FF] text-[#6D4AFF]"
+                      ? "border-[#284078] bg-blue-50 text-[#284078]"
                       : tc === "Mentor / Pengajar"
                       ? "border-blue-500 bg-blue-50 text-blue-700"
                       : "border-orange-500 bg-orange-50 text-orange-700";
@@ -593,7 +655,7 @@ function InputKontenInner() {
                     onClick={() => togglePlatform(plat.id)}
                     className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition ${
                       checked
-                        ? "border-[#7E60FF] bg-[#ECE7FF] text-[#7E60FF]"
+                        ? "border-[#284078] bg-blue-50 text-[#284078]"
                         : "border-slate-200 bg-slate-50 text-slate-400 hover:text-slate-700"
                     }`}
                   >
@@ -610,10 +672,10 @@ function InputKontenInner() {
           <div className="md:col-span-12">
             {/* MODE 1: KHUSUS FORMAT REEL -> INPUT SCRIPT POIN PER POIN */}
             {isReelFormat && (
-              <div className="rounded-3xl border border-[#ECE7FF] bg-[#FAF9FF] p-5">
+              <div className="rounded-3xl border border-blue-100 bg-blue-50/30 p-5">
                 <div className="mb-3.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-2">
-                    <Video className="h-4 w-4 text-[#7E60FF]" />
+                    <Video className="h-4 w-4 text-[#284078]" />
                     <div>
                       <h4 className="text-xs sm:text-sm font-bold text-slate-900">
                         Kolom Script Video Reel (Poin per Poin)
@@ -627,7 +689,7 @@ function InputKontenInner() {
                   <button
                     type="button"
                     onClick={() => setReelPoints((prev) => [...prev, ""])}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#7E60FF] px-3.5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[#694be8]"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#284078] px-3.5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[#1e305a]"
                   >
                     <ListPlus className="h-3.5 w-3.5" />
                     <span>+ Tambah Poin Script</span>
@@ -656,7 +718,7 @@ function InputKontenInner() {
                         className="rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-2xs"
                       >
                         <div className="mb-1.5 flex items-center justify-between">
-                          <span className="text-xs font-extrabold text-[#7E60FF]">
+                          <span className="text-xs font-extrabold text-[#284078]">
                             {pointLabel}
                           </span>
                           {reelPoints.length > 1 && (
@@ -684,7 +746,7 @@ function InputKontenInner() {
                             );
                           }}
                           placeholder={placeholderText}
-                          className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed text-slate-800 placeholder:text-slate-400 focus:border-[#7E60FF] focus:bg-white focus:outline-none"
+                          className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-xs sm:text-sm leading-relaxed text-slate-800 placeholder:text-slate-400 focus:border-[#284078] focus:bg-white focus:outline-none"
                         />
                       </div>
                     );
@@ -823,7 +885,7 @@ function InputKontenInner() {
               value={captionText}
               onChange={(e) => setCaptionText(e.target.value)}
               placeholder="Tulis caption untuk Instagram / Facebook / TikTok beserta hashtag (#PrimaRIB #CPNS #Sekdin #Polri)..."
-              className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-2.5 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#7E60FF] focus:bg-white focus:outline-none"
+              className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-2.5 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#284078] focus:bg-white focus:outline-none"
             />
           </div>
 
@@ -831,7 +893,7 @@ function InputKontenInner() {
           <div className="md:col-span-3 flex items-end">
             <button
               type="submit"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#7E60FF] px-5 py-3.5 text-xs sm:text-sm font-bold text-white shadow-[0_8px_20px_rgba(126,96,255,0.3)] transition hover:bg-[#694be8]"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#284078] px-5 py-3.5 text-xs sm:text-sm font-bold text-white shadow-xs transition hover:bg-[#1e305a]"
             >
               <Plus className="h-4 w-4" />
               <span>{editingId ? "Update Konten" : "Simpan Konten"}</span>
@@ -916,14 +978,14 @@ function InputKontenInner() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari judul konten..."
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50/70 py-2 pl-9 pr-3 text-xs font-medium text-slate-800 focus:border-[#7E60FF] focus:bg-white focus:outline-none"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50/70 py-2 pl-9 pr-3 text-xs font-medium text-slate-800 focus:border-[#284078] focus:bg-white focus:outline-none"
             />
           </div>
 
           <select
             value={filterProgram}
             onChange={(e) => setFilterProgram(e.target.value)}
-            className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs font-semibold text-slate-700 focus:border-[#7E60FF] focus:bg-white focus:outline-none"
+            className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs font-semibold text-slate-700 focus:border-[#284078] focus:bg-white focus:outline-none"
           >
             <option value="ALL">Semua Wilayah (CPNS, Sekdin, Polri)</option>
             {activePrograms.map((p) => (
@@ -936,7 +998,7 @@ function InputKontenInner() {
           <select
             value={filterFormat}
             onChange={(e) => setFilterFormat(e.target.value)}
-            className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs font-semibold text-slate-700 focus:border-[#7E60FF] focus:bg-white focus:outline-none"
+            className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs font-semibold text-slate-700 focus:border-[#284078] focus:bg-white focus:outline-none"
           >
             <option value="ALL">
               Semua Format (Reel, Single Post, Carousel)
@@ -951,7 +1013,7 @@ function InputKontenInner() {
           <select
             value={filterTalent}
             onChange={(e) => setFilterTalent(e.target.value)}
-            className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs font-semibold text-slate-700 focus:border-[#7E60FF] focus:bg-white focus:outline-none"
+            className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs font-semibold text-slate-700 focus:border-[#284078] focus:bg-white focus:outline-none"
           >
             <option value="ALL">Semua Kategori Talent Reel</option>
             {REEL_TALENT_CATEGORIES.map((tc) => (
@@ -1004,7 +1066,7 @@ function InputKontenInner() {
                           item.program?.code === "CPNS"
                             ? "bg-[#FFF0E5] text-[#EA6A15]"
                             : item.program?.code === "SEKDIN"
-                            ? "bg-[#ECE7FF] text-[#7E60FF]"
+                            ? "bg-blue-50 text-[#284078]"
                             : "bg-[#E5F3FF] text-[#1D74F5]"
                         }`}
                       >
@@ -1021,7 +1083,7 @@ function InputKontenInner() {
                         <span
                           className={`rounded-lg border px-2 py-0.5 text-[11px] font-bold ${
                             isReel
-                              ? "border-[#DCD4FF] bg-[#F3F0FF] text-[#6D4AFF]"
+                              ? "border-blue-200 bg-blue-50 text-[#284078]"
                               : item.format_id === "fmt-carousel"
                               ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                               : "border-pink-200 bg-pink-50 text-pink-700"
@@ -1079,7 +1141,7 @@ function InputKontenInner() {
                         <button
                           type="button"
                           onClick={() => handleEditContent(item)}
-                          className="rounded-xl bg-slate-100 p-2 text-slate-600 transition hover:bg-[#ECE7FF] hover:text-[#7E60FF]"
+                          className="rounded-xl bg-slate-100 p-2 text-slate-600 transition hover:bg-blue-50 hover:text-[#284078]"
                           title="Edit Konten"
                         >
                           <Pencil className="h-3.5 w-3.5" />
@@ -1123,7 +1185,7 @@ function InputKontenInner() {
         <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xs">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-[#6D4AFF]" />
+              <BookOpen className="h-4 w-4 text-[#284078]" />
               <h3 className="text-sm font-bold text-slate-800">
                 Arsip Ide dari Master PDF ({availableIdeas.length})
               </h3>
@@ -1137,11 +1199,11 @@ function InputKontenInner() {
             {availableIdeas.slice(0, 12).map((idea) => (
               <div
                 key={idea.id}
-                className="flex flex-col justify-between rounded-2xl border border-slate-100 bg-slate-50/60 p-3.5 transition hover:border-[#ECE7FF] hover:bg-white"
+                className="flex flex-col justify-between rounded-2xl border border-slate-100 bg-slate-50/60 p-3.5 transition hover:border-blue-200 hover:bg-white"
               >
                 <div>
                   <div className="mb-1.5 flex items-center justify-between gap-2">
-                    <span className="rounded-lg bg-[#ECE7FF] px-2 py-0.5 text-[10px] font-bold text-[#7E60FF]">
+                    <span className="rounded-lg bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-[#284078]">
                       {idea.program?.name} • {idea.pillar?.name}
                     </span>
                     <button
@@ -1164,7 +1226,7 @@ function InputKontenInner() {
                 <button
                   type="button"
                   onClick={() => handleConvertIdeaToContent(idea)}
-                  className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-white border border-slate-200 py-1.5 text-xs font-bold text-[#7E60FF] transition hover:bg-[#7E60FF] hover:text-white"
+                  className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-white border border-slate-200 py-1.5 text-xs font-bold text-[#284078] transition hover:bg-[#284078] hover:text-white"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Masukkan ke Daftar Konten</span>
@@ -1174,6 +1236,17 @@ function InputKontenInner() {
           </div>
         </div>
       )}
+
+      {/* AI IDEA & TITLE GENERATOR MODAL */}
+      <AiIdeaTitleGeneratorModal
+        isOpen={isIdeaGeneratorOpen}
+        onClose={() => setIsIdeaGeneratorOpen(false)}
+        initialProgramId={programId}
+        initialPillarId={pillarId}
+        initialFormatId={formatId}
+        onSelectTitle={handleSelectTitleFromAi}
+        onSelectAndOpenScriptBuilder={handleSelectAndOpenScriptBuilder}
+      />
 
       {/* AI SCRIPT BUILDER MODAL */}
       <AiScriptBuilderModal
