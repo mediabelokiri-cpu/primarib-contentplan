@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Film,
   Layers,
@@ -117,8 +117,11 @@ export function AiScriptBuilderModal({
     (v) => v.content_id === contentId
   );
 
+  const prevIsOpenRef = useRef(false);
+
   useEffect(() => {
-    if (isOpen) {
+    // Only run initialization when modal transitions from closed to open
+    if (isOpen && !prevIsOpenRef.current) {
       const isNewDraft = !contentId || contentId === "new-content-draft";
       if (!isNewDraft && currentContentScript) {
         setTitle(currentContentScript.title || initialTitle);
@@ -160,6 +163,7 @@ export function AiScriptBuilderModal({
       setSuccessBanner(null);
       setErrorMessage(null);
     }
+    prevIsOpenRef.current = isOpen;
   }, [isOpen, contentId, initialTitle, initialHook, initialFormat, currentContentScript]);
 
   // Full AI Generation Handler
