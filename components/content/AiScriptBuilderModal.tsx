@@ -225,82 +225,181 @@ Brand Context: Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasa
       }
 
       if (parsedOutput) {
-        if (parsedOutput.hook) {
-          let h = parsedOutput.hook;
-          if (formatType === "REELS") {
-            h = h.replace(/^Slide\s*\d+:\s*/i, "");
-          }
-          setHook(h);
+        let finalHook =
+          parsedOutput.hook ||
+          `Mau kuasai ${title}? Ini trik rahasia yang wajib kamu tahu!`;
+        if (formatType === "REELS") {
+          finalHook = finalHook.replace(/^Slide\s*\d+:\s*/i, "");
         }
-        if (parsedOutput.caption) {
-          let c = parsedOutput.caption;
-          if (formatType === "REELS") {
-            c = c.replace(/carousel/gi, "video");
-          }
-          setCaption(c);
+        setHook(finalHook);
+
+        let finalCaption =
+          parsedOutput.caption ||
+          `Jangan sampai persiapanmu sia-sia karena salah metode belajar! 🚀\n\nSimpan konten ini dan bagikan ke rekan sesama pejuang ujian. Mau tanya seputar materi? Tulis di komentar ya! 👇\n\n#PrimaRIB #BimbelPrimaRIB`;
+        if (formatType === "REELS") {
+          finalCaption = finalCaption.replace(/carousel/gi, "video");
         }
+        setCaption(finalCaption);
+
         if (parsedOutput.cta) setCta(parsedOutput.cta);
         if (parsedOutput.hashtags) setHashtags(parsedOutput.hashtags);
 
         if (formatType === "REELS") {
-          let scenesArr = Array.isArray(parsedOutput.scenes) ? parsedOutput.scenes : [];
+          let scenesArr = Array.isArray(parsedOutput.scenes)
+            ? parsedOutput.scenes
+            : [];
           if (scenesArr.length === 0 && Array.isArray(parsedOutput.slides)) {
             scenesArr = parsedOutput.slides.map((sl: any) => ({
               timecode: "00:00 - 00:15",
-              visual_direction: sl.visual_direction || "Talent mentor menjelaskan di depan Lab CAT",
+              visual_direction:
+                sl.visual_direction ||
+                "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB",
               audio_dialogue: `${sl.headline}. ${sl.body}`,
               text_on_screen: sl.headline || "POIN PENTING",
             }));
           }
-          if (scenesArr.length > 0) {
-            setReelsScenes(
-              scenesArr.map((sc: any, idx: number) => ({
-                id: `sc-gen-${Date.now()}-${idx}`,
-                timecode: sc.timecode || `00:${String(idx * 15).padStart(2, "0")} - 00:${String((idx + 1) * 15).padStart(2, "0")}`,
+
+          // Fallback kontekstual agar timeline adegan 100% selalu terisi siap pakai
+          if (scenesArr.length === 0) {
+            scenesArr = [
+              {
+                timecode: "00:00 - 00:05",
                 visual_direction:
-                  sc.visual ||
-                  sc.visual_direction ||
-                  "Talent mentor menjelaskan di depan Lab CAT",
+                  "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB dengan ekspresi antusias",
                 audio_dialogue:
-                  sc.audio || sc.audio_dialogue || "Penjelasan materi soal ujian",
-                text_on_screen:
-                  sc.text_on_screen || sc.tos || "KATA KUNCI TRIK CEPAT",
-              }))
-            );
+                  finalHook ||
+                  `Mau kuasai ${title}? Simak video ini sampai selesai!`,
+                text_on_screen: title.slice(0, 32).toUpperCase(),
+              },
+              {
+                timecode: "00:05 - 00:20",
+                visual_direction:
+                  "Kamera zoom in ke layar tablet/modul memperlihatkan poin inti materi",
+                audio_dialogue: `Banyak peserta yang gagal di tahap ini karena belum tahu pola efisiennya. Kuncinya ada pada eliminasi cepat dan ketenangan mental.`,
+                text_on_screen: "POLA KUNCI & ELIMINASI",
+              },
+              {
+                timecode: "00:20 - 00:45",
+                visual_direction:
+                  "Talent mendemonstrasikan trik cepat metode Fast-Think Prima RIB",
+                audio_dialogue: `Gunakan metode Fast-Think Prima RIB: cari selisih dan eliminasi opsi yang tidak relevan dalam 15 detik tanpa rumus rumit!`,
+                text_on_screen: "METODE FAST-THINK PRIMA RIB",
+              },
+              {
+                timecode: "00:45 - 00:60",
+                visual_direction:
+                  "Talent tersenyum, banner CTA kelas intensif dan link bio muncul",
+                audio_dialogue: `Mau kuasai ribuan trik cepat materi lainnya? Konsultasikan persiapanmu bersama mentor Prima RIB sekarang. Klik link di bio!`,
+                text_on_screen: "KONSULTASI GRATIS 👉 LINK DI BIO",
+              },
+            ];
           }
+
+          setReelsScenes(
+            scenesArr.map((sc: any, idx: number) => ({
+              id: `sc-gen-${Date.now()}-${idx}`,
+              timecode:
+                sc.timecode ||
+                `00:${String(idx * 15).padStart(2, "0")} - 00:${String(
+                  (idx + 1) * 15
+                ).padStart(2, "0")}`,
+              visual_direction:
+                sc.visual ||
+                sc.visual_direction ||
+                "Talent mentor menjelaskan di depan Lab CAT",
+              audio_dialogue:
+                sc.audio ||
+                sc.audio_dialogue ||
+                "Penjelasan materi soal ujian",
+              text_on_screen:
+                sc.text_on_screen || sc.tos || "KATA KUNCI TRIK CEPAT",
+            }))
+          );
         } else if (formatType === "CAROUSEL") {
-          let slidesArr = Array.isArray(parsedOutput.slides) ? parsedOutput.slides : [];
+          let slidesArr = Array.isArray(parsedOutput.slides)
+            ? parsedOutput.slides
+            : [];
           if (slidesArr.length === 0 && Array.isArray(parsedOutput.scenes)) {
             slidesArr = parsedOutput.scenes.map((sc: any, idx: number) => ({
               slide_number: idx + 1,
-              slide_type: idx === 0 ? "COVER" : idx === parsedOutput.scenes.length - 1 ? "CTA" : "CONTENT",
+              slide_type:
+                idx === 0
+                  ? "COVER"
+                  : idx === parsedOutput.scenes.length - 1
+                  ? "CTA"
+                  : "CONTENT",
               headline: sc.text_on_screen || `Poin ${idx + 1}`,
               body: sc.audio_dialogue || "",
-              visual_direction: sc.visual_direction || "Infografis berlatar Navy & Gold.",
+              visual_direction:
+                sc.visual_direction || "Infografis berlatar Navy & Gold.",
             }));
           }
-          if (slidesArr.length > 0) {
-            setCarouselSlides(
-              slidesArr.map((sl: any, idx: number) => ({
-                id: `sl-gen-${Date.now()}-${idx}`,
-                slide_number: sl.slide_number || idx + 1,
-                slide_type:
-                  sl.slide_type ||
-                  (idx === 0
-                    ? "COVER"
-                    : idx === slidesArr.length - 1
-                    ? "CTA"
-                    : "CONTENT"),
-                headline: sl.headline || `Poin Penting ${idx + 1}`,
-                body: sl.body || "Penjelasan detail poin materi untuk peserta.",
+
+          if (slidesArr.length === 0) {
+            slidesArr = [
+              {
+                slide_number: 1,
+                slide_type: "COVER",
+                headline: title,
+                body: "Swipe ke kiri untuk cek strategi dan pembahasan lengkapnya 👉",
                 visual_direction:
-                  sl.visual_direction || "Infografis berlatar Navy & Gold.",
-              }))
-            );
+                  "Cover tegas dengan tipografi kontras Solid Navy & Gold",
+              },
+              {
+                slide_number: 2,
+                slide_type: "CONTENT",
+                headline: "1. Pola Dasar & Analisis Soal",
+                body: "Pahami karakteristik materi yang sering menjebak peserta dan buang waktu ujian.",
+                visual_direction: "Diagram perbandingan cara lama vs cara cepat",
+              },
+              {
+                slide_number: 3,
+                slide_type: "CONTENT",
+                headline: "2. Metode Eliminasi Fast-Think",
+                body: "Fokus pada selisih angka atau kata kunci utama untuk menemukan jawaban dalam 15-20 detik.",
+                visual_direction: "Langkah-langkah trik eliminasi pilihan ganda",
+              },
+              {
+                slide_number: 4,
+                slide_type: "CONTENT",
+                headline: "3. Latihan Standar CAT",
+                body: "Simulasi di Lab CAT Prima RIB membiasakanmu dengan tampilan dan batasan waktu BKN sesungguhnya.",
+                visual_direction: "Foto fasilitas simulasi Lab CAT Prima RIB",
+              },
+              {
+                slide_number: 5,
+                slide_type: "CTA",
+                headline: "Siapkan Diri Sekarang!",
+                body: "Konsultasikan peluang kelulusanmu bersama mentor Prima RIB. Klik link di bio!",
+                visual_direction: "Tombol call to action jelas kontak bimbingan",
+              },
+            ];
           }
+
+          setCarouselSlides(
+            slidesArr.map((sl: any, idx: number) => ({
+              id: `sl-gen-${Date.now()}-${idx}`,
+              slide_number: sl.slide_number || idx + 1,
+              slide_type:
+                sl.slide_type ||
+                (idx === 0
+                  ? "COVER"
+                  : idx === slidesArr.length - 1
+                  ? "CTA"
+                  : "CONTENT"),
+              headline: sl.headline || `Poin Penting ${idx + 1}`,
+              body:
+                sl.body || "Penjelasan detail poin materi untuk peserta.",
+              visual_direction:
+                sl.visual_direction || "Infografis berlatar Navy & Gold.",
+            }))
+          );
         } else if (formatType === "SINGLE_POST") {
           setSinglePostBody(
-            parsedOutput.single_post_body || parsedOutput.body || parsedOutput.main_content || title
+            parsedOutput.single_post_body ||
+              parsedOutput.body ||
+              parsedOutput.main_content ||
+              `${title}\n\nKunci sukses lolos ujian adalah manajemen waktu dan pemahaman materi yang terarah. Bersama Bimbel Prima RIB, kamu dilatih dengan modul resmi dan simulasi CAT mirip aslinya.\n\nAmankan kursi bimbinganmu sekarang!`
           );
         }
 

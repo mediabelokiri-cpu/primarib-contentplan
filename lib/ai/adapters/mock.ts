@@ -394,49 +394,103 @@ export class MockFallbackAdapter implements AiProviderAdapter {
             2
           );
         } else {
-          // Reels / Video format default
+          // Reels / Video format - adaptif cerdas mengikuti topik judul
+          const titleClean = reqTitle.replace(/^["']|["']$/g, "").trim();
+          const isMathOrHitung =
+            /tiu|hitung|matematika|angka|pecahan|rumus|kecermatan|silogisme/i.test(
+              titleClean
+            );
+          const isAdministrasi =
+            /administrasi|berkas|dokumen|ktp|syarat|daftar|pendaftaran|upload|tms/i.test(
+              titleClean
+            );
+          const isFisik =
+            /fisik|samapta|jasmani|lari|push up|kesemaptaan|kebugaran/i.test(
+              titleClean
+            );
+
+          let dynamicHook = `Mau kuasai ${titleClean}? Simak rahasia penting ini biar nggak salah langkah!`;
+          let scene1Audio = `Siapa di sini yang lagi berjuang di seleksi ${progLabel}? Jangan lewatkan info penting ini!`;
+          let scene2Audio = `Kunci utamanya ada pada pemahaman pola dan eliminasi kesalahan yang sering bikin gugur di tahap awal.`;
+          let scene3Audio = `Gunakan metode Fast-Think dan simulasi standar BKN di Bimbel Prima RIB biar instingmu terasah tajam.`;
+
+          if (isMathOrHitung) {
+            dynamicHook =
+              "Stop buang-buang waktu hitung cara manual kalau mau selesai sebelum waktu CAT habis!";
+            scene1Audio =
+              "Stop hitung cara manual kalau mau selesai tepat waktu di ujian CAT!";
+            scene2Audio =
+              "Di ujian asli kamu cuma punya 50 detik per soal. Kalau kamu kerjakan dengan rumus panjang, waktumu pasti habis!";
+            scene3Audio =
+              "Gunakan metode Fast-Think Prima RIB: cari selisih dan eliminasi opsi yang tidak relevan dalam 15 detik!";
+          } else if (isAdministrasi) {
+            dynamicHook =
+              "Banyak yang gugur di tahap ini bukan karena kurang pintar, tapi salah verifikasi berkas!";
+            scene1Audio = `Pejuang ${progLabel}, pastikan dokumen pendaftaranmu sudah 100% valid sebelum submit!`;
+            scene2Audio =
+              "Cek sinkronisasi NIK Dukcapil, tahun akreditasi ijazah, dan keaslian e-meterai resmi agar tidak kena TMS.";
+            scene3Audio =
+              "Di Bimbel Prima RIB, setiap siswa mendapat pendampingan cek berkas 1-on-1 agar lolos verifikasi tanpa cemas.";
+          } else if (isFisik) {
+            dynamicHook =
+              "Persiapan fisik berbulan-bulan bisa sia-sia kalau kamu salah strategi gerakan!";
+            scene1Audio =
+              "Tes kesamaptaan bukan cuma adu tenaga, tapi adu efisiensi nafas dan teknik gerakan yang dinilai penguji.";
+            scene2Audio =
+              "Pelajari standar hitungan resmi dan hindari kesalahan postur yang sering membuat repetisi gerakanmu dianulir.";
+            scene3Audio =
+              "Ikuti program drill fisik terarah bersama instruktur Prima RIB dengan standar penilaian instansi resmi.";
+          }
+
           generatedOutput = JSON.stringify(
             {
               format: "REELS",
               formatType: "REELS",
               title: reqTitle,
-              hook: "Stop buang-buang waktu hitung cara manual kalau mau selesai sebelum waktu CAT habis!",
+              hook: dynamicHook,
               scenes: [
                 {
                   timecode: "00:00 - 00:05",
-                  visual: "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB",
-                  visual_direction: "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB",
-                  audio: "Stop hitung cara manual kalau mau selesai sebelum waktu CAT habis!",
-                  audio_dialogue: "Stop hitung cara manual kalau mau selesai sebelum waktu CAT habis!",
-                  text_on_screen: "TRIK HITUNG CEPAT 15 DETIK!",
+                  visual:
+                    "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB",
+                  visual_direction:
+                    "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB dengan ekspresi meyakinkan",
+                  audio: scene1Audio,
+                  audio_dialogue: scene1Audio,
+                  text_on_screen: titleClean.slice(0, 30).toUpperCase(),
                 },
                 {
                   timecode: "00:05 - 00:20",
-                  visual: "Kamera zoom in ke tablet memperlihatkan tipe soal HOTS",
-                  visual_direction: "Kamera zoom in ke tablet memperlihatkan tipe soal HOTS",
-                  audio: "Di ujian asli kamu cuma punya waktu sangat singkat per soal. Kalau kamu kerjakan satu-satu dengan rumus panjang, waktumu pasti habis sebelum tuntas!",
-                  audio_dialogue: "Di ujian asli kamu cuma punya waktu sangat singkat per soal. Kalau kamu kerjakan satu-satu dengan rumus panjang, waktumu pasti habis sebelum tuntas!",
-                  text_on_screen: "JANGAN PAKAI CARA LAMA!",
+                  visual:
+                    "Kamera zoom in ke modul / tablet memperlihatkan poin kunci materi",
+                  visual_direction:
+                    "Kamera zoom in ke layar menampilkan poin regulasi atau tipe soal",
+                  audio: scene2Audio,
+                  audio_dialogue: scene2Audio,
+                  text_on_screen: "POIN PENTING SELEKSI",
                 },
                 {
                   timecode: "00:20 - 00:45",
-                  visual: "Talent mencoret angka dengan metode eliminasi selisih Fast-Think Prima RIB",
-                  visual_direction: "Talent mencoret angka dengan metode eliminasi selisih Fast-Think Prima RIB",
-                  audio: "Gunakan metode Fast-Think Prima RIB: cari pola kunci dan eliminasi opsi yang tidak mungkin. Jawaban langsung ketemu dalam 15 detik tanpa hitungan rumit!",
-                  audio_dialogue: "Gunakan metode Fast-Think Prima RIB: cari pola kunci dan eliminasi opsi yang tidak mungkin. Jawaban langsung ketemu dalam 15 detik tanpa hitungan rumit!",
+                  visual:
+                    "Talent mendemonstrasikan metode Fast-Think di layar Lab CAT",
+                  visual_direction:
+                    "Talent mendemonstrasikan trik cepat dan simulasi sistem CAT Prima RIB",
+                  audio: scene3Audio,
+                  audio_dialogue: scene3Audio,
                   text_on_screen: "METODE FAST-THINK PRIMA RIB",
                 },
                 {
                   timecode: "00:45 - 00:60",
-                  visual: "Talent tersenyum sambil memegang modul resmi & Lab CAT di belakangnya",
-                  visual_direction: "Talent tersenyum sambil memegang modul resmi & Lab CAT di belakangnya",
-                  audio: `Mau kuasai ribuan trik pengerjaan cepat materi ${progLabel} lainnya? Gabung kelas intensif Prima RIB sekarang. Klik link di bio!`,
-                  audio_dialogue: `Mau kuasai ribuan trik pengerjaan cepat materi ${progLabel} lainnya? Gabung kelas intensif Prima RIB sekarang. Klik link di bio!`,
-                  text_on_screen: "GABUNG KELAS INTENSIF SEKARANG 👉 LINK DI BIO",
+                  visual:
+                    "Talent tersenyum sambil memegang modul resmi & Lab CAT di belakangnya",
+                  visual_direction:
+                    "Talent tersenyum, banner kontak bimbingan dan link bio muncul",
+                  audio: `Mau persiapanmu lebih terarah dan intensif untuk seleksi ${progLabel}? Gabung kelas bimbingan Prima RIB sekarang. Klik link di bio!`,
+                  audio_dialogue: `Mau persiapanmu lebih terarah dan intensif untuk seleksi ${progLabel}? Gabung kelas bimbingan Prima RIB sekarang. Klik link di bio!`,
+                  text_on_screen: "KONSULTASI GRATIS 👉 LINK DI BIO",
                 },
               ],
-              caption:
-                `Bukan soal seberapa jago menghafal, tapi seberapa cepat kamu nemu pola eliminasi! 🚀\n\nSimpan video ini buat latihan malam ini ya Sobat Prima. Tag teman seperjuanganmu di kolom komentar! 👇\n\n#PrimaRIB #${progTag} #PejuangNIP`,
+              caption: `Jangan biarkan kerja kerasmu terhambat karena kurang persiapan matang! 🚀\n\nSimpan video ini buat latihan dan bagikan ke rekan seperjuangan. Punya pertanyaan seputar materi ${progLabel}? Tulis di kolom komentar ya Sobat Prima! 👇\n\n#PrimaRIB #${progTag} #PejuangNIP #PersiapanTes`,
               cta: "Daftar kelas intensif Prima RIB & kuasai ribuan trik cepat!",
               hashtags: `#PrimaRIB #${progTag} #PejuangNIP #SimulasiCAT`,
             },
