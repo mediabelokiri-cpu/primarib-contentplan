@@ -27,6 +27,7 @@ interface ScheduleDayCell {
   weekdayName: string;
   ruleLabel: string;
   isReelDay: boolean;
+  isCurrentMonth: boolean;
 }
 
 function buildScheduleWeeks(
@@ -59,22 +60,42 @@ function buildScheduleWeeks(
   };
 
   const firstDay = new Date(year, month, 1);
-  const dayOfWeek = firstDay.getDay();
-  let firstMondayDate = 1;
-  if (dayOfWeek === 0) {
-    firstMondayDate = 2;
-  } else if (dayOfWeek > 1) {
-    firstMondayDate = 1 + (8 - dayOfWeek);
+  const firstDayOfWeek = firstDay.getDay(); // 0 = Minggu, 1 = Senin, ..., 5 = Jumat, 6 = Sabtu
+
+  // Tentukan hari Senin pertama untuk memulai baris Minggu 1:
+  // Jika tgl 1 jatuh di Selasa-Jumat, tarik mundur ke hari Senin minggu yang sama (misal 1 Des 2026 adalah Selasa, maka mundur ke 30 Nov 2026).
+  // Dengan demikian tanggal 1, 2, 3, 4 Desember tetap tampil utuh di Minggu 1!
+  let startMondayDate: Date;
+  if (firstDayOfWeek === 1) {
+    startMondayDate = new Date(year, month, 1);
+  } else if (firstDayOfWeek >= 2 && firstDayOfWeek <= 5) {
+    startMondayDate = new Date(year, month, 1 - (firstDayOfWeek - 1));
+  } else if (firstDayOfWeek === 6) {
+    // Jatuh di Sabtu -> Hari kerja pertama mulai Senin tgl 3
+    startMondayDate = new Date(year, month, 3);
+  } else {
+    // Jatuh di Minggu (0) -> Hari kerja pertama mulai Senin tgl 2
+    startMondayDate = new Date(year, month, 2);
   }
 
   const weeks: ScheduleDayCell[][] = [];
-  for (let w = 0; w < 4; w++) {
+  const currentMonday = new Date(startMondayDate);
+
+  // Buat minggu secara dinamis sampai seluruh hari di bulan tersebut tercover penuh (bisa 4 s/d 6 minggu)
+  for (let w = 0; w < 6; w++) {
     const weekRow: ScheduleDayCell[] = [];
+    let hasCurrentMonthDay = false;
+
     for (let d = 0; d < 5; d++) {
-      const dateObj = new Date(year, month, firstMondayDate + w * 7 + d);
+      const dateObj = new Date(currentMonday);
+      dateObj.setDate(currentMonday.getDate() + d);
+
       const yyyy = dateObj.getFullYear();
       const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
       const dd = String(dateObj.getDate()).padStart(2, "0");
+      const isCurrMonth = dateObj.getMonth() === month;
+      if (isCurrMonth) hasCurrentMonthDay = true;
+
       const meta = weekdayMeta[d + 1];
 
       weekRow.push({
@@ -84,9 +105,19 @@ function buildScheduleWeeks(
         weekdayName: meta.name,
         ruleLabel: meta.rule,
         isReelDay: meta.isReel,
+        isCurrentMonth: isCurrMonth,
       });
     }
+
+    // Jika minggu ini sudah tidak memuat tanggal dari bulan aktif dan sudah ada minimal 4 minggu, hentikan
+    if (!hasCurrentMonthDay && weeks.length >= 4) {
+      break;
+    }
+
     weeks.push(weekRow);
+
+    // Geser ke hari Senin minggu berikutnya (+7 hari)
+    currentMonday.setDate(currentMonday.getDate() + 7);
   }
 
   return weeks;
@@ -375,7 +406,7 @@ export default function SchedulePostCalendarPage() {
 
     const weekLabel =
       waWeekFilter === "ALL"
-        ? `${monthFullNames[viewMonth]} ${viewYear} (Minggu 1–4)`
+        ? `${monthFullNames[viewMonth]} ${viewYear} (Minggu 1–${weeks.length})`
         : `Minggu ${waWeekFilter + 1} (${monthFullNames[viewMonth]} ${viewYear})`;
 
     const headerLines = [
@@ -1049,20 +1080,42 @@ export default function SchedulePostCalendarPage() {
                     <td
                       key={cell.dateIso}
                       className={`min-h-[165px] align-top border border-slate-200/80 p-3 ${
-                        cell.isReelDay ? "bg-[#FAF9FF]/70" : "bg-white"
+                        !cell.isCurrentMonth
+                          ? "bg-slate-50/70"
+                          : cell.isReelDay
+                          ? "bg-[#FAF9FF]/70"
+                          : "bg-white"
                       }`}
                     >
                       {/* Date Number Header */}
                       <div className="mb-2.5 flex items-center justify-between">
                         <span className="inline-flex items-baseline gap-1">
-                          <span className="text-sm font-extrabold text-slate-800">
+                          <span
+                            className={`text-sm font-extrabold ${
+                              !cell.isCurrentMonth
+                                ? "text-slate-400"
+                                : "text-slate-800"
+                            }`}
+                          >
                             {cell.dayNumber}
                           </span>
-                          <span className="text-[11px] font-semibold text-slate-400">
+                          <span
+                            className={`text-[11px] font-semibold ${
+                              !cell.isCurrentMonth
+                                ? "text-slate-400"
+                                : "text-slate-500"
+                            }`}
+                          >
                             {cell.monthLabel}
                           </span>
                         </span>
-                        <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500">
+                        <span
+                          className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                            !cell.isCurrentMonth
+                              ? "bg-slate-200/60 text-slate-400"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
                           Minggu {wIdx + 1}
                         </span>
                       </div>
@@ -1178,24 +1231,29 @@ export default function SchedulePostCalendarPage() {
             {/* Filter Minggu & Opsi Script */}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-1.5">
-                {[
-                  { id: "ALL" as const, label: "Semua Minggu" },
-                  { id: 0 as const, label: "Minggu 1" },
-                  { id: 1 as const, label: "Minggu 2" },
-                  { id: 2 as const, label: "Minggu 3" },
-                  { id: 3 as const, label: "Minggu 4" },
-                ].map((wk) => (
+                <button
+                  type="button"
+                  onClick={() => setWaWeekFilter("ALL")}
+                  className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                    waWeekFilter === "ALL"
+                      ? "bg-[#284078] text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  Semua Minggu
+                </button>
+                {weeks.map((_, wkIdx) => (
                   <button
-                    key={String(wk.id)}
+                    key={wkIdx}
                     type="button"
-                    onClick={() => setWaWeekFilter(wk.id)}
+                    onClick={() => setWaWeekFilter(wkIdx)}
                     className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
-                      waWeekFilter === wk.id
-                        ? "bg-[#6D4AFF] text-white"
+                      waWeekFilter === wkIdx
+                        ? "bg-[#284078] text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
-                    {wk.label}
+                    Minggu {wkIdx + 1}
                   </button>
                 ))}
               </div>
