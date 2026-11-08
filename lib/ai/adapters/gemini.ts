@@ -70,6 +70,7 @@ export class GeminiAdapter implements AiProviderAdapter {
         "x-goog-api-key": apiKey,
       },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(6000), // Max 6s agar tidak menggantung jika API Google antre
     });
 
     const durationMs = Date.now() - startTime;

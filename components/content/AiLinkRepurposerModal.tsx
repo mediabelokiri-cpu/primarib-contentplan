@@ -232,6 +232,7 @@ OUTPUT WAJIB FORMAT JSON VALID PERSIS DENGAN STRUKTUR INI:
             relevantKnowledge: state.brandKnowledge?.slice(0, 3),
           },
         }),
+        signal: AbortSignal.timeout(10000), // Max 10 detik agar UI tidak menggantung
       });
 
       const aiJson = await aiRes.json();
