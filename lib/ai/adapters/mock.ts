@@ -323,51 +323,89 @@ export class MockFallbackAdapter implements AiProviderAdapter {
 
       if (request.responseFormat === "json") {
         if (selectedFormat === "CAROUSEL") {
+          const cleanT = reqTitle.replace(/^["']|["']$/g, "").trim();
+          const isMathOrHitung =
+            /tiu|hitung|matematika|angka|pecahan|rumus|kecermatan|silogisme/i.test(cleanT);
+          const isAdministrasi =
+            /administrasi|berkas|dokumen|ktp|syarat|daftar|pendaftaran|upload|tms/i.test(cleanT);
+          const isFisik =
+            /fisik|samapta|jasmani|lari|push up|kesemaptaan|kebugaran/i.test(cleanT);
+
+          let slide2Head = `1. Fakta & Analisis: ${cleanT}`;
+          let slide2Body = `Pahami poin-poin utama seputar ${cleanT} agar persiapanmu terarah dan tidak membuang waktu berharga.`;
+          let slide3Head = `2. Kesalahan yang Sering Terjadi`;
+          let slide3Body = `Banyak peserta kehilangan poin karena panik dan kurang strategi eliminasi. Kuncinya ada pada ketenangan dan penguasaan trik.`;
+          let slide4Head = `3. Solusi Terarah di Prima RIB`;
+          let slide4Body = `Bimbel Prima RIB membekali modul resmi terverifikasi dan simulasi Lab CAT berstandar BKN.`;
+
+          if (isMathOrHitung) {
+            slide2Head = `1. Jebakan Hitung Manual di ${cleanT}`;
+            slide2Body = `Di ujian asli waktu per soal hanya 50 detik. Menggunakan rumus manual panjang pasti menghabiskan waktu di soal awal.`;
+            slide3Head = `2. Trik Eliminasi Cepat Fast-Think`;
+            slide3Body = `Fokus pada selisih pembilang dan penyebut atau pola angka kunci. Jawaban ketemu dalam 15-20 detik!`;
+            slide4Head = `3. Drill Soal Standar CAT BKN`;
+            slide4Body = `Latihan intensif di Lab CAT Prima RIB melatih insting kecepatanmu menghadapi tipe soal HOTS.`;
+          } else if (isAdministrasi) {
+            slide2Head = `1. Sinkronisasi NIK Dukcapil & KK`;
+            slide2Body = `Data di KTP dan KK harus 100% cocok. Selisih 1 huruf bisa otomatis membuat berkas tidak memenuhi syarat (TMS).`;
+            slide3Head = `2. Akreditasi Sesuai Tahun Lulus`;
+            slide3Body = `Gunakan surat ketetapan BAN-PT atau Kemdikbud pada tahun kelulusan ijazahmu, bukan status terbaru saat ini.`;
+            slide4Head = `3. Pendampingan Cek Berkas Prima RIB`;
+            slide4Body = `Siswa Prima RIB mendapat pendampingan 1-on-1 validasi dokumen sebelum submit portal SSCASN.`;
+          } else if (isFisik) {
+            slide2Head = `1. Pengaturan Pace & Pernafasan`;
+            slide2Body = `Kunci lari 12 menit bukan sprint di awal, tapi konsistensi pace putaran dan ritme tarikan nafas.`;
+            slide3Head = `2. Standar Repetisi Sesuai Penguji`;
+            slide3Body = `Hindari kesalahan postur pada pull-up atau push-up yang sering membuat repetisi tidak dihitung panitia.`;
+            slide4Head = `3. Program Drill Fisik Prima RIB`;
+            slide4Body = `Dipandu instruktur berpengalaman dengan simulasi penilaian fisik standar instansi resmi.`;
+          }
+
           generatedOutput = JSON.stringify(
             {
               format: "CAROUSEL",
               formatType: "CAROUSEL",
               title: reqTitle,
-              hook: "Slide 1: Hati-hati! 73% peserta gugur di tahap ini bukan karena kurang pintar, tapi salah strategi!",
+              hook: `Slide 1: Catat baik-baik! Pembahasan penting seputar ${cleanT} yang wajib kamu tahu!`,
               slides: [
                 {
                   slide_number: 1,
                   slide_type: "COVER",
-                  headline: reqTitle,
-                  body: "Swipe ke kiri untuk cek 5 ceklis wajib sebelum submit dokumen resmi.",
-                  visual_direction: `Foto siswa bimbel profesional berlatar Lab CAT Prima RIB dengan teks kontras Solid Navy & Gold`,
+                  headline: cleanT,
+                  body: "Swipe ke kiri untuk cek strategi dan rangkuman lengkapnya 👉",
+                  visual_direction: `Cover kontras Solid Navy #284078 & Gold #DDB02E dengan tipografi tegas`,
                 },
                 {
                   slide_number: 2,
                   slide_type: "CONTENT",
-                  headline: "1. Sinkronisasi Data Database Pusat",
-                  body: "Pastikan data di KTP & Kartu Keluarga 100% sinkron. Selisih 1 huruf bisa otomatis ditolak sistem verifikasi berkas.",
-                  visual_direction: "Ilustrasi KTP dengan checklist hijau dan icon warning merah.",
+                  headline: slide2Head,
+                  body: slide2Body,
+                  visual_direction: "Diagram analisis dan checklist poin penting",
                 },
                 {
                   slide_number: 3,
                   slide_type: "CONTENT",
-                  headline: "2. Akreditasi Sesuai Tahun Kelulusan",
-                  body: "Gunakan surat ketetapan BAN-PT atau Kemdikbud saat tahun kelulusanmu, bukan akreditasi terbaru saat ini.",
-                  visual_direction: "Screenshot dokumen sertifikat akreditasi berstempel resmi.",
+                  headline: slide3Head,
+                  body: slide3Body,
+                  visual_direction: "Infografis langkah eliminasi dan tips pencegahan kesalahan",
                 },
                 {
                   slide_number: 4,
                   slide_type: "CONTENT",
-                  headline: "3. Format Surat & Berkas Wajib",
-                  body: "Perhatikan format materai 10.000 dan tanda tangan basah vs e-meterai sesuai arahan instansi yang dilamar.",
-                  visual_direction: "Infografis letak penempelan e-meterai yang benar agar tidak tumpang tindih.",
+                  headline: slide4Head,
+                  body: slide4Body,
+                  visual_direction: "Foto fasilitas simulasi Lab CAT Prima RIB",
                 },
                 {
                   slide_number: 5,
                   slide_type: "CTA",
-                  headline: "Mau Dicek Berkas & Konsultasi Gratis?",
-                  body: "Bimbel Prima RIB sediakan pendampingan berkas 1-on-1 sampai tuntas. Simpan carousel ini & klik link di bio!",
+                  headline: "Mau Konsultasi Gratis?",
+                  body: "Bimbel Prima RIB sediakan pendampingan belajar intensif sampai tuntas. Simpan carousel ini & klik link di bio!",
                   visual_direction: "Foto Lab CAT Prima RIB dengan tombol CTA emas 'Konsultasi Sekarang'.",
                 },
               ],
               caption:
-                `Jangan biarkan kerja keras berbulan-bulan gugur hanya karena salah upload berkas! 📁\n\nSimpan carousel ini buat ceklis sebelum submit portal pendaftaran. Ada pertanyaan seputar formasi ${progLabel}? Tulis di komen ya Sobat Prima! 💬\n\n#PrimaRIB #${progTag} #PersiapanTes2026`,
+                `Jangan biarkan persiapanmu berbulan-bulan salah arah! 📁\n\nSimpan carousel ini buat ceklis belajarmu. Ada pertanyaan seputar ${cleanT}? Tulis di kolom komentar ya Sobat Prima! 💬\n\n#PrimaRIB #${progTag} #PersiapanTes2026`,
               cta: "Simpan & share ke grup pejuang tes! Butuh bimbingan intensif? Hubungi admin via link bio.",
               hashtags: `#PrimaRIB #Info${progLabel.replace(/\s+/g, "")}2026 #${progTag} #PejuangNIP`,
             },

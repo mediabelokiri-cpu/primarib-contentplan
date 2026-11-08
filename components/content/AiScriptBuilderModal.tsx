@@ -172,22 +172,110 @@ export function AiScriptBuilderModal({
     setErrorMessage(null);
     try {
       const prompt = `Buatkan script naskah konten lengkap untuk brand bimbingan belajar Prima RIB.
-Topik/Judul: "${title}"
-Program: "${initialProgramName}"
-Pilar: "${initialPillarName}"
-Format yang diinginkan: "${formatType}"
+Topik/Judul Utama: "${title}"
+Program Target: "${initialProgramName}"
+Pilar Konten: "${initialPillarName}"
+Format Konten: "${formatType}"
 Target Tone: "${tone}"
 
-Instruksi Format:
-- Format yang diminta adalah ${formatType}.
+ATURAN KETAT RELEVANSI ISI:
+1. Seluruh isi naskah, hook, dan rincian (${formatType === "CAROUSEL" ? "Slide 1 sampai Slide 5" : "Adegan 1 sampai Adegan 4"}) WAJIB 100% MEMBAHAS TOPIK/JUDUL: "${title}".
+2. DILARANG membuat materi acak yang tidak berhubungan dengan judul "${title}".
+3. Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasan, dan Polri dengan keunggulan Lab Simulasi CAT standar BKN dan metode Fast-Think.
+
+OUTPUT WAJIB FORMAT JSON PERSIS DENGAN STRUKTUR INI:
 ${
   formatType === "REELS"
-    ? 'HANYA hasilkan array "scenes" (timecode, visual_direction, audio_dialogue, text_on_screen). JANGAN hasilkan array slides dan DILARANG gunakan kata "slide" pada hook maupun naskah!'
+    ? `{
+  "title": "${title}",
+  "hook": "Kalimat hook 0-3 detik pemikat yang berhubungan langsung dengan ${title}",
+  "formatType": "REELS",
+  "scenes": [
+    {
+      "timecode": "00:00 - 00:05",
+      "visual_direction": "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB",
+      "audio_dialogue": "Kalimat pembuka hook dan pengantar materi ${title}",
+      "text_on_screen": "KATA KUNCI UTAMA"
+    },
+    {
+      "timecode": "00:05 - 00:20",
+      "visual_direction": "Layar zoom in ke pembahasan materi / dokumen soal",
+      "audio_dialogue": "Penjelasan inti pembahasan dan jebakan yang sering dialami pejuang seleksi",
+      "text_on_screen": "POIN PENTING MATERI"
+    },
+    {
+      "timecode": "00:20 - 00:45",
+      "visual_direction": "Talent mendemonstrasikan trik cepat metode Fast-Think di tablet",
+      "audio_dialogue": "Trik cepat dan strategi praktis menyelesaikan materi ini dalam 15-20 detik",
+      "text_on_screen": "METODE FAST-THINK PRIMA RIB"
+    },
+    {
+      "timecode": "00:45 - 00:60",
+      "visual_direction": "Talent tersenyum, banner CTA bimbingan dan kontak bio muncul",
+      "audio_dialogue": "Ajakan konsultasi dan gabung kelas bimbingan intensif Prima RIB",
+      "text_on_screen": "KONSULTASI GRATIS 👉 LINK DI BIO"
+    }
+  ],
+  "caption": "Teks caption edukatif yang mengalir lengkap dengan tips praktis untuk ${title}",
+  "cta": "Simpan video ini dan konsultasikan persiapanmu di Prima RIB via link bio!",
+  "hashtags": "#PrimaRIB #BimbelCPNS #PersiapanTes"
+}`
     : formatType === "CAROUSEL"
-    ? 'HANYA hasilkan array "slides" (slide_number, slide_type, headline, body, visual_direction).'
-    : 'HANYA hasilkan "single_post_body" yang padat dan informatif.'
-}
-Brand Context: Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasan, dan Polri dengan fasilitas Lab Simulasi CAT standar BKN dan metode Fast-Think.`;
+    ? `{
+  "title": "${title}",
+  "hook": "Slide 1: Kalimat hook cover carousel yang memicu swipe untuk topik ${title}",
+  "formatType": "CAROUSEL",
+  "slides": [
+    {
+      "slide_number": 1,
+      "slide_type": "COVER",
+      "headline": "${title}",
+      "body": "Subheadline pemantik rasa penasaran pejuang seleksi untuk membaca slide berikutnya",
+      "visual_direction": "Cover kontras Solid Navy #284078 & Gold #DDB02E dengan tipografi tegas"
+    },
+    {
+      "slide_number": 2,
+      "slide_type": "CONTENT",
+      "headline": "1. Poin Analisis Utama ${title}",
+      "body": "Penjelasan detail poin pertama yang paling krusial dipahami",
+      "visual_direction": "Infografis penjelasan poin 1 dengan ikon penjelas"
+    },
+    {
+      "slide_number": 3,
+      "slide_type": "CONTENT",
+      "headline": "2. Kendala & Kesalahan yang Sering Terjadi",
+      "body": "Penjelasan jebakan atau kesalahan umum peserta terkait topik ini",
+      "visual_direction": "Infografis tips pencegahan kesalahan"
+    },
+    {
+      "slide_number": 4,
+      "slide_type": "CONTENT",
+      "headline": "3. Solusi Taktis di Bimbel Prima RIB",
+      "body": "Penerapan metode Fast-Think dan simulasi Lab CAT untuk menuntaskan materi ini",
+      "visual_direction": "Foto fasilitas Lab Simulasi CAT Prima RIB"
+    },
+    {
+      "slide_number": 5,
+      "slide_type": "CTA",
+      "headline": "Siapkan Dirimu Sekarang!",
+      "body": "Konsultasikan peluang kelulusanmu bersama mentor ahli Prima RIB. Klik link di bio!",
+      "visual_direction": "Tombol CTA jelas dengan info kontak pendaftaran"
+    }
+  ],
+  "caption": "Caption edukatif lengkap seputar ${title} beserta tips praktis",
+  "cta": "Simpan postingan ini sebelum submit pendaftaran! Hubungi admin via link di bio.",
+  "hashtags": "#PrimaRIB #BimbelCPNS #PersiapanTes"
+}`
+    : `{
+  "title": "${title}",
+  "hook": "Kalimat pembuka menarik seputar ${title}",
+  "formatType": "SINGLE_POST",
+  "single_post_body": "Isi lengkap poster edukatif seputar ${title} secara padat dan terstruktur.",
+  "caption": "Caption edukatif seputar ${title}",
+  "cta": "Klik link di bio untuk info kelas intensif!",
+  "hashtags": "#PrimaRIB #BimbelCPNS"
+}`
+}`;
 
       const res = await fetch("/api/ai/generate", {
         method: "POST",
@@ -316,9 +404,16 @@ Brand Context: Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasa
             }))
           );
         } else if (formatType === "CAROUSEL") {
-          let slidesArr = Array.isArray(parsedOutput.slides)
-            ? parsedOutput.slides
-            : [];
+          const rawSlides =
+            parsedOutput.slides ||
+            parsedOutput.carousel_slides ||
+            parsedOutput.carousel ||
+            parsedOutput.karusel ||
+            parsedOutput.slide_list ||
+            [];
+
+          let slidesArr = Array.isArray(rawSlides) ? rawSlides : [];
+
           if (slidesArr.length === 0 && Array.isArray(parsedOutput.scenes)) {
             slidesArr = parsedOutput.scenes.map((sc: any, idx: number) => ({
               slide_number: idx + 1,
@@ -328,48 +423,87 @@ Brand Context: Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasa
                   : idx === parsedOutput.scenes.length - 1
                   ? "CTA"
                   : "CONTENT",
-              headline: sc.text_on_screen || `Poin ${idx + 1}`,
-              body: sc.audio_dialogue || "",
+              headline: sc.text_on_screen || sc.visual || `Poin ${idx + 1}: ${title}`,
+              body: sc.audio_dialogue || sc.audio || "",
               visual_direction:
                 sc.visual_direction || "Infografis berlatar Navy & Gold.",
             }));
           }
 
+          // Fallback cerdas adaptif yang 100% DINAMIS MENGIKUTI JUDUL
           if (slidesArr.length === 0) {
+            const cleanT = title.replace(/^["']|["']$/g, "").trim();
+            const isMathOrHitung =
+              /tiu|hitung|matematika|angka|pecahan|rumus|kecermatan|silogisme/i.test(cleanT);
+            const isAdministrasi =
+              /administrasi|berkas|dokumen|ktp|syarat|daftar|pendaftaran|upload|tms/i.test(cleanT);
+            const isFisik =
+              /fisik|samapta|jasmani|lari|push up|kesemaptaan|kebugaran/i.test(cleanT);
+
+            let s2Head = `1. Poin Kunci: ${cleanT}`;
+            let s2Body = `Pahami aspek fundamental terkait ${cleanT} agar persiapanmu terarah dan tidak membuang waktu ujian.`;
+            let s3Head = `2. Jebakan yang Sering Terjadi`;
+            let s3Body = `Banyak peserta kehilangan poin karena panik dan kurang strategi eliminasi. Kuncinya ada pada ketenangan dan penguasaan trik.`;
+            let s4Head = `3. Solusi Terarah di Prima RIB`;
+            let s4Body = `Di Bimbel Prima RIB, kamu dibekali simulasi ujian Lab CAT standar BKN dan modul terverifikasi resmi.`;
+
+            if (isMathOrHitung) {
+              s2Head = `1. Jebakan Hitung Cara Manual`;
+              s2Body = `Di ujian asli waktu per soal hanya 50 detik. Menggunakan rumus panjang di ${cleanT} pasti menghabiskan waktu.`;
+              s3Head = `2. Trik Eliminasi Cepat Fast-Think`;
+              s3Body = `Gunakan eliminasi selisih angka dan pola opsi. Jawaban langsung ketemu dalam 15-20 detik!`;
+              s4Head = `3. Simulasi di Lab CAT Prima RIB`;
+              s4Body = `Latihan intensif di Lab CAT Prima RIB membiasakan insting kecepatanmu menghadapi soal HOTS.`;
+            } else if (isAdministrasi) {
+              s2Head = `1. Sinkronisasi Data KTP & KK`;
+              s2Body = `Data KTP, Ijazah, dan KK harus 100% sinkron. Selisih 1 huruf bisa otomatis membuat berkasmu TMS.`;
+              s3Head = `2. Akreditasi Sesuai Tahun Kelulusan`;
+              s3Body = `Gunakan surat ketetapan akreditasi saat tahun kamu lulus, bukan akreditasi terbaru saat ini.`;
+              s4Head = `3. Cek Berkas 1-on-1 Prima RIB`;
+              s4Body = `Siswa Prima RIB mendapat pendampingan validasi dokumen sampai tuntas sebelum submit SSCASN.`;
+            } else if (isFisik) {
+              s2Head = `1. Pengaturan Pace & Pernafasan`;
+              s2Body = `Kunci lari 12 menit bukan sprint di awal, tapi konsistensi pace putaran dan ritme tarikan nafas.`;
+              s3Head = `2. Standar Repetisi Sesuai Penguji`;
+              s3Body = `Pahami postur pull-up atau push-up yang dinilai sah agar repetisimu tidak dianulir panitia.`;
+              s4Head = `3. Program Drill Fisik Prima RIB`;
+              s4Body = `Dipandu instruktur berpengalaman dengan standar pengujian fisik instansi resmi.`;
+            }
+
             slidesArr = [
               {
                 slide_number: 1,
                 slide_type: "COVER",
-                headline: title,
+                headline: cleanT,
                 body: "Swipe ke kiri untuk cek strategi dan pembahasan lengkapnya 👉",
                 visual_direction:
-                  "Cover tegas dengan tipografi kontras Solid Navy & Gold",
+                  "Cover tegas dengan tipografi kontras Solid Navy #284078 & Gold #DDB02E",
               },
               {
                 slide_number: 2,
                 slide_type: "CONTENT",
-                headline: "1. Pola Dasar & Analisis Soal",
-                body: "Pahami karakteristik materi yang sering menjebak peserta dan buang waktu ujian.",
-                visual_direction: "Diagram perbandingan cara lama vs cara cepat",
+                headline: s2Head,
+                body: s2Body,
+                visual_direction: "Diagram perbandingan dan checklist poin penting",
               },
               {
                 slide_number: 3,
                 slide_type: "CONTENT",
-                headline: "2. Metode Eliminasi Fast-Think",
-                body: "Fokus pada selisih angka atau kata kunci utama untuk menemukan jawaban dalam 15-20 detik.",
-                visual_direction: "Langkah-langkah trik eliminasi pilihan ganda",
+                headline: s3Head,
+                body: s3Body,
+                visual_direction: "Infografis langkah eliminasi dan tips pencegahan kesalahan",
               },
               {
                 slide_number: 4,
                 slide_type: "CONTENT",
-                headline: "3. Latihan Standar CAT",
-                body: "Simulasi di Lab CAT Prima RIB membiasakanmu dengan tampilan dan batasan waktu BKN sesungguhnya.",
+                headline: s4Head,
+                body: s4Body,
                 visual_direction: "Foto fasilitas simulasi Lab CAT Prima RIB",
               },
               {
                 slide_number: 5,
                 slide_type: "CTA",
-                headline: "Siapkan Diri Sekarang!",
+                headline: "Siapkan Dirimu Sekarang!",
                 body: "Konsultasikan peluang kelulusanmu bersama mentor Prima RIB. Klik link di bio!",
                 visual_direction: "Tombol call to action jelas kontak bimbingan",
               },
@@ -387,11 +521,24 @@ Brand Context: Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasa
                   : idx === slidesArr.length - 1
                   ? "CTA"
                   : "CONTENT"),
-              headline: sl.headline || `Poin Penting ${idx + 1}`,
+              headline:
+                sl.headline ||
+                sl.title ||
+                sl.slide_title ||
+                sl.judul ||
+                (idx === 0 ? title : `Poin ${idx}`),
               body:
-                sl.body || "Penjelasan detail poin materi untuk peserta.",
+                sl.body ||
+                sl.content ||
+                sl.isi ||
+                sl.description ||
+                sl.text ||
+                `Pembahasan detail materi seputar ${title}.`,
               visual_direction:
-                sl.visual_direction || "Infografis berlatar Navy & Gold.",
+                sl.visual_direction ||
+                sl.visual ||
+                sl.desain ||
+                "Infografis berlatar Navy & Gold.",
             }))
           );
         } else if (formatType === "SINGLE_POST") {
