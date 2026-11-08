@@ -22,9 +22,12 @@ import {
   Flame,
   Award,
   Sparkles,
+  Download,
+  Smartphone,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { ContentWithRelations } from "@/types/database";
+import { TalentInstallPromptModal } from "@/components/talent/TalentInstallPromptModal";
 
 // ============================================================================
 // METADATA & HELPER HARI KALENDER
@@ -126,6 +129,62 @@ function TalentScheduleViewInner() {
   // Copy feedback state
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [scriptModalTab, setScriptModalTab] = useState<"SCENE" | "CAPTION" | "BRIEF">("SCENE");
+
+  // PWA Install Prompt States (Android & iOS)
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [isStandaloneApp, setIsStandaloneApp] = useState(false);
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Cek apakah aplikasi sudah berjalan dalam mode standalone (terpasang di Homescreen)
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true ||
+      document.referrer.includes("android-app://");
+
+    setIsStandaloneApp(isStandalone);
+    if (isStandalone) return;
+
+    // Cek apakah user sudah pernah menutup pop-up dalam kurun 48 jam terakhir
+    let isDismissed = false;
+    try {
+      const dismissedUntil = localStorage.getItem(
+        "prima_talent_install_dismissed_until"
+      );
+      if (dismissedUntil && Number(dismissedUntil) > Date.now()) {
+        isDismissed = true;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredInstallPrompt(e);
+      if (!isDismissed) {
+        setShowInstallModal(true);
+      }
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    // Untuk iOS atau Android, buka pop-up edukasi setelah delay santai 1.2 detik
+    const timer = setTimeout(() => {
+      if (!isDismissed) {
+        setShowInstallModal(true);
+      }
+    }, 1200);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     const roleParam = searchParams.get("role");
@@ -331,15 +390,29 @@ function TalentScheduleViewInner() {
               </div>
             </div>
 
-            {/* Quick Today Pill */}
-            <button
-              type="button"
-              onClick={handleGoToday}
-              className="inline-flex items-center gap-1 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 px-3 py-1 text-[11px] font-bold text-white transition backdrop-blur-xs"
-            >
-              <Clock className="h-3 w-3 text-[#DDB02E]" />
-              <span>Hari Ini</span>
-            </button>
+            {/* Quick Actions (Install App Pill & Quick Today Pill) */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {!isStandaloneApp && (
+                <button
+                  type="button"
+                  onClick={() => setShowInstallModal(true)}
+                  className="inline-flex items-center gap-1 rounded-full bg-[#DDB02E] text-[#284078] hover:bg-[#ebd068] active:scale-95 px-2.5 py-1 text-[11px] font-extrabold transition shadow-xs"
+                  title="Pasang Aplikasi ke Layar Utama HP"
+                >
+                  <Download className="h-3 w-3" />
+                  <span>Install App</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={handleGoToday}
+                className="inline-flex items-center gap-1 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 px-2.5 py-1 text-[11px] font-bold text-white transition backdrop-blur-xs"
+              >
+                <Clock className="h-3 w-3 text-[#DDB02E]" />
+                <span>Hari Ini</span>
+              </button>
+            </div>
           </div>
 
           {/* Month Switcher Bar */}
@@ -1062,6 +1135,12 @@ function TalentScheduleViewInner() {
             </div>
           </div>
         )}
+        {/* PWA INSTALL PROMPT MODAL (ANDROID & IOS) */}
+        <TalentInstallPromptModal
+          isOpen={showInstallModal}
+          onClose={() => setShowInstallModal(false)}
+          deferredPrompt={deferredInstallPrompt}
+        />
       </div>
     </div>
   );

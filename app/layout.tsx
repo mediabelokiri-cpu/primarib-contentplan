@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   title: "Prima RIB — Content Planner",
   description:
     "Internal Content Management & Production Workflow System untuk Prima RIB (CPNS, Sekdin, Polri)",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Prima RIB Talent",
+  },
   icons: {
     icon: [
       { url: "/logo.png", type: "image/png" },
