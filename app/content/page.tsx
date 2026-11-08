@@ -108,6 +108,7 @@ function InputKontenInner() {
   const [isScriptBuilderOpen, setIsScriptBuilderOpen] = useState(false);
   const [isIdeaGeneratorOpen, setIsIdeaGeneratorOpen] = useState(false);
   const [isLinkRepurposerOpen, setIsLinkRepurposerOpen] = useState(false);
+  const [scriptBuilderHook, setScriptBuilderHook] = useState("");
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -159,6 +160,7 @@ function InputKontenInner() {
     result: RepurposedContentResult
   ) => {
     handleApplyRepurposedToForm(result);
+    setScriptBuilderHook(result.hook || "");
     setIsScriptBuilderOpen(true);
     showToast("Membuka AI Script Builder untuk memperhalus naskah...");
   };
@@ -169,12 +171,15 @@ function InputKontenInner() {
     chosenFormatId?: string
   ) => {
     setTitle(chosenTitle);
-    if (chosenHook && isReelFormat) {
-      setReelPoints((prev) => {
-        const next = [...prev];
-        next[0] = chosenHook;
-        return next;
-      });
+    if (chosenHook) {
+      setScriptBuilderHook(chosenHook);
+      if (isReelFormat) {
+        setReelPoints((prev) => {
+          const next = [...prev];
+          next[0] = chosenHook;
+          return next;
+        });
+      }
     }
     if (chosenFormatId) {
       setFormatId(chosenFormatId);
@@ -188,12 +193,15 @@ function InputKontenInner() {
     chosenFormatId?: string
   ) => {
     setTitle(chosenTitle);
-    if (chosenHook && isReelFormat) {
-      setReelPoints((prev) => {
-        const next = [...prev];
-        next[0] = chosenHook;
-        return next;
-      });
+    if (chosenHook) {
+      setScriptBuilderHook(chosenHook);
+      if (isReelFormat) {
+        setReelPoints((prev) => {
+          const next = [...prev];
+          next[0] = chosenHook;
+          return next;
+        });
+      }
     }
     if (chosenFormatId) {
       setFormatId(chosenFormatId);
@@ -1322,6 +1330,7 @@ function InputKontenInner() {
         onClose={() => setIsScriptBuilderOpen(false)}
         contentId={editingId || "new-content-draft"}
         initialTitle={title}
+        initialHook={scriptBuilderHook || (isReelFormat ? reelPoints[0] : "")}
         initialFormat={formatId}
         initialProgramName={
           activePrograms.find((p) => p.id === programId)?.name || "CPNS"

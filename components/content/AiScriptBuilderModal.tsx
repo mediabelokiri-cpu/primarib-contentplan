@@ -40,6 +40,7 @@ interface AiScriptBuilderModalProps {
   onClose: () => void;
   contentId: string;
   initialTitle?: string;
+  initialHook?: string;
   initialFormat?: string; // e.g. "fmt-reels", "fmt-carousel", "fmt-feed"
   initialProgramName?: string;
   initialPillarName?: string;
@@ -53,6 +54,7 @@ export function AiScriptBuilderModal({
   onClose,
   contentId,
   initialTitle = "",
+  initialHook = "",
   initialFormat = "fmt-reels",
   initialProgramName = "CPNS",
   initialPillarName = "Edukatif",
@@ -117,10 +119,11 @@ export function AiScriptBuilderModal({
 
   useEffect(() => {
     if (isOpen) {
-      if (currentContentScript) {
+      const isNewDraft = !contentId || contentId === "new-content-draft";
+      if (!isNewDraft && currentContentScript) {
         setTitle(currentContentScript.title || initialTitle);
         setFormatType(currentContentScript.format_type);
-        setHook(currentContentScript.hook || "");
+        setHook(currentContentScript.hook || initialHook || "");
         setCta(currentContentScript.cta || "");
         setCaption(currentContentScript.caption || "");
         setHashtags(
@@ -142,9 +145,10 @@ export function AiScriptBuilderModal({
         );
         setSinglePostBody(currentContentScript.single_post_body || "");
       } else {
+        // ALWAYS prioritize fresh initialTitle & initialHook when creating a new content / draft!
         setTitle(initialTitle || "");
         setFormatType(getFormatTypeFromId(initialFormat));
-        setHook("");
+        setHook(initialHook || "");
         setCta("");
         setCaption("");
         setHashtags("#PrimaRIB #BimbelCPNS #BimbelKedinasan #BimbelPolri");
@@ -156,7 +160,7 @@ export function AiScriptBuilderModal({
       setSuccessBanner(null);
       setErrorMessage(null);
     }
-  }, [isOpen, contentId, initialTitle, initialFormat, currentContentScript]);
+  }, [isOpen, contentId, initialTitle, initialHook, initialFormat, currentContentScript]);
 
   // Full AI Generation Handler
   const handleGenerateScript = async () => {
