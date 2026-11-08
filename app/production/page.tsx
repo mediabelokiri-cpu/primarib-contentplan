@@ -34,9 +34,11 @@ interface CalendarDayCell {
   weekdayName: string;
   ruleLabel: string;
   isReelDay: boolean;
+  isCurrentMonth: boolean;
 }
 
-// Generate 4 weeks of Monday–Friday for a given year & month (0-indexed)
+// Generate Monday–Friday weeks dynamically for a given year & month (0-indexed)
+// Covers all days of the month (up to 5-6 weeks) and gracefully includes trailing/leading days
 function buildMonFriCalendarWeeks(
   year: number,
   month: number
@@ -78,24 +80,43 @@ function buildMonFriCalendarWeeks(
     },
   };
 
-  // Find the first Monday on or after the 1st of the month (or leading week)
   const firstDay = new Date(year, month, 1);
-  const dayOfWeek = firstDay.getDay(); // 0=Sun, 1=Mon...
-  let firstMondayDate = 1;
-  if (dayOfWeek === 0) {
-    firstMondayDate = 2;
-  } else if (dayOfWeek > 1) {
-    firstMondayDate = 1 + (8 - dayOfWeek);
+  const firstDayOfWeek = firstDay.getDay(); // 0 = Minggu, 1 = Senin, ..., 5 = Jumat, 6 = Sabtu
+
+  // Tentukan hari Senin pertama untuk memulai baris Minggu 1:
+  // Jika tgl 1 jatuh di Selasa-Jumat, tarik mundur ke hari Senin minggu yang sama (misal 1 Des 2026 adalah Selasa, maka mundur ke 30 Nov 2026).
+  // Dengan demikian tanggal 1, 2, 3, 4 Desember tetap tampil utuh di Minggu 1!
+  let startMondayDate: Date;
+  if (firstDayOfWeek === 1) {
+    startMondayDate = new Date(year, month, 1);
+  } else if (firstDayOfWeek >= 2 && firstDayOfWeek <= 5) {
+    startMondayDate = new Date(year, month, 1 - (firstDayOfWeek - 1));
+  } else if (firstDayOfWeek === 6) {
+    // Jatuh di Sabtu -> Hari kerja pertama mulai Senin tgl 3
+    startMondayDate = new Date(year, month, 3);
+  } else {
+    // Jatuh di Minggu (0) -> Hari kerja pertama mulai Senin tgl 2
+    startMondayDate = new Date(year, month, 2);
   }
 
   const weeks: CalendarDayCell[][] = [];
-  for (let w = 0; w < 4; w++) {
+  const currentMonday = new Date(startMondayDate);
+
+  // Buat minggu secara dinamis sampai seluruh hari di bulan tersebut tercover penuh (bisa 4 s/d 6 minggu)
+  for (let w = 0; w < 6; w++) {
     const weekRow: CalendarDayCell[] = [];
+    let hasCurrentMonthDay = false;
+
     for (let d = 0; d < 5; d++) {
-      const dateObj = new Date(year, month, firstMondayDate + w * 7 + d);
+      const dateObj = new Date(currentMonday);
+      dateObj.setDate(currentMonday.getDate() + d);
+
       const yyyy = dateObj.getFullYear();
       const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
       const dd = String(dateObj.getDate()).padStart(2, "0");
+      const isCurrMonth = dateObj.getMonth() === month;
+      if (isCurrMonth) hasCurrentMonthDay = true;
+
       const wIdx = d + 1;
       const meta = weekdayMeta[wIdx];
 
@@ -107,9 +128,19 @@ function buildMonFriCalendarWeeks(
         weekdayName: meta.name,
         ruleLabel: meta.rule,
         isReelDay: meta.isReel,
+        isCurrentMonth: isCurrMonth,
       });
     }
+
+    // Jika minggu ini sudah tidak memuat tanggal dari bulan aktif dan sudah ada minimal 4 minggu, hentikan
+    if (!hasCurrentMonthDay && weeks.length >= 4) {
+      break;
+    }
+
     weeks.push(weekRow);
+
+    // Geser ke hari Senin minggu berikutnya (+7 hari)
+    currentMonday.setDate(currentMonday.getDate() + 7);
   }
 
   return weeks;
@@ -690,6 +721,8 @@ export default function ProductionBoardPage() {
                           className={`min-h-[160px] align-top border border-slate-100 p-2.5 transition-all ${
                             isDragOver
                               ? "bg-[#ECE7FF]/70 ring-2 ring-inset ring-[#7E60FF]"
+                              : !cell.isCurrentMonth
+                              ? "bg-slate-50/70"
                               : cell.isReelDay
                               ? "bg-[#FAF9FF]"
                               : "bg-white"
@@ -697,11 +730,22 @@ export default function ProductionBoardPage() {
                         >
                           {/* Date Cell Header */}
                           <div className="mb-2 flex items-center justify-between">
-                            <span className="inline-flex items-center gap-1 text-xs font-extrabold text-slate-700">
+                            <span
+                              className={`inline-flex items-center gap-1 text-xs font-extrabold ${
+                                cell.isCurrentMonth
+                                  ? "text-slate-700"
+                                  : "text-slate-400"
+                              }`}
+                            >
                               <span>{cell.dayNumber}</span>
                               <span className="text-[10px] font-semibold text-slate-400">
                                 {cell.monthLabel}
                               </span>
+                              {!cell.isCurrentMonth && (
+                                <span className="text-[9px] font-normal text-slate-400">
+                                  (Luar Bulan)
+                                </span>
+                              )}
                             </span>
                             <span className="text-[10px] font-semibold text-slate-300">
                               Minggu {wIdx + 1}
