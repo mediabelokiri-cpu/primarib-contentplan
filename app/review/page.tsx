@@ -8,7 +8,6 @@ import {
   ExternalLink,
   RotateCcw,
   FileText,
-  Sparkles,
   ShieldCheck,
 } from "lucide-react";
 import {

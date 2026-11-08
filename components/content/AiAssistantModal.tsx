@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Sparkles,
+  Cpu,
   Check,
   Copy,
   Layers,
   MessageSquareText,
   Film,
   Zap,
-  Wand2,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -104,12 +104,12 @@ export function AiAssistantModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="✨ Prima RIB AI Content Co-Pilot"
+      title="Prima RIB AI Content Co-Pilot"
       maxWidthClass="max-w-3xl"
     >
       <div className="space-y-4">
         {/* Top Context Input Bar */}
-        <div className="rounded-xl border border-[#284078]/20 bg-gradient-to-r from-[#284078]/5 via-amber-50/60 to-white p-3.5">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
             <div className="sm:col-span-2">
               <label className="block text-[11px] font-bold uppercase tracking-wider text-[#284078]">
@@ -269,7 +269,7 @@ export function AiAssistantModal({
                       }
                       className="inline-flex items-center gap-1 rounded-lg bg-[#DDB02E] px-3 py-1 text-xs font-bold text-[#284078] hover:bg-[#c99e23]"
                     >
-                      <Wand2 className="h-3.5 w-3.5" />
+                      <SlidersHorizontal className="h-3.5 w-3.5" />
                       <span>Gunakan Hook Ini</span>
                     </button>
                   </div>
@@ -301,7 +301,7 @@ export function AiAssistantModal({
                 }
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#DDB02E] px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-2xs hover:bg-[#c99e23]"
               >
-                <Sparkles className="h-3.5 w-3.5" />
+                <Cpu className="h-3.5 w-3.5" />
                 <span>Terapkan Struktur Carousel ke Form</span>
               </button>
             </div>
@@ -356,7 +356,7 @@ export function AiAssistantModal({
                 }
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#DDB02E] px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-2xs hover:bg-[#c99e23]"
               >
-                <Sparkles className="h-3.5 w-3.5" />
+                <Cpu className="h-3.5 w-3.5" />
                 <span>Terapkan Caption, CTA & Hashtags</span>
               </button>
             </div>
@@ -438,7 +438,7 @@ export function AiAssistantModal({
                 }
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#DDB02E] px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-2xs hover:bg-[#c99e23]"
               >
-                <Sparkles className="h-3.5 w-3.5" />
+                <Cpu className="h-3.5 w-3.5" />
                 <span>Terapkan Script Reels ke Form</span>
               </button>
             </div>
@@ -499,7 +499,7 @@ export function AiAssistantModal({
             }}
             className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#284078] px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[#1e305a]"
           >
-            <Sparkles className="h-3.5 w-3.5 text-[#DDB02E]" />
+            <Cpu className="h-3.5 w-3.5 text-[#DDB02E]" />
             <span>Isi Otomatis Semua Field (All-in-One) & Tutup</span>
           </button>
 

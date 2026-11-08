@@ -6,7 +6,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
-  Sparkles,
+  Cpu,
   Copy,
   Check,
   Send,
@@ -211,13 +211,13 @@ Tolong evaluasi:
     >
       <div className="space-y-6">
         {/* Header Summary */}
-        <div className="bg-slate-900 text-white p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="bg-[#284078] text-white p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[#1f3260]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold text-gold">
+              <span className="font-mono text-xs font-bold text-[#DDB02E]">
                 {content.content_code}
               </span>
-              <span className="text-xs text-slate-300">
+              <span className="text-xs text-slate-200">
                 • {content.program?.name} • {content.format?.name}
               </span>
             </div>
@@ -230,7 +230,7 @@ Tolong evaluasi:
             type="button"
             disabled={isRunning}
             onClick={handleRunQualityCheck}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-purple text-white text-xs font-bold rounded-lg hover:opacity-95 transition disabled:opacity-50 shadow-sm self-start sm:self-auto flex-shrink-0"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1b2b52] hover:bg-[#152242] border border-white/20 text-white text-xs font-bold rounded-lg transition disabled:opacity-50 shadow-sm self-start sm:self-auto flex-shrink-0"
           >
             {isRunning ? (
               <>
@@ -239,7 +239,7 @@ Tolong evaluasi:
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-gold" />
+                <Cpu className="w-3.5 h-3.5 text-[#DDB02E]" />
                 <span>{checkResult ? "Periksa Ulang (Re-Check)" : "Jalankan Pemeriksaan AI"}</span>
               </>
             )}
@@ -261,11 +261,11 @@ Tolong evaluasi:
           <div className="space-y-5">
             {/* Score Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3.5 bg-gradient-to-br from-navy/10 to-navy/5 border border-navy/20 rounded-xl text-center">
-                <span className="text-[11px] font-bold text-navy uppercase tracking-wider block">
+              <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                <span className="text-[11px] font-bold text-[#284078] uppercase tracking-wider block">
                   Skor Keseluruhan
                 </span>
-                <span className="text-2xl font-black text-navy mt-0.5 block">
+                <span className="text-2xl font-black text-[#284078] mt-0.5 block">
                   {checkResult.overall_score}
                   <span className="text-xs font-normal text-slate-500">/100</span>
                 </span>
@@ -348,7 +348,7 @@ Tolong evaluasi:
 
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                 <h4 className="font-bold text-slate-800 flex items-center gap-1.5 uppercase tracking-wider">
-                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <HelpCircle className="w-4 h-4 text-[#284078]" />
                   Rekomendasi Penyempurnaan
                 </h4>
                 <ul className="space-y-1.5 text-slate-600">

@@ -8,7 +8,7 @@ import {
   Eye,
   Users,
   Heart,
-  Sparkles,
+  Cpu,
   Clock,
   Award,
   Edit3,
@@ -270,7 +270,7 @@ export default function AnalyticsPage() {
       {/* CONTENT INSIGHT CARDS (Section 20 of Masterplan) */}
       <div className="rounded-xl border border-slate-200 bg-[#284078] p-5 text-white shadow-sm">
         <div className="mb-3 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-[#DDB02E]" />
+          <Cpu className="h-4 w-4 text-[#DDB02E]" />
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#DDB02E]">
             Content Insight & Strategy Highlights
           </h2>

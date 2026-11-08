@@ -74,11 +74,12 @@ import { getLocalCurrentUser } from "@/lib/auth";
 import { calculateEngagementRate } from "@/lib/utils";
 
 const LEGACY_STORAGE_KEYS = [
+  "primarib_content_plan_store_v3_simplified",
   "primarib_content_plan_store_v1",
   "primarib_content_plan_v1",
   "primarib_content_plan_store_v2_master",
 ];
-const STORAGE_KEY = "primarib_content_plan_store_v3_simplified";
+const STORAGE_KEY = "primarib_content_plan_store_v4_nov2026";
 const STORE_EVENT = "primarib-store-updated";
 
 export interface AppDatabaseState {
@@ -556,8 +557,8 @@ const INITIAL_IDEAS: Idea[] = RAW_MASTER_IDEAS.map((item, idx) => ({
   priority: item.priority,
   status: idx < 8 ? "SELECTED" : "NEW",
   created_by: "user-idam",
-  created_at: "2026-10-01T09:00:00Z",
-  updated_at: "2026-10-01T09:00:00Z",
+  created_at: "2026-11-01T09:00:00Z",
+  updated_at: "2026-11-01T09:00:00Z",
 }));
 
 // ============================================================================
@@ -595,11 +596,11 @@ Slide 5 (CTA): "Urus dari sekarang biar nggak mepet deadline! Ada pertanyaan sep
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 5 Slide (Desain bersih, warna resmi: biru #284078 & emas #DDB02E Prima RIB). Slide 1 menampilkan ikon berkas dengan tanda seru.",
-    scheduled_at: "2026-10-05T19:00:00+08:00",
+    scheduled_at: "2026-11-02T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:00:00Z",
-    updated_at: "2026-10-01T10:00:00Z",
+    created_at: "2026-11-01T10:00:00Z",
+    updated_at: "2026-11-01T10:00:00Z",
   },
   {
     id: "cnt-2",
@@ -631,11 +632,11 @@ Opsi Rotasi Niche:
 20-35s (CTA): "Mau tau trik rahasia jebol soal TIU tanpa rumus ribet? Yuk gabung di kelas intensif CPNS Prima RIB. Cek link di bio!"`,
     creative_brief:
       "Durasi: 35 Detik | Visual Cue: Tentor menulis cepat di papan tulis / tablet dengan latar animasi angka | Audio: Musik tren yang upbeat / memotivasi.",
-    scheduled_at: "2026-10-06T19:00:00+08:00",
+    scheduled_at: "2026-11-03T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:05:00Z",
-    updated_at: "2026-10-01T10:05:00Z",
+    created_at: "2026-11-01T10:05:00Z",
+    updated_at: "2026-11-01T10:05:00Z",
   },
   {
     id: "cnt-3",
@@ -665,11 +666,11 @@ Slide 6 (CTA): "Mau kuasai ratusan rumus kilat TIU lainnya? Belajar terarah lang
     script: "",
     creative_brief:
       "Format: Karusel 6 Slide Edukatif (Deep-Dive). Topik pasangan rotasi tabel Minggu 1: 3 Kesalahan Fatal Peserta saat Mengerjakan Soal TKP.",
-    scheduled_at: "2026-10-07T19:00:00+08:00",
+    scheduled_at: "2026-11-04T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:10:00Z",
-    updated_at: "2026-10-01T10:10:00Z",
+    created_at: "2026-11-01T10:10:00Z",
+    updated_at: "2026-11-01T10:10:00Z",
   },
   {
     id: "cnt-4",
@@ -701,11 +702,11 @@ Opsi Rotasi Niche:
 18-25s (CTA): "Jawabannya benar atau salah? Coba ketik di kolom komentar, dan tag teman kamu yang jago TWK!"`,
     creative_brief:
       "Durasi: 25 Detik | In-Frame: Mentor/Pengajar berperan sebagai Quiz Master interaktif | Visual Cue: Teks soal besar di layar, ada animasi timer mundur 5 detik berbunyi 'tik-tok' | Audio: Musik tegang/game show.",
-    scheduled_at: "2026-10-08T19:00:00+08:00",
+    scheduled_at: "2026-11-05T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:15:00Z",
-    updated_at: "2026-10-01T10:15:00Z",
+    created_at: "2026-11-01T10:15:00Z",
+    updated_at: "2026-11-01T10:15:00Z",
   },
   {
     id: "cnt-5",
@@ -732,11 +733,11 @@ Slide 3 (CTA): "Belajar langsung dari pakarnya bikin materi serumit apapun jadi 
     script: "",
     creative_brief:
       "Format: Single Image / Karusel 3 Slide (Foto profesional tentor dengan latar belakang ruang kelas modern Prima RIB).",
-    scheduled_at: "2026-10-09T19:00:00+08:00",
+    scheduled_at: "2026-11-06T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:20:00Z",
-    updated_at: "2026-10-01T10:20:00Z",
+    created_at: "2026-11-01T10:20:00Z",
+    updated_at: "2026-11-01T10:20:00Z",
   },
 
   // ==========================================================================
@@ -770,11 +771,11 @@ Slide 6 (CTA): "Mana instansi impianmu? Tentukan pilihan dari sekarang dan siapk
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 6 Slide (Tabel perbandingan & Alur Tahapan Seleksi Sekolah Kedinasan STAN/IPDN/dll).",
-    scheduled_at: "2026-10-12T19:00:00+08:00",
+    scheduled_at: "2026-11-09T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:25:00Z",
-    updated_at: "2026-10-01T10:25:00Z",
+    created_at: "2026-11-01T10:25:00Z",
+    updated_at: "2026-11-01T10:25:00Z",
   },
   {
     id: "cnt-7",
@@ -806,11 +807,11 @@ Opsi Rotasi Niche:
 25-40s (CTA): "Di Prima RIB, kita bedah kurikulum kedinasan dari nol sampai mahir. Daftar sekarang kuota terbatas!"`,
     creative_brief:
       "Durasi: 40 Detik | Visual Cue: Talking head (pembicara/mentor) dengan gaya santai tapi tegas, diselingi b-roll suasana simulasi CAT | Audio: Musik latar lo-fi produktif yang tenang.",
-    scheduled_at: "2026-10-13T19:00:00+08:00",
+    scheduled_at: "2026-11-10T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:30:00Z",
-    updated_at: "2026-10-01T10:30:00Z",
+    created_at: "2026-11-01T10:30:00Z",
+    updated_at: "2026-11-01T10:30:00Z",
   },
   {
     id: "cnt-8",
@@ -839,11 +840,11 @@ Slide 5 (CTA): "Pelajari kisi-kisi penilaian poin 1 sampai 5 di TKP bersama modu
     script: "",
     creative_brief:
       "Format: Karusel 5 Slide. Topik pendamping tabel Minggu 2: Rahasia Manajemen Waktu Paling Efektif saat Ujian.",
-    scheduled_at: "2026-10-14T19:00:00+08:00",
+    scheduled_at: "2026-11-11T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:35:00Z",
-    updated_at: "2026-10-01T10:35:00Z",
+    created_at: "2026-11-01T10:35:00Z",
+    updated_at: "2026-11-01T10:35:00Z",
   },
   {
     id: "cnt-9",
@@ -875,11 +876,11 @@ Opsi Rotasi Niche:
 15-20s (CTA): "Ketik A atau B di komentar! Solusi dua-duanya ada di kelas kita, cek bio ya."`,
     creative_brief:
       "Durasi: 20 Detik | Visual Cue: Menampilkan dua pilihan di layar (A. TIU yang bikin pusing / B. TKP yang abu-abu). Mentor/Siswa gestur menunjuk ke pilihan | Audio: Tren audio pilihan ganda/viral.",
-    scheduled_at: "2026-10-15T19:00:00+08:00",
+    scheduled_at: "2026-11-12T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:40:00Z",
-    updated_at: "2026-10-01T10:40:00Z",
+    created_at: "2026-11-01T10:40:00Z",
+    updated_at: "2026-11-01T10:40:00Z",
   },
   {
     id: "cnt-10",
@@ -907,11 +908,11 @@ Slide 4 (CTA): "Fasilitas terbaik mendukung hasil yang maksimal. Yuk, datang lan
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 4 Slide (Foto fasilitas komputer, ruang kelas AC ber-lighting nyaman).",
-    scheduled_at: "2026-10-16T19:00:00+08:00",
+    scheduled_at: "2026-11-13T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:45:00Z",
-    updated_at: "2026-10-01T10:45:00Z",
+    created_at: "2026-11-01T10:45:00Z",
+    updated_at: "2026-11-01T10:45:00Z",
   },
 
   // ==========================================================================
@@ -944,11 +945,11 @@ Slide 5 (CTA): "Persiapkan berkas dan fisikmu dari jauh-jauh hari! Ada pertanyaa
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 5 Slide checklist syarat fisik & dokumen administratif seleksi Polri terbaru.",
-    scheduled_at: "2026-10-19T19:00:00+08:00",
+    scheduled_at: "2026-11-16T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:50:00Z",
-    updated_at: "2026-10-01T10:50:00Z",
+    created_at: "2026-11-01T10:50:00Z",
+    updated_at: "2026-11-01T10:50:00Z",
   },
   {
     id: "cnt-12",
@@ -980,11 +981,11 @@ Opsi Rotasi Niche:
 22-35s (CTA): "Dapatkan modul psikotes lengkap dan bimbingan fisik terarah hanya di Prima RIB. Klik link di bio untuk info kelas!"`,
     creative_brief:
       "Durasi: 35 Detik | Visual Cue: Video transisi cepat antara latihan fisik (lari/push up) dan tes tulis psikotes | Audio: Musik workout/energetic.",
-    scheduled_at: "2026-10-20T19:00:00+08:00",
+    scheduled_at: "2026-11-17T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T10:55:00Z",
-    updated_at: "2026-10-01T10:55:00Z",
+    created_at: "2026-11-01T10:55:00Z",
+    updated_at: "2026-11-01T10:55:00Z",
   },
   {
     id: "cnt-13",
@@ -1013,11 +1014,11 @@ Slide 5 (CTA): "Latihan simulasi psikotes Polri lengkap dengan lembar penilaian 
     script: "",
     creative_brief:
       "Format: Karusel 5 Slide. Topik pendamping tabel Minggu 3: Cara Menghitung Skor Akumulasi Tes Akademik Polri.",
-    scheduled_at: "2026-10-21T19:00:00+08:00",
+    scheduled_at: "2026-11-18T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:00:00Z",
-    updated_at: "2026-10-01T11:00:00Z",
+    created_at: "2026-11-01T11:00:00Z",
+    updated_at: "2026-11-01T11:00:00Z",
   },
   {
     id: "cnt-14",
@@ -1049,11 +1050,11 @@ Opsi Rotasi Niche:
 20-30s (CTA): "Fokus tingkatkan kapasitas diri bareng Prima RIB. Share video ini ke teman kamu yang masih ragu!"`,
     creative_brief:
       "Durasi: 30 Detik | Visual Cue: Konsep menjawab mitos umum dengan stempel 'MITOS' atau 'FAKTA' digital di layar | Audio: Sound efek 'Boom' / transisi cepat.",
-    scheduled_at: "2026-10-22T19:00:00+08:00",
+    scheduled_at: "2026-11-19T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:05:00Z",
-    updated_at: "2026-10-01T11:05:00Z",
+    created_at: "2026-11-01T11:05:00Z",
+    updated_at: "2026-11-01T11:05:00Z",
   },
   {
     id: "cnt-15",
@@ -1081,11 +1082,11 @@ Slide 4 (CTA): "Giliran kamu berikutnya yang mencetak sejarah sukses tahun ini! 
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 4 Slide (Foto alumni berseragam / foto bahagia bersama keluarga + kutipan testimoni).",
-    scheduled_at: "2026-10-23T19:00:00+08:00",
+    scheduled_at: "2026-11-20T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:10:00Z",
-    updated_at: "2026-10-01T11:10:00Z",
+    created_at: "2026-11-01T11:10:00Z",
+    updated_at: "2026-11-01T11:10:00Z",
   },
 
   // ==========================================================================
@@ -1118,11 +1119,11 @@ Slide 5 (CTA): "Punya pertanyaan lain? Jangan ragu drop di komentar atau langsun
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 5 Slide Q&A seputar bimbel Prima RIB.",
-    scheduled_at: "2026-10-26T19:00:00+08:00",
+    scheduled_at: "2026-11-23T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:15:00Z",
-    updated_at: "2026-10-01T11:15:00Z",
+    created_at: "2026-11-01T11:15:00Z",
+    updated_at: "2026-11-01T11:15:00Z",
   },
   {
     id: "cnt-17",
@@ -1154,11 +1155,11 @@ Opsi Rotasi Niche:
 22-35s (CTA): "Jangan pertaruhkan masa depanmu dengan coba-coba. Amankan kursimu di kelas intensif Prima RIB sekarang!"`,
     creative_brief:
       "Durasi: 35 Detik | Visual Cue: Mentor berbicara langsung (pesan heart-to-heart menenangkan audiens) dengan suasana kelas/ruang belajar yang kondusif di latar belakang | Audio: Musik instrumen yang menenangkan/inspiratif.",
-    scheduled_at: "2026-10-27T19:00:00+08:00",
+    scheduled_at: "2026-11-24T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:20:00Z",
-    updated_at: "2026-10-01T11:20:00Z",
+    created_at: "2026-11-01T11:20:00Z",
+    updated_at: "2026-11-01T11:20:00Z",
   },
   {
     id: "cnt-18",
@@ -1187,11 +1188,11 @@ Slide 5 (CTA): "Latih manajemen waktumu lewat Tryout berkala berstandar CAT di P
     script: "",
     creative_brief:
       "Format: Karusel 5 Slide. Topik pendamping tabel Minggu 4: Bedah Soal Paling Sering Keluar di Tahun Sebelumnya.",
-    scheduled_at: "2026-10-28T19:00:00+08:00",
+    scheduled_at: "2026-11-25T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:25:00Z",
-    updated_at: "2026-10-01T11:25:00Z",
+    created_at: "2026-11-01T11:25:00Z",
+    updated_at: "2026-11-01T11:25:00Z",
   },
   {
     id: "cnt-19",
@@ -1223,11 +1224,11 @@ Opsi Rotasi Niche:
 15-25s (CTA): "Pasti pilih Tim B kan? Yuk, amankan kuota pendaftaran kelas baru Prima RIB bulan ini. Klik link di bio!"`,
     creative_brief:
       "Durasi: 25 Detik | Visual Cue: Skrin terbelah dua (Split screen) menunjukkan skenario belajar sendirian tumpukan buku vs belajar terarah di kelas modern Prima RIB | Audio: Musik tren yang fun.",
-    scheduled_at: "2026-10-29T19:00:00+08:00",
+    scheduled_at: "2026-11-26T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:30:00Z",
-    updated_at: "2026-10-01T11:30:00Z",
+    created_at: "2026-11-01T11:30:00Z",
+    updated_at: "2026-11-01T11:30:00Z",
   },
   {
     id: "cnt-20",
@@ -1254,11 +1255,11 @@ Slide 3 (CTA): "Kuota kelas terbatas untuk menjaga kualitas bimbingan! Segera da
     script: "",
     creative_brief:
       "Format: Feed Foto / Karusel 3 Slide (Desain poster promo yang elegan, bersih, dengan urgency tinggi).",
-    scheduled_at: "2026-10-30T19:00:00+08:00",
+    scheduled_at: "2026-11-27T19:00:00+08:00",
     source_idea_id: null,
     created_by: "user-idam",
-    created_at: "2026-10-01T11:35:00Z",
-    updated_at: "2026-10-01T11:35:00Z",
+    created_at: "2026-11-01T11:35:00Z",
+    updated_at: "2026-11-01T11:35:00Z",
   },
 ];
 

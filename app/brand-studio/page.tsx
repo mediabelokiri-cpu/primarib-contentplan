@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import {
-  Sparkles,
+  BookOpen,
   Building2,
   Volume2,
   Users,
   GraduationCap,
-  BookOpen,
   FileText,
   Palette,
   Check,
@@ -466,8 +465,8 @@ export default function BrandStudioPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#F3F0FF] px-2.5 py-1 text-xs font-bold text-[#6D4AFF]">
-              <Sparkles className="h-3.5 w-3.5 text-[#6D4AFF]" />
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-bold text-[#284078]">
+              <BookOpen className="h-3.5 w-3.5 text-[#284078]" />
               Module 01 • Brand Knowledge Engine
             </span>
             <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">

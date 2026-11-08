@@ -21,7 +21,6 @@ import {
   UserCheck,
   GraduationCap,
   Users,
-  Sparkles,
 } from "lucide-react";
 import {
   useAppStore,
@@ -414,9 +413,9 @@ function InputKontenInner() {
             <button
               type="button"
               onClick={() => setIsScriptBuilderOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary to-[#6D4AFF] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:opacity-95 transition"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#284078] hover:bg-[#1e305a] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition"
             >
-              <Sparkles className="h-3.5 w-3.5 text-[#DDB02E]" />
+              <FileText className="h-3.5 w-3.5 text-[#DDB02E]" />
               <span>AI Script Builder</span>
             </button>
 
@@ -1209,7 +1208,7 @@ function InputKontenInner() {
           setCaptionText(
             `${script.caption}\n\nCTA: ${script.cta}\n\n${script.hashtags}`
           );
-          showToast("✨ Naskah AI berhasil disinkronkan ke formulir!");
+          showToast("Naskah berhasil disinkronkan ke formulir!");
           setIsScriptBuilderOpen(false);
         }}
       />

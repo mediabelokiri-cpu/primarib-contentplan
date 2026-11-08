@@ -21,15 +21,50 @@ import {
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 
+const MONTH_FULL_NAMES = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+const MONTH_SHORT_NAMES = [
+  "Okt",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
+];
+
 export default function DashboardPage() {
   const router = useRouter();
   const { enrichedContents } = useAppStore();
+
+  const now = new Date();
+  const [viewYear, setViewYear] = useState<number>(() => now.getFullYear());
+  const [viewMonth, setViewMonth] = useState<number>(() => now.getMonth());
 
   // Interactive filter states
   const [selectedProgramFilter, setSelectedProgramFilter] = useState<
     "ALL" | "CPNS" | "SEKDIN" | "POLRI"
   >("ALL");
-  const [selectedDay, setSelectedDay] = useState<number>(8);
+  const [selectedDay, setSelectedDay] = useState<number>(() => now.getDate());
   const [filterBySelectedDay, setFilterBySelectedDay] = useState<boolean>(false);
 
   const activeContents = enrichedContents.filter(
@@ -90,8 +125,12 @@ export default function DashboardPage() {
     .filter((item) => {
       if (!filterBySelectedDay) return true;
       if (!item.scheduled_at) return false;
-      const dayNum = new Date(item.scheduled_at).getDate();
-      return dayNum === selectedDay;
+      const d = new Date(item.scheduled_at);
+      return (
+        d.getFullYear() === viewYear &&
+        d.getMonth() === viewMonth &&
+        d.getDate() === selectedDay
+      );
     })
     .sort((a, b) =>
       (a.scheduled_at || "9999").localeCompare(b.scheduled_at || "9999")
@@ -109,53 +148,84 @@ export default function DashboardPage() {
     });
   };
 
-  // October 2026 Calendar Grid (Sun - Sat)
-  const calendarCells: { day: number; currentMonth: boolean }[] = [
-    { day: 27, currentMonth: false },
-    { day: 28, currentMonth: false },
-    { day: 29, currentMonth: false },
-    { day: 30, currentMonth: false },
-    ...Array.from({ length: 31 }, (_, idx) => ({
-      day: idx + 1,
-      currentMonth: true,
-    })),
-  ];
+  // Dynamic Calendar Grid (Sun - Sat) for viewYear and viewMonth
+  const totalDaysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay(); // 0 = Sun
+  const prevMonthTotalDays = new Date(viewYear, viewMonth, 0).getDate();
+
+  const calendarCells: { day: number; currentMonth: boolean }[] = [];
+  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+    calendarCells.push({ day: prevMonthTotalDays - i, currentMonth: false });
+  }
+  for (let d = 1; d <= totalDaysInMonth; d++) {
+    calendarCells.push({ day: d, currentMonth: true });
+  }
+  const remainingCells = (7 - (calendarCells.length % 7)) % 7;
+  for (let d = 1; d <= remainingCells; d++) {
+    calendarCells.push({ day: d, currentMonth: false });
+  }
 
   const scheduledDaysSet = new Set(
-    scheduledContents.map((c) => new Date(c.scheduled_at as string).getDate())
+    scheduledContents
+      .filter((c) => {
+        if (!c.scheduled_at) return false;
+        const d = new Date(c.scheduled_at);
+        return d.getFullYear() === viewYear && d.getMonth() === viewMonth;
+      })
+      .map((c) => new Date(c.scheduled_at as string).getDate())
   );
 
-  // Weekly schedule fulfillment (October 2026 Mon-Fri weeks)
-  const weeklyRanges = [
-    {
-      id: 1,
-      title: "Minggu 1",
-      rangeLabel: "5 – 9 Okt 2026",
-      startDay: 5,
-      endDay: 9,
-    },
-    {
-      id: 2,
-      title: "Minggu 2",
-      rangeLabel: "12 – 16 Okt 2026",
-      startDay: 12,
-      endDay: 16,
-    },
-    {
-      id: 3,
-      title: "Minggu 3",
-      rangeLabel: "19 – 23 Okt 2026",
-      startDay: 19,
-      endDay: 23,
-    },
-    {
-      id: 4,
-      title: "Minggu 4",
-      rangeLabel: "26 – 30 Okt 2026",
-      startDay: 26,
-      endDay: 30,
-    },
-  ];
+  // Month navigation handlers
+  const handlePrevMonth = () => {
+    if (viewMonth === 0) {
+      setViewYear((y) => y - 1);
+      setViewMonth(11);
+    } else {
+      setViewMonth((m) => m - 1);
+    }
+    setFilterBySelectedDay(false);
+  };
+
+  const handleNextMonth = () => {
+    if (viewMonth === 11) {
+      setViewYear((y) => y + 1);
+      setViewMonth(0);
+    } else {
+      setViewMonth((m) => m + 1);
+    }
+    setFilterBySelectedDay(false);
+  };
+
+  // Weekly schedule fulfillment (Dynamic Mon-Fri weeks for viewMonth)
+  const shortMonthName = MONTH_SHORT_NAMES[viewMonth + 1] || "Bln";
+  const weeklyRanges = (() => {
+    const list: {
+      id: number;
+      title: string;
+      rangeLabel: string;
+      startDay: number;
+      endDay: number;
+    }[] = [];
+    let weekIndex = 1;
+    for (let day = 1; day <= totalDaysInMonth; day++) {
+      const dayOfWeek = new Date(viewYear, viewMonth, day).getDay();
+      if (dayOfWeek === 1 || (day === 1 && dayOfWeek >= 1 && dayOfWeek <= 5)) {
+        const startDay = day;
+        const daysToFriday = dayOfWeek === 1 ? 4 : Math.max(0, 5 - dayOfWeek);
+        const endDay = Math.min(totalDaysInMonth, day + daysToFriday);
+        list.push({
+          id: weekIndex,
+          title: `Minggu ${weekIndex}`,
+          rangeLabel: `${startDay} – ${endDay} ${shortMonthName} ${viewYear}`,
+          startDay,
+          endDay,
+        });
+        weekIndex++;
+        day = endDay;
+      }
+    }
+    return list.slice(0, 5);
+  })();
 
   const territoryCards = [
     {
@@ -177,10 +247,10 @@ export default function DashboardPage() {
       icon: GraduationCap,
       total: sekdinItems.length,
       scheduled: sekdinItems.filter((c) => c.scheduled_at).length,
-      accentBg: "bg-[#F3F0FF]",
-      accentText: "text-[#6D4AFF]",
-      accentBorder: "border-[#DCD4FF]",
-      activeRing: "ring-2 ring-[#6D4AFF] border-[#6D4AFF]",
+      accentBg: "bg-blue-50/80",
+      accentText: "text-[#284078]",
+      accentBorder: "border-blue-200",
+      activeRing: "ring-2 ring-[#284078] border-[#284078]",
     },
     {
       key: "POLRI" as const,
@@ -189,10 +259,10 @@ export default function DashboardPage() {
       icon: Shield,
       total: polriItems.length,
       scheduled: polriItems.filter((c) => c.scheduled_at).length,
-      accentBg: "bg-blue-50",
-      accentText: "text-blue-600",
-      accentBorder: "border-blue-200",
-      activeRing: "ring-2 ring-blue-500 border-blue-400",
+      accentBg: "bg-sky-50",
+      accentText: "text-sky-600",
+      accentBorder: "border-sky-200",
+      activeRing: "ring-2 ring-sky-500 border-sky-400",
     },
   ];
 
@@ -204,10 +274,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs md:grid-cols-3">
         <Link
           href="/content"
-          className="group flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#6D4AFF]/40 hover:bg-[#F3F0FF]/40"
+          className="group flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#284078]/40 hover:bg-slate-50"
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#6D4AFF] text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#284078] text-white">
               <FilePlus2 className="h-4 w-4" />
             </div>
             <div>
@@ -219,12 +289,12 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:text-[#6D4AFF]" />
+          <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:text-[#284078]" />
         </Link>
 
         <Link
           href="/production"
-          className="group flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#6D4AFF]/40 hover:bg-[#F3F0FF]/40"
+          className="group flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#284078]/40 hover:bg-slate-50"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-white">
@@ -239,12 +309,12 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:text-[#6D4AFF]" />
+          <ArrowUpRight className="h-4 w-4 text-slate-400 transition group-hover:text-[#284078]" />
         </Link>
 
         <Link
           href="/calendar"
-          className="group flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#6D4AFF]/40 hover:bg-[#F3F0FF]/40"
+          className="group flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#284078]/40 hover:bg-slate-50"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
@@ -281,7 +351,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/content"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-[#6D4AFF] px-3.5 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-[#5B38E8]"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#284078] px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-[#1e305a]"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Tambah Konten</span>
@@ -293,9 +363,9 @@ export default function DashboardPage() {
                 const Icon = card.icon;
                 const isSelected = selectedProgramFilter === card.key;
                 const pct =
-                  card.total > 0
-                    ? Math.round((card.scheduled / card.total) * 100)
-                    : 0;
+                    card.total > 0
+                      ? Math.round((card.scheduled / card.total) * 100)
+                      : 0;
 
                 return (
                   <button
@@ -342,7 +412,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                         <div
-                          className="h-full rounded-full bg-[#6D4AFF] transition-all"
+                          className="h-full rounded-full bg-[#284078] transition-all"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -355,14 +425,14 @@ export default function DashboardPage() {
 
           {/* SECTION 2: DISTRIBUSI WARNA CARD REELS, CAROUSEL & SINGLE POST */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            <div className="rounded-xl border border-[#DCD4FF] bg-[#F3F0FF]/70 p-3.5">
+            <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3.5">
               <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#6D4AFF]" />
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#284078]" />
                 <span className="truncate text-[11px] font-bold text-slate-700">
                   Talent Model
                 </span>
               </div>
-              <p className="mt-1.5 text-lg font-extrabold text-[#6D4AFF]">
+              <p className="mt-1.5 text-lg font-extrabold text-[#284078]">
                 {talentModelCount}{" "}
                 <span className="text-[11px] font-medium text-slate-500">
                   Reel
@@ -370,14 +440,14 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3.5">
+            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3.5">
               <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600" />
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-slate-700" />
                 <span className="truncate text-[11px] font-bold text-slate-700">
                   Mentor
                 </span>
               </div>
-              <p className="mt-1.5 text-lg font-extrabold text-blue-600">
+              <p className="mt-1.5 text-lg font-extrabold text-slate-800">
                 {mentorCount}{" "}
                 <span className="text-[11px] font-medium text-slate-500">
                   Reel
@@ -455,7 +525,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/calendar"
-                className="inline-flex items-center gap-1 text-xs font-semibold text-[#6D4AFF] hover:underline"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-[#284078] hover:underline"
               >
                 <span>Buka Kalender Schedule Post</span>
                 <ChevronRight className="h-3.5 w-3.5" />
@@ -494,7 +564,7 @@ export default function DashboardPage() {
                             <div
                               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                                 isReel
-                                  ? "bg-[#F3F0FF] text-[#6D4AFF]"
+                                  ? "bg-blue-50 text-[#284078]"
                                   : isCarousel
                                   ? "bg-emerald-50 text-emerald-600"
                                   : "bg-pink-50 text-pink-600"
@@ -510,7 +580,7 @@ export default function DashboardPage() {
                             </div>
 
                             <div className="min-w-0">
-                              <p className="truncate text-xs font-bold text-slate-800 group-hover:text-[#6D4AFF]">
+                              <p className="truncate text-xs font-bold text-slate-800 group-hover:text-[#284078]">
                                 {item.title}
                               </p>
                               <p className="mt-0.5 text-[11px] text-slate-400">
@@ -528,18 +598,10 @@ export default function DashboardPage() {
                         </td>
 
                         <td className="py-3 px-3 text-xs">
-                          {isReel && item.talent_category ? (
-                            <span
-                              className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[11px] font-semibold ${
-                                item.talent_category === "Talent Model"
-                                  ? "border-[#DCD4FF] bg-[#F3F0FF] text-[#6D4AFF]"
-                                  : item.talent_category === "Mentor / Pengajar"
-                                  ? "border-blue-200 bg-blue-50 text-blue-700"
-                                  : "border-orange-200 bg-orange-50 text-orange-700"
-                              }`}
-                            >
-                              <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                              <span>Reel • {item.talent_category}</span>
+                          {isReel ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-[#284078]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#284078]" />
+                              <span>{item.talent_category || "Reel"}</span>
                             </span>
                           ) : isCarousel ? (
                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
@@ -574,7 +636,7 @@ export default function DashboardPage() {
                       setFilterBySelectedDay(false);
                       setSelectedProgramFilter("ALL");
                     }}
-                    className="mt-2 text-xs font-semibold text-[#6D4AFF] hover:underline"
+                    className="mt-2 text-xs font-semibold text-[#284078] hover:underline"
                   >
                     Tampilkan semua jadwal
                   </button>
@@ -588,12 +650,12 @@ export default function DashboardPage() {
         {/* RIGHT COLUMN: MINI CALENDAR & WEEKLY SCHEDULE PROGRESS            */}
         {/* ================================================================= */}
         <div className="space-y-6 xl:col-span-4">
-          {/* 1. MINI CALENDAR (Oktober 2026) */}
+          {/* 1. MINI CALENDAR (DYNAMIC MONTH & YEAR) */}
           <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-bold text-slate-900">
-                  Kalender Oktober 2026
+                  Kalender {MONTH_FULL_NAMES[viewMonth]} {viewYear}
                 </h3>
                 <p className="text-[11px] text-slate-400">
                   Klik tanggal untuk melihat konten terjadwal
@@ -602,23 +664,19 @@ export default function DashboardPage() {
               <div className="flex items-center gap-1">
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedDay((d) => (d > 1 ? d - 1 : 31));
-                    setFilterBySelectedDay(true);
-                  }}
+                  onClick={handlePrevMonth}
                   className="rounded-lg border border-slate-200 p-1 text-slate-500 transition hover:bg-slate-50"
-                  aria-label="Hari sebelumnya"
+                  aria-label="Bulan sebelumnya"
+                  title="Bulan sebelumnya"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedDay((d) => (d < 31 ? d + 1 : 1));
-                    setFilterBySelectedDay(true);
-                  }}
+                  onClick={handleNextMonth}
                   className="rounded-lg border border-slate-200 p-1 text-slate-500 transition hover:bg-slate-50"
-                  aria-label="Hari berikutnya"
+                  aria-label="Bulan berikutnya"
+                  title="Bulan berikutnya"
                 >
                   <ChevronRight className="h-3.5 w-3.5" />
                 </button>
@@ -646,7 +704,7 @@ export default function DashboardPage() {
 
                 return (
                   <div
-                    key={`${cell.currentMonth ? "cur" : "prev"}-${cell.day}-${index}`}
+                    key={`${cell.currentMonth ? "cur" : "out"}-${cell.day}-${index}`}
                     className="flex items-center justify-center py-0.5"
                   >
                     <button
@@ -665,15 +723,15 @@ export default function DashboardPage() {
                         !cell.currentMonth
                           ? "cursor-default text-slate-300"
                           : isSelected
-                          ? "bg-[#6D4AFF] text-white shadow-xs"
+                          ? "bg-[#284078] text-white shadow-xs"
                           : hasScheduled
-                          ? "bg-[#F3F0FF] font-bold text-[#6D4AFF] hover:bg-[#E4DEFF]"
+                          ? "bg-blue-50 font-bold text-[#284078] hover:bg-blue-100"
                           : "text-slate-700 hover:bg-slate-100"
                       }`}
                     >
                       <span>{cell.day}</span>
                       {hasScheduled && !isSelected && (
-                        <span className="mt-0.5 h-1 w-1 rounded-full bg-[#6D4AFF]" />
+                        <span className="mt-0.5 h-1 w-1 rounded-full bg-[#284078]" />
                       )}
                     </button>
                   </div>
@@ -682,7 +740,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* 2. PROGRES JADWAL MINGGUAN (MINGGU 1 - 4) */}
+          {/* 2. PROGRES JADWAL MINGGUAN (DYNAMIC WEEKS) */}
           <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs">
             <div className="mb-3.5 flex items-center justify-between">
               <div>
@@ -695,7 +753,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/production"
-                className="text-xs font-semibold text-[#6D4AFF] hover:underline"
+                className="text-xs font-semibold text-[#284078] hover:underline"
               >
                 Atur
               </Link>
@@ -706,7 +764,8 @@ export default function DashboardPage() {
                 const filledCount = scheduledContents.filter((c) => {
                   const d = new Date(c.scheduled_at as string);
                   return (
-                    d.getMonth() === 9 &&
+                    d.getFullYear() === viewYear &&
+                    d.getMonth() === viewMonth &&
                     d.getDate() >= wk.startDay &&
                     d.getDate() <= wk.endDay
                   );
@@ -717,7 +776,7 @@ export default function DashboardPage() {
                   <Link
                     key={wk.id}
                     href="/production"
-                    className="block rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#6D4AFF]/40 hover:bg-white"
+                    className="block rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 transition hover:border-[#284078]/40 hover:bg-white"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -732,7 +791,7 @@ export default function DashboardPage() {
                         className={`rounded-lg px-2 py-1 text-xs font-bold ${
                           pct === 100
                             ? "bg-emerald-50 text-emerald-700"
-                            : "bg-[#F3F0FF] text-[#6D4AFF]"
+                            : "bg-blue-50 text-[#284078]"
                         }`}
                       >
                         {pct}%
@@ -742,7 +801,7 @@ export default function DashboardPage() {
                     <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200/70">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          pct === 100 ? "bg-emerald-500" : "bg-[#6D4AFF]"
+                          pct === 100 ? "bg-emerald-500" : "bg-[#284078]"
                         }`}
                         style={{ width: `${pct}%` }}
                       />

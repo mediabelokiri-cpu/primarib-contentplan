@@ -1,21 +1,27 @@
 @import "tailwindcss";
 
+@theme {
+  --color-navy: #284078;
+  --color-primary: #284078;
+  --color-primary-hover: #1e305a;
+}
+
 :root {
-  --primary-navy: #7E60FF;
-  --secondary-yellow: #FF9F59;
+  --primary-navy: #284078;
+  --secondary-yellow: #DDB02E;
   --surface-white: #FFFFFF;
-  --canvas-lavender: #DCD8EC;
+  --canvas-lavender: #EAEFF8;
 }
 
 body {
-  background-color: #DCD8EC;
+  background-color: #EAEFF8;
   color: #1E1B39;
   font-family: "Plus Jakarta Sans", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 dialog::backdrop {
-  background-color: rgba(30, 27, 57, 0.45);
+  background-color: rgba(40, 64, 120, 0.45);
   backdrop-filter: blur(4px);
 }
 
@@ -30,11 +36,11 @@ dialog::backdrop {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(126, 96, 255, 0.2);
+  background: rgba(40, 64, 120, 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(126, 96, 255, 0.4);
+  background: rgba(40, 64, 120, 0.45);
 }
 

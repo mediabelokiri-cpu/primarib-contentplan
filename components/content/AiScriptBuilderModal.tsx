@@ -2,14 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Sparkles,
   Film,
   Layers,
   FileText,
   History,
   RotateCcw,
   CheckCircle2,
-  Wand2,
+  SlidersHorizontal,
   Plus,
   Trash2,
   Copy,
@@ -20,6 +19,7 @@ import {
   Clock,
   ShieldCheck,
   Zap,
+  Cpu,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -83,95 +83,12 @@ export function AiScriptBuilderModal({
   const [hook, setHook] = useState("");
   const [cta, setCta] = useState("");
   const [caption, setCaption] = useState("");
-  const [hashtags, setHashtags] = useState("");
+  const [hashtags, setHashtags] = useState("#PrimaRIB #BimbelCPNS #BimbelKedinasan #BimbelPolri");
 
-  // Format-specific states
-  const [reelsScenes, setReelsScenes] = useState<ReelsScene[]>([
-    {
-      id: "sc-1",
-      timecode: "00:00 - 00:05",
-      visual_direction:
-        "Talent mentor berdiri percaya diri di depan layar Lab CAT Prima RIB",
-      audio_dialogue:
-        "Stop buang-buang waktu hitung cara manual kalau mau selesai sebelum waktu CAT habis!",
-      text_on_screen: "TRIK HITUNG CEPAT TIU 15 DETIK!",
-    },
-    {
-      id: "sc-2",
-      timecode: "00:05 - 00:20",
-      visual_direction:
-        "Kamera zoom in ke layar simulasi CAT memperlihatkan soal pecahan HOTS",
-      audio_dialogue:
-        "Di ujian asli kamu cuma punya 50 detik per soal. Kalau kamu samakan penyebut satu-satu, waktu kamu pasti habis di 5 soal pertama!",
-      text_on_screen: "JANGAN SAMAKAN PENYEBUT!",
-    },
-    {
-      id: "sc-3",
-      timecode: "00:20 - 00:45",
-      visual_direction:
-        "Talent mencoret angka dengan metode eliminasi selisih cepat Prima RIB",
-      audio_dialogue:
-        "Pakai metode Fast-Think Prima RIB: Cukup lihat selisih pembilang dan penyebut. Opsi A sampai E langsung kelihatan jawabannya dalam 15 detik!",
-      text_on_screen: "METODE FAST-THINK PRIMA RIB",
-    },
-    {
-      id: "sc-4",
-      timecode: "00:45 - 00:60",
-      visual_direction:
-        "Talent tersenyum sambil memegang modul resmi & Lab CAT di belakangnya",
-      audio_dialogue:
-        "Mau trik lengkap 50 materi lainnya? Gabung kelas intensif Prima RIB sekarang. Klik link di bio!",
-      text_on_screen: "GABUNG KELAS INTENSIF SEKARANG 👉 LINK DI BIO",
-    },
-  ]);
-
-  const [carouselSlides, setCarouselSlides] = useState<CarouselSlide[]>([
-    {
-      id: "sl-1",
-      slide_number: 1,
-      slide_type: "COVER",
-      headline: "STOP Lakukan Ini Kalau Nggak Mau Gugur Administrasi!",
-      body: "Swipe ke kiri untuk cek 5 ceklis wajib sebelum submit dokumen resmi ke SSCASN.",
-      visual_direction:
-        "Foto mahasiswa berseragam kedinasan dengan overlay teks kontras Navy #284078 & Gold #DDB02E",
-    },
-    {
-      id: "sl-2",
-      slide_number: 2,
-      slide_type: "CONTENT",
-      headline: "1. Sinkronisasi NIK Dukcapil",
-      body: "Pastikan data di KTP & Kartu Keluarga 100% sinkron di database pusat. Selisih 1 huruf bisa otomatis bikin TMS.",
-      visual_direction: "Ilustrasi KTP dengan checklist hijau dan icon warning merah.",
-    },
-    {
-      id: "sl-3",
-      slide_number: 3,
-      slide_type: "CONTENT",
-      headline: "2. Akreditasi Sesuai Tahun Kelulusan",
-      body: "Gunakan surat ketetapan BAN-PT atau Kemdikbud saat tahun kamu lulus, bukan akreditasi terbaru saat ini.",
-      visual_direction: "Screenshot sertifikat akreditasi berstempel resmi.",
-    },
-    {
-      id: "sl-4",
-      slide_number: 4,
-      slide_type: "CONTENT",
-      headline: "3. Format Materai & Tanda Tangan",
-      body: "Perhatikan format materai 10.000 dan tanda tangan basah vs e-meterai sesuai arahan instansi yang dilamar.",
-      visual_direction: "Infografis letak penempelan e-meterai yang benar agar tidak tumpang tindih.",
-    },
-    {
-      id: "sl-5",
-      slide_number: 5,
-      slide_type: "CTA",
-      headline: "Mau Dicek Berkas & Konsultasi Gratis?",
-      body: "Bimbel Prima RIB sediakan pendampingan berkas 1-on-1 sampai tuntas. Simpan carousel ini & amankan kursi konsultasimu via link bio!",
-      visual_direction: "Foto Lab CAT Prima RIB dengan tombol CTA emas 'Konsultasi Sekarang'.",
-    },
-  ]);
-
-  const [singlePostBody, setSinglePostBody] = useState(
-    "Banyak peserta seleksi merasa puas saat nilainya tembus passing grade. Padahal, sistem hanya mengambil 3x kuota formasi untuk lanjut ke tahap SKB!\n\nUntuk formasi pusat, target aman SKD bukan cuma 350, tapi minimal 410+. Di Prima RIB, kamu dilatih simulasi CAT berstandar BKN dengan perankingan nasional real-time, jadi kamu selalu tahu posisi kompetitormu sebelum hari H ujian."
-  );
+  // Format-specific states (clean initial state, no dummy/demo scripts)
+  const [reelsScenes, setReelsScenes] = useState<ReelsScene[]>([]);
+  const [carouselSlides, setCarouselSlides] = useState<CarouselSlide[]>([]);
+  const [singlePostBody, setSinglePostBody] = useState("");
 
   // Loading & Generation states
   const [isGenerating, setIsGenerating] = useState(false);
@@ -213,34 +130,27 @@ export function AiScriptBuilderModal({
         setTone(
           currentContentScript.tone || "Semi Formal (Standar Prima RIB)"
         );
-        if (
-          currentContentScript.reels_scenes &&
-          currentContentScript.reels_scenes.length > 0
-        ) {
-          setReelsScenes(currentContentScript.reels_scenes);
-        }
-        if (
-          currentContentScript.carousel_slides &&
-          currentContentScript.carousel_slides.length > 0
-        ) {
-          setCarouselSlides(currentContentScript.carousel_slides);
-        }
-        if (currentContentScript.single_post_body) {
-          setSinglePostBody(currentContentScript.single_post_body);
-        }
+        setReelsScenes(
+          currentContentScript.reels_scenes && currentContentScript.reels_scenes.length > 0
+            ? currentContentScript.reels_scenes
+            : []
+        );
+        setCarouselSlides(
+          currentContentScript.carousel_slides && currentContentScript.carousel_slides.length > 0
+            ? currentContentScript.carousel_slides
+            : []
+        );
+        setSinglePostBody(currentContentScript.single_post_body || "");
       } else {
-        setTitle(initialTitle || "Strategi Menaklukkan Soal TIU & Waktu CAT");
+        setTitle(initialTitle || "");
         setFormatType(getFormatTypeFromId(initialFormat));
-        setHook(
-          "Stop buang-buang waktu hitung cara manual kalau mau selesai sebelum waktu CAT habis!"
-        );
-        setCta(
-          "Daftar kelas intensif Prima RIB & kuasai ribuan trik cepat via link di bio!"
-        );
-        setCaption(
-          "Bukan soal seberapa jago matematika, tapi seberapa cepat kamu nemu pola eliminasi! 🚀\n\nSimpan postingan ini buat latihan malam ini ya Sobat Prima. Tag teman seperjuanganmu di kolom komentar! 👇"
-        );
-        setHashtags("#PrimaRIB #BimbelCPNS #BimbelKedinasan #BimbelPolri #PejuangNIP");
+        setHook("");
+        setCta("");
+        setCaption("");
+        setHashtags("#PrimaRIB #BimbelCPNS #BimbelKedinasan #BimbelPolri");
+        setReelsScenes([]);
+        setCarouselSlides([]);
+        setSinglePostBody("");
       }
       setActiveTab("EDITOR");
       setSuccessBanner(null);
@@ -340,11 +250,11 @@ Brand Context: Prima RIB adalah bimbel persiapan tes CPNS, Sekolah Kedinasan, da
         }
 
         setSuccessBanner(
-          `✨ Naskah ${formatType} berhasil di-generate dengan ${data.providerCode} (${data.modelCode})!`
+          `Naskah ${formatType} berhasil di-generate dengan ${data.providerCode} (${data.modelCode})!`
         );
       } else {
         setSuccessBanner(
-          "✨ Naskah berhasil disusun berdasarkan Brand Knowledge Prima RIB!"
+          "Naskah berhasil disusun berdasarkan Brand Knowledge Prima RIB!"
         );
       }
     } catch (err: any) {
@@ -507,12 +417,12 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
     >
       <div className="space-y-6">
         {/* Header Ribbon: Format & Tone Selector */}
-        <div className="bg-gradient-to-r from-navy/95 to-slate-900 text-white rounded-xl p-4 sm:p-5 shadow-sm border border-navy/30">
+        <div className="bg-[#284078] text-white rounded-xl p-4 sm:p-5 shadow-sm border border-[#1f3260]">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold/20 text-gold border border-gold/30">
-                  <Sparkles className="w-3.5 h-3.5" /> AI Script Builder (Module 04)
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#DDB02E]/20 text-[#DDB02E] border border-[#DDB02E]/30">
+                  <Cpu className="w-3.5 h-3.5" /> AI Script Builder
                 </span>
                 {currentContentScript && (
                   <span className="px-2 py-0.5 rounded text-xs bg-white/10 text-slate-200">
@@ -529,14 +439,14 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
             </div>
 
             {/* Format Pill Switcher */}
-            <div className="flex items-center bg-slate-800/80 p-1 rounded-lg border border-slate-700/80 self-start md:self-auto">
+            <div className="flex items-center bg-[#1b2b52] p-1 rounded-lg border border-[#374f8c] self-start md:self-auto">
               <button
                 type="button"
                 onClick={() => setFormatType("REELS")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                   formatType === "REELS"
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-[#284078] text-white shadow-sm font-bold border border-white/20"
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 <Film className="w-3.5 h-3.5" /> Reels / Video
@@ -546,8 +456,8 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                 onClick={() => setFormatType("CAROUSEL")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                   formatType === "CAROUSEL"
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-[#284078] text-white shadow-sm font-bold border border-white/20"
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" /> Karusel Slide
@@ -557,8 +467,8 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                 onClick={() => setFormatType("SINGLE_POST")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                   formatType === "SINGLE_POST"
-                    ? "bg-primary text-white shadow-sm"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-[#284078] text-white shadow-sm font-bold border border-white/20"
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 <FileText className="w-3.5 h-3.5" /> Single Post
@@ -574,29 +484,29 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
             onClick={() => setActiveTab("EDITOR")}
             className={`pb-3 px-4 text-sm font-semibold border-b-2 flex items-center gap-2 transition ${
               activeTab === "EDITOR"
-                ? "border-primary text-primary"
+                ? "border-[#284078] text-[#284078]"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            <Wand2 className="w-4 h-4" /> Script Editor & Timeline
+            <FileText className="w-4 h-4" /> Script Editor & Timeline
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("REWRITE")}
             className={`pb-3 px-4 text-sm font-semibold border-b-2 flex items-center gap-2 transition ${
               activeTab === "REWRITE"
-                ? "border-primary text-primary"
+                ? "border-[#284078] text-[#284078]"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
-            <Zap className="w-4 h-4" /> Section Rewrite & Tone Adjuster
+            <SlidersHorizontal className="w-4 h-4" /> Section Rewrite & Tone Adjuster
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("VERSIONS")}
             className={`pb-3 px-4 text-sm font-semibold border-b-2 flex items-center gap-2 transition ${
               activeTab === "VERSIONS"
-                ? "border-primary text-primary"
+                ? "border-[#284078] text-[#284078]"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             }`}
           >
@@ -634,7 +544,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Contoh: Rahasia Menaklukkan Soal TIU & Waktu CAT"
-                  className="w-full text-sm font-medium px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="w-full text-sm font-medium px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#284078]/20 focus:border-[#284078]"
                 />
               </div>
 
@@ -645,7 +555,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                 <select
                   value={tone}
                   onChange={(e) => setTone(e.target.value)}
-                  className="w-full text-xs font-medium px-3 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="w-full text-xs font-medium px-3 py-2.5 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#284078]/20 focus:border-[#284078]"
                 >
                   <option value="Semi Formal (Standar Prima RIB)">Semi Formal (Prima RIB)</option>
                   <option value="Santai & Relatable">Santai & Relatable</option>
@@ -659,7 +569,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                   type="button"
                   disabled={isGenerating || !title.trim()}
                   onClick={handleGenerateScript}
-                  className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-purple text-white text-xs font-bold rounded-lg hover:opacity-95 transition disabled:opacity-50 shadow-sm"
+                  className="w-full md:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-[#284078] hover:bg-[#1e305a] text-white text-xs font-bold rounded-lg transition disabled:opacity-50 shadow-sm"
                 >
                   {isGenerating ? (
                     <>
@@ -668,7 +578,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4 text-gold" />
+                      <Cpu className="w-4 h-4 text-[#DDB02E]" />
                       <span>Generate Script dengan AI</span>
                     </>
                   )}
@@ -711,134 +621,142 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Film className="w-4 h-4 text-primary" />
+                    <Film className="w-4 h-4 text-[#284078]" />
                     Timeline & Adegan Video (Scene Breakdown)
                   </h4>
                   <button
                     type="button"
                     onClick={addReelsScene}
-                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-md hover:bg-primary/20 transition"
+                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[#284078] bg-blue-50 rounded-md hover:bg-blue-100 transition"
                   >
                     <Plus className="w-3.5 h-3.5" /> Tambah Adegan
                   </button>
                 </div>
 
-                <div className="space-y-3">
-                  {reelsScenes.map((scene, idx) => (
-                    <div
-                      key={scene.id}
-                      className="p-3.5 bg-white border border-slate-200 rounded-xl shadow-xs space-y-2.5"
-                    >
-                      <div className="flex items-center justify-between text-xs font-semibold text-slate-600 border-b border-slate-100 pb-2">
-                        <span className="flex items-center gap-1.5 text-navy font-bold">
-                          <span className="w-5 h-5 rounded-full bg-navy/10 text-navy flex items-center justify-center text-[10px]">
-                            {idx + 1}
+                {reelsScenes.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center bg-slate-50">
+                    <p className="text-xs text-slate-500 font-medium">
+                      Belum ada rincian adegan. Klik &quot;Generate Script dengan AI&quot; di atas untuk membuat naskah otomatis, atau klik &quot;+ Tambah Adegan&quot; untuk menyusun manual.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {reelsScenes.map((scene, idx) => (
+                      <div
+                        key={scene.id}
+                        className="p-3.5 bg-white border border-slate-200 rounded-xl shadow-xs space-y-2.5"
+                      >
+                        <div className="flex items-center justify-between text-xs font-semibold text-slate-600 border-b border-slate-100 pb-2">
+                          <span className="flex items-center gap-1.5 text-[#284078] font-bold">
+                            <span className="w-5 h-5 rounded-full bg-blue-50 text-[#284078] flex items-center justify-center text-[10px]">
+                              {idx + 1}
+                            </span>
+                            Adegan {idx + 1}
                           </span>
-                          Adegan {idx + 1}
-                        </span>
 
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-slate-400" />
-                            <input
-                              type="text"
-                              value={scene.timecode}
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-slate-400" />
+                              <input
+                                type="text"
+                                value={scene.timecode}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setReelsScenes((prev) =>
+                                    prev.map((s) =>
+                                      s.id === scene.id
+                                        ? { ...s, timecode: val }
+                                        : s
+                                    )
+                                  );
+                                }}
+                                className="w-24 text-[11px] px-1.5 py-0.5 bg-slate-50 border border-slate-200 rounded text-center"
+                              />
+                            </div>
+                            {reelsScenes.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeReelsScene(scene.id)}
+                                className="text-slate-400 hover:text-rose-600 transition p-1"
+                                title="Hapus Adegan"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                              Visual & Talent Direction
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={scene.visual_direction}
                               onChange={(e) => {
                                 const val = e.target.value;
                                 setReelsScenes((prev) =>
                                   prev.map((s) =>
                                     s.id === scene.id
-                                      ? { ...s, timecode: val }
+                                      ? { ...s, visual_direction: val }
                                       : s
                                   )
                                 );
                               }}
-                              className="w-24 text-[11px] px-1.5 py-0.5 bg-slate-50 border border-slate-200 rounded text-center"
+                              placeholder="Aksi talent, angle kamera, background Lab CAT..."
+                              className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:border-[#284078]"
                             />
                           </div>
-                          {reelsScenes.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => removeReelsScene(scene.id)}
-                              className="text-slate-400 hover:text-rose-600 transition p-1"
-                              title="Hapus Adegan"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                              Audio / Spoken Dialogue
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={scene.audio_dialogue}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setReelsScenes((prev) =>
+                                  prev.map((s) =>
+                                    s.id === scene.id
+                                      ? { ...s, audio_dialogue: val }
+                                      : s
+                                  )
+                                );
+                              }}
+                              placeholder="Kata-kata yang diucapkan talent atau suara voiceover..."
+                              className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:border-[#284078] font-medium text-slate-800"
+                            />
+                          </div>
+                        </div>
+
                         <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                            Visual & Talent Direction
+                          <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">
+                            Text On Screen (TOS / Pop-up Layar)
                           </label>
-                          <textarea
-                            rows={2}
-                            value={scene.visual_direction}
+                          <input
+                            type="text"
+                            value={scene.text_on_screen}
                             onChange={(e) => {
                               const val = e.target.value;
                               setReelsScenes((prev) =>
                                 prev.map((s) =>
                                   s.id === scene.id
-                                    ? { ...s, visual_direction: val }
+                                    ? { ...s, text_on_screen: val }
                                     : s
                                 )
                               );
                             }}
-                            placeholder="Aksi talent, angle kamera, background Lab CAT..."
-                            className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:border-primary"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                            Audio / Spoken Dialogue
-                          </label>
-                          <textarea
-                            rows={2}
-                            value={scene.audio_dialogue}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setReelsScenes((prev) =>
-                                prev.map((s) =>
-                                  s.id === scene.id
-                                    ? { ...s, audio_dialogue: val }
-                                    : s
-                                )
-                              );
-                            }}
-                            placeholder="Kata-kata yang diucapkan talent atau suara voiceover..."
-                            className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:border-primary font-medium text-slate-800"
+                            placeholder="Teks singkat penekanan di layar (contoh: METODE ELIMINASI KILAT)"
+                            className="w-full text-xs px-2 py-1 bg-amber-50/40 border border-amber-200/80 rounded-md focus:bg-white focus:outline-none text-slate-800 font-semibold"
                           />
                         </div>
                       </div>
-
-                      <div>
-                        <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">
-                          Text On Screen (TOS / Pop-up Layar)
-                        </label>
-                        <input
-                          type="text"
-                          value={scene.text_on_screen}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setReelsScenes((prev) =>
-                              prev.map((s) =>
-                                s.id === scene.id
-                                  ? { ...s, text_on_screen: val }
-                                  : s
-                              )
-                            );
-                          }}
-                          placeholder="Teks singkat penekanan di layar (contoh: METODE ELIMINASI KILAT)"
-                          className="w-full text-xs px-2 py-1 bg-amber-50/40 border border-amber-200/80 rounded-md focus:bg-white focus:outline-none text-slate-800 font-semibold"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -847,13 +765,13 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <Layers className="w-4 h-4 text-purple" />
+                    <Layers className="w-4 h-4 text-[#284078]" />
                     Slide-by-Slide Copywriting
                   </h4>
                   <button
                     type="button"
                     onClick={addCarouselSlide}
-                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-purple bg-purple/10 rounded-md hover:bg-purple/20 transition"
+                    className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[#284078] bg-blue-50 rounded-md hover:bg-blue-100 transition"
                   >
                     <Plus className="w-3.5 h-3.5" /> Tambah Slide
                   </button>
@@ -1056,10 +974,10 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
         {/* =================================================================== */}
         {activeTab === "REWRITE" && (
           <div className="space-y-5">
-            <div className="p-4 bg-gradient-to-r from-purple/10 to-primary/10 rounded-xl border border-purple/20">
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
               <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1.5 mb-1">
-                <Zap className="w-4 h-4 text-purple" />
-                AI Targeted Section Rewrite (FR-026)
+                <SlidersHorizontal className="w-4 h-4 text-[#284078]" />
+                Targeted Section Rewrite & Tone Adjuster
               </h4>
               <p className="text-xs text-slate-600">
                 Pilih bagian naskah tertentu yang ingin disempurnakan oleh AI tanpa mengubah keseluruhan naskah lainnya.
@@ -1079,7 +997,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                       onClick={() => setRewriteTarget(tgt)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition border ${
                         rewriteTarget === tgt
-                          ? "bg-primary text-white border-primary"
+                          ? "bg-[#284078] text-white border-[#284078]"
                           : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                       }`}
                     >
@@ -1096,12 +1014,12 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
               <div className="md:col-span-2 space-y-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Pilihan Arah Gaya / Style Rewrite (FR-027)
+                    Pilihan Arah Gaya / Style Rewrite
                   </label>
                   <select
                     value={rewriteStyle}
                     onChange={(e) => setRewriteStyle(e.target.value)}
-                    className="w-full text-xs font-medium px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    className="w-full text-xs font-medium px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#284078]/20"
                   >
                     <option value="Lebih Menghentak & Penasaran (Pattern Interrupt)">
                       Lebih Menghentak & Penasaran (Pattern Interrupt)
@@ -1130,7 +1048,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                     value={rewriteCustomInstruction}
                     onChange={(e) => setRewriteCustomInstruction(e.target.value)}
                     placeholder="Contoh: tambahkan mention fasilitas Lab CAT berstandar BKN..."
-                    className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-primary"
+                    className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-[#284078]"
                   />
                 </div>
 
@@ -1138,7 +1056,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                   type="button"
                   disabled={isRewriting}
                   onClick={handleRewriteSection}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/95 transition disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#284078] hover:bg-[#1e305a] text-white text-xs font-bold rounded-lg transition disabled:opacity-50"
                 >
                   {isRewriting ? (
                     <>
@@ -1147,7 +1065,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-3.5 h-3.5 text-gold" />
+                      <Cpu className="w-3.5 h-3.5 text-[#DDB02E]" />
                       <span>Jalankan Rewrite Bagian {rewriteTarget}</span>
                     </>
                   )}

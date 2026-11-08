@@ -103,8 +103,8 @@ function escapeHtml(str: string): string {
 export default function SchedulePostCalendarPage() {
   const { state, enrichedContents } = useAppStore();
 
-  const [viewYear, setViewYear] = useState(2026);
-  const [viewMonth, setViewMonth] = useState(9); // October 2026
+  const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
+  const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
 
   const [filterTalent, setFilterTalent] = useState<string>("ALL");
   const [filterProgram, setFilterProgram] = useState<string>("ALL");
@@ -1101,7 +1101,7 @@ export default function SchedulePostCalendarPage() {
                                 <div className="flex items-center gap-1">
                                   {item.source_type === "AI_ASSISTED" && (
                                     <span className="rounded bg-[#DDB02E]/30 px-1 py-0.5 text-[8px] font-extrabold text-[#284078]">
-                                      ✨ AI
+                                      AI
                                     </span>
                                   )}
                                   <span className="rounded-md bg-white/80 px-1.5 py-0.5 text-[10px] font-extrabold text-slate-700">

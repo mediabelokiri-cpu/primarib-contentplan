@@ -118,9 +118,8 @@ function buildMonFriCalendarWeeks(
 export default function ProductionBoardPage() {
   const { state, enrichedContents } = useAppStore();
 
-  // Default to October 2026 (where our 20 seed items are scheduled)
-  const [viewYear, setViewYear] = useState(2026);
-  const [viewMonth, setViewMonth] = useState(9); // 9 = October
+  const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
+  const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
 
   const [draggedContentId, setDraggedContentId] = useState<string | null>(null);
   const [dragOverDateIso, setDragOverDateIso] = useState<string | null>(null);
@@ -471,11 +470,11 @@ export default function ProductionBoardPage() {
               <select
                 value={filterSource}
                 onChange={(e) => setFilterSource(e.target.value as any)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 focus:border-[#7E60FF] focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 focus:border-[#284078] focus:outline-none"
               >
                 <option value="ALL">Semua Metode (Manual & AI)</option>
-                <option value="AI_ASSISTED">✨ Hanya AI-Assisted</option>
-                <option value="MANUAL">✍️ Hanya Manual</option>
+                <option value="AI_ASSISTED">Hanya AI-Assisted</option>
+                <option value="MANUAL">Hanya Manual</option>
               </select>
             </div>
 
@@ -531,7 +530,7 @@ export default function ProductionBoardPage() {
 
                         {item.source_type === "AI_ASSISTED" && (
                           <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-bold bg-[#DDB02E]/25 text-[#284078] border border-[#DDB02E]/40">
-                            ✨ AI
+                            AI
                           </span>
                         )}
                       </div>
@@ -742,7 +741,7 @@ export default function ProductionBoardPage() {
 
                                       {item.source_type === "AI_ASSISTED" && (
                                         <span className="inline-flex items-center gap-0.5 rounded px-1 py-0.2 text-[8px] font-bold bg-[#DDB02E]/30 text-[#284078] border border-[#DDB02E]/50">
-                                          ✨ AI
+                                          AI
                                         </span>
                                       )}
                                     </div>

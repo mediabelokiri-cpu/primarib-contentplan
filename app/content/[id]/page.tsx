@@ -19,9 +19,9 @@ import {
   Activity,
   FileText,
   MessageSquare,
-  Sparkles,
   Palette,
   ShieldCheck,
+  Cpu,
 } from "lucide-react";
 import {
   useAppStore,
@@ -362,19 +362,19 @@ export default function ContentDetailPage({
             <button
               type="button"
               onClick={() => setIsScriptBuilderOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#6D4AFF] bg-gradient-to-r from-primary to-[#6D4AFF] px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs transition hover:opacity-95"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#284078] bg-[#284078] hover:bg-[#1e305a] px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs transition"
             >
-              <Sparkles className="h-3.5 w-3.5 text-[#DDB02E]" />
+              <FileText className="h-3.5 w-3.5 text-[#DDB02E]" />
               <span>AI Script Builder</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsAiOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#DDB02E] bg-[#DDB02E]/25 px-3 py-1.5 text-xs font-bold text-[#284078] shadow-2xs transition hover:bg-[#DDB02E]/40"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#284078]/30 bg-blue-50 px-3 py-1.5 text-xs font-bold text-[#284078] shadow-2xs transition hover:bg-blue-100"
             >
-              <Sparkles className="h-3.5 w-3.5 text-[#284078]" />
-              <span>✨ Quick AI</span>
+              <Cpu className="h-3.5 w-3.5 text-[#284078]" />
+              <span>Quick AI</span>
             </button>
 
             <button

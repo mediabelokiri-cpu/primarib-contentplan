@@ -90,8 +90,8 @@ function TalentScheduleViewInner() {
   const searchParams = useSearchParams();
   const { enrichedContents } = useAppStore();
 
-  const [viewYear, setViewYear] = useState(2026);
-  const [viewMonth, setViewMonth] = useState(9); // Oktober 2026
+  const [viewYear, setViewYear] = useState(() => new Date().getFullYear());
+  const [viewMonth, setViewMonth] = useState(() => new Date().getMonth());
   const [filterTalent, setFilterTalent] = useState<string>("ALL");
   const [activeWeek, setActiveWeek] = useState<number | "ALL">("ALL");
   const [selectedContent, setSelectedContent] =

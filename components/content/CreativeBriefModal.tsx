@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Palette,
-  Sparkles,
+  Cpu,
   CheckCircle2,
   AlertCircle,
   Copy,
@@ -160,11 +160,11 @@ Format JSON:
             if (Array.isArray(parsed.dos_and_donts.donts))
               setDonts(parsed.dos_and_donts.donts);
           }
-          setSuccessBanner("✨ Creative Brief berhasil dirumuskan AI!");
+          setSuccessBanner("Creative Brief berhasil dirumuskan AI!");
         }
       }
     } catch {
-      setSuccessBanner("✨ Creative Brief berhasil disesuaikan secara lokal!");
+      setSuccessBanner("Creative Brief berhasil disesuaikan secara lokal!");
     } finally {
       setIsGenerating(false);
     }
@@ -198,24 +198,24 @@ Format JSON:
     >
       <div className="space-y-6">
         {/* Header & Role Switcher */}
-        <div className="bg-gradient-to-r from-navy to-slate-900 text-white p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="bg-[#284078] text-white p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[#1f3260]">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold/20 text-gold border border-gold/30 mb-1">
-              <Palette className="w-3.5 h-3.5" /> Creative Brief (FR-029)
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#DDB02E]/20 text-[#DDB02E] border border-[#DDB02E]/30 mb-1">
+              <Palette className="w-3.5 h-3.5" /> Creative Brief
             </span>
             <h3 className="text-sm font-bold text-white tracking-wide">
               {content.title}
             </h3>
           </div>
 
-          <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700 self-start sm:self-auto">
+          <div className="flex items-center bg-[#1b2b52] p-1 rounded-lg border border-[#374f8c] self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setTargetRole("DESIGNER")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                 targetRole === "DESIGNER"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#284078] text-white shadow-xs font-bold border border-white/20"
+                  : "text-slate-300 hover:text-white"
               }`}
             >
               <ImageIcon className="w-3.5 h-3.5" /> Designer
@@ -225,8 +225,8 @@ Format JSON:
               onClick={() => setTargetRole("VIDEO_EDITOR")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                 targetRole === "VIDEO_EDITOR"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#284078] text-white shadow-xs font-bold border border-white/20"
+                  : "text-slate-300 hover:text-white"
               }`}
             >
               <Video className="w-3.5 h-3.5" /> Video Editor
@@ -236,8 +236,8 @@ Format JSON:
               onClick={() => setTargetRole("TALENT")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
                 targetRole === "TALENT"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-slate-400 hover:text-white"
+                  ? "bg-[#284078] text-white shadow-xs font-bold border border-white/20"
+                  : "text-slate-300 hover:text-white"
               }`}
             >
               <Users className="w-3.5 h-3.5" /> Talent
@@ -261,7 +261,7 @@ Format JSON:
             type="button"
             disabled={isGenerating}
             onClick={handleGenerateBrief}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-primary to-purple text-white text-xs font-bold rounded-lg hover:opacity-95 transition disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#284078] hover:bg-[#1e305a] text-white text-xs font-bold rounded-lg transition disabled:opacity-50"
           >
             {isGenerating ? (
               <>
@@ -270,7 +270,7 @@ Format JSON:
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-gold" />
+                <Cpu className="w-3.5 h-3.5 text-[#DDB02E]" />
                 <span>Generate Brief dengan AI</span>
               </>
             )}

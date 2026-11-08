@@ -12,7 +12,7 @@ import {
   LogOut,
   X,
   Plus,
-  Sparkles,
+  BookOpen,
 } from "lucide-react";
 import { Profile } from "@/types/database";
 
@@ -65,7 +65,7 @@ export function Sidebar({
       label: "Brand Studio",
       description: "Identitas & knowledge AI",
       href: "/brand-studio",
-      icon: Sparkles,
+      icon: BookOpen,
       active: pathname.startsWith("/brand-studio"),
     },
     {
