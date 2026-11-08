@@ -22,6 +22,7 @@ import {
   GraduationCap,
   Users,
   Lightbulb,
+  Link2,
 } from "lucide-react";
 import {
   useAppStore,
@@ -36,6 +37,10 @@ import { REEL_TALENT_CATEGORIES } from "@/lib/constants";
 import { ContentWithRelations, IdeaWithRelations } from "@/types/database";
 import { AiScriptBuilderModal } from "@/components/content/AiScriptBuilderModal";
 import { AiIdeaTitleGeneratorModal } from "@/components/content/AiIdeaTitleGeneratorModal";
+import {
+  AiLinkRepurposerModal,
+  RepurposedContentResult,
+} from "@/components/content/AiLinkRepurposerModal";
 
 function parsePointsFromText(raw: string, defaultCount = 3): string[] {
   const trimmed = (raw || "").trim();
@@ -102,6 +107,7 @@ function InputKontenInner() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isScriptBuilderOpen, setIsScriptBuilderOpen] = useState(false);
   const [isIdeaGeneratorOpen, setIsIdeaGeneratorOpen] = useState(false);
+  const [isLinkRepurposerOpen, setIsLinkRepurposerOpen] = useState(false);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -122,6 +128,39 @@ function InputKontenInner() {
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3000);
+  };
+
+  const handleApplyRepurposedToForm = (result: RepurposedContentResult) => {
+    setTitle(result.title);
+    if (result.formatType === "REELS" && result.scenes && result.scenes.length > 0) {
+      setFormatId("fmt-reels");
+      setReelPoints(result.scenes.map((s) => s.audio_dialogue));
+    } else if (
+      result.formatType === "CAROUSEL" &&
+      result.slides &&
+      result.slides.length > 0
+    ) {
+      setFormatId("fmt-carousel");
+      setCarouselSlides(result.slides.map((s) => `${s.headline}: ${s.body}`));
+    } else if (result.single_post_body) {
+      setFormatId("fmt-feed");
+      setSinglePostBody(result.single_post_body);
+    }
+
+    if (result.caption) {
+      setCaptionText(
+        `${result.caption}\n\nCTA: ${result.cta}\n\n${result.hashtags}`
+      );
+    }
+    showToast("Konten dari link referensi berhasil diterapkan ke formulir!");
+  };
+
+  const handleApplyRepurposedAndOpenScriptBuilder = (
+    result: RepurposedContentResult
+  ) => {
+    handleApplyRepurposedToForm(result);
+    setIsScriptBuilderOpen(true);
+    showToast("Membuka AI Script Builder untuk memperhalus naskah...");
   };
 
   const handleSelectTitleFromAi = (
@@ -452,7 +491,7 @@ function InputKontenInner() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setIsIdeaGeneratorOpen(true)}
@@ -464,11 +503,20 @@ function InputKontenInner() {
 
             <button
               type="button"
+              onClick={() => setIsLinkRepurposerOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-xs transition hover:bg-blue-100"
+            >
+              <Link2 className="h-3.5 w-3.5 text-[#284078]" />
+              <span>2. Dari Link Berita / Sosmed</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setIsScriptBuilderOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-[#284078] bg-white px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-xs transition hover:bg-blue-50"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-bold text-[#284078] shadow-xs transition hover:bg-slate-50"
             >
               <FileText className="h-3.5 w-3.5 text-[#284078]" />
-              <span>2. AI Script Builder</span>
+              <span>3. AI Script Builder</span>
             </button>
 
             {editingId && (
@@ -491,14 +539,24 @@ function InputKontenInner() {
               <label className="block text-xs font-bold text-slate-700">
                 Judul / Topik Ide Konten <span className="text-rose-500">*</span>
               </label>
-              <button
-                type="button"
-                onClick={() => setIsIdeaGeneratorOpen(true)}
-                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#284078] hover:underline"
-              >
-                <Lightbulb className="h-3 w-3 text-[#284078]" />
-                <span>Bantu Buatkan Judul AI →</span>
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsLinkRepurposerOpen(true)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:underline"
+                >
+                  <Link2 className="h-3 w-3 text-blue-700" />
+                  <span>Dari Link Berita / Sosmed</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsIdeaGeneratorOpen(true)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#284078] hover:underline"
+                >
+                  <Lightbulb className="h-3 w-3 text-[#284078]" />
+                  <span>Bantu Buatkan Judul AI →</span>
+                </button>
+              </div>
             </div>
             <input
               type="text"
@@ -1246,6 +1304,16 @@ function InputKontenInner() {
         initialFormatId={formatId}
         onSelectTitle={handleSelectTitleFromAi}
         onSelectAndOpenScriptBuilder={handleSelectAndOpenScriptBuilder}
+      />
+
+      {/* AI LINK & NEWS REPURPOSER MODAL */}
+      <AiLinkRepurposerModal
+        isOpen={isLinkRepurposerOpen}
+        onClose={() => setIsLinkRepurposerOpen(false)}
+        initialProgramId={programId}
+        initialFormatId={formatId}
+        onApplyToForm={handleApplyRepurposedToForm}
+        onApplyAndOpenScriptBuilder={handleApplyRepurposedAndOpenScriptBuilder}
       />
 
       {/* AI SCRIPT BUILDER MODAL */}

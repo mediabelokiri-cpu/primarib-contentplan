@@ -109,6 +109,7 @@ export class AiOrchestrator {
           fallbackModel: "claude-3-5-sonnet-20241022",
         };
       case "IDEA_GENERATION":
+      case "NEWS_REPURPOSE":
       case "COPYWRITING":
       case "CREATIVE_BRIEF":
       default:

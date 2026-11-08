@@ -489,7 +489,8 @@ export type AiTaskCode =
   | "COPYWRITING"
   | "CREATIVE_BRIEF"
   | "QUALITY_CHECK"
-  | "CONTENT_ANALYSIS";
+  | "CONTENT_ANALYSIS"
+  | "NEWS_REPURPOSE";
 
 export interface AiProvider {
   id: string;

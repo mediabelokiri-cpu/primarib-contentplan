@@ -132,7 +132,7 @@ export class MockFallbackAdapter implements AiProviderAdapter {
       } else {
         generatedOutput = `💡 **Rekomendasi Ide Konten Prima RIB:**\n\n1. **${topic1}**\n- Hook: "Banyak yang gagal di tahap ini karena belum tahu pola rahasianya!"\n- Format: Reels Video 45s\n- CTA: "Simpan video ini & share ke sesama pejuang!"`;
       }
-    } else if (task === "SCRIPT_WRITING" || task === "COPYWRITING") {
+    } else if (task === "SCRIPT_WRITING" || task === "COPYWRITING" || task === "NEWS_REPURPOSE") {
       const isCarousel = promptLower.includes("carousel") || promptLower.includes("karusel") || promptLower.includes("slide");
       const isSinglePost = promptLower.includes("single") || promptLower.includes("feed foto");
 
