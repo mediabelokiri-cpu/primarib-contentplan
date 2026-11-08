@@ -18,53 +18,111 @@ export class MockFallbackAdapter implements AiProviderAdapter {
     const startTime = Date.now();
     await new Promise((resolve) => setTimeout(resolve, 450)); // realistic latency simulation
 
-    const promptLower = request.prompt.toLowerCase();
+    const promptText = request.prompt || "";
+    const promptLower = promptText.toLowerCase();
     const task = request.taskCode;
-    const isCpns = promptLower.includes("cpns") || promptLower.includes("nip");
-    const isSekdin =
-      promptLower.includes("sekdin") ||
-      promptLower.includes("stan") ||
-      promptLower.includes("ipdn");
+
+    // Extract target program specifically if mentioned
+    const targetMatch = promptText.match(/Wilayah Target:\s*"([^"]+)"/i);
+    const targetStr = (targetMatch ? targetMatch[1] : promptText).toLowerCase();
+
     const isPolri =
-      promptLower.includes("polri") ||
-      promptLower.includes("akpol") ||
-      promptLower.includes("bintara");
+      targetStr.includes("polri") ||
+      targetStr.includes("akpol") ||
+      targetStr.includes("bintara");
+    const isSekdin =
+      targetStr.includes("sekdin") ||
+      targetStr.includes("stan") ||
+      targetStr.includes("ipdn") ||
+      targetStr.includes("kedinasan");
+    const isCpns = !isPolri && !isSekdin;
+
+    // Extract keyword specifically if mentioned
+    const keywordMatch = promptText.match(/Topik \/ Kata Kunci Khusus:\s*"([^"]+)"/i);
+    const customKeyword = keywordMatch ? keywordMatch[1].trim() : "";
 
     let generatedOutput = "";
 
     if (task === "IDEA_GENERATION") {
-      const topic = isPolri
+      const progLabel = isPolri ? "Polri" : isSekdin ? "Sekolah Kedinasan" : "CPNS";
+      const topic1 = customKeyword
+        ? `${customKeyword}: Solusi Belajar Intensif Lolos Seleksi ${progLabel}`
+        : isPolri
         ? "Strategi Menaklukkan Tes Kecermatan Angka Hilang Polri Tanpa Blank"
         : isSekdin
         ? "Peta Rasio Keketatan PKN STAN vs IPDN 2026: Mana Peluang Terbesarmu?"
         : "Bongkar Trik Cepat TIU Silogisme HOTS 20 Detik Langsung Ketemu Jawaban!";
+
+      const topic2 = customKeyword
+        ? `Keunggulan Program ${customKeyword} di Prima RIB Dibanding Belajar Mandiri`
+        : isPolri
+        ? "3 Kesalahan Fatal Saat Uji Kesamaptaan Jasmani yang Bikin Nilai Drop"
+        : isSekdin
+        ? "Syarat Nilai Rapor & Mata Minus Masuk Sekolah Kedinasan 2026"
+        : "Cara Manajemen Waktu 100 Menit 110 Soal CAT BKN Tanpa Panik";
+
+      const topic3 = customKeyword
+        ? `Review Fasilitas Simulasi CAT & Mentor Ahli untuk ${customKeyword}`
+        : isPolri
+        ? "Bongkar Rahasia Penilaian Tes Psikologi Polri: Jangan Sampai Kena TMS"
+        : isSekdin
+        ? "Bocoran Materi Tes SKD Kedinasan: Passing Grade Tertinggi Tiap Instansi"
+        : "Tips Tembus Skor SKD 450+ dengan Metode Eliminasi Fast-Think Prima RIB";
+
+      const topic4 = customKeyword
+        ? `Promo Spesial Terbatas: Diskon Kelas Intensif ${customKeyword} Minggu Ini`
+        : isPolri
+        ? "Kisah Sukses Siswa Prima RIB: Dari Nol Fisik Hingga Lolos Ranking 1 Bintara"
+        : isSekdin
+        ? "Bedah Format Soal TPA & TBI SPMB PKN STAN Versi Terbaru"
+        : "5 Aturan Resmi BKN Seputar Ujian CAT yang Jarang Diketahui Peserta";
 
       if (request.responseFormat === "json") {
         generatedOutput = JSON.stringify(
           {
             ideas: [
               {
-                title: topic,
-                hook: "Banyak yang gagal di tahap ini karena belum tahu pola rahasianya!",
+                title: topic1,
+                hook: customKeyword
+                  ? `Mau lolos ${progLabel} tapi bingung mulai dari mana? Simak info penting ini!`
+                  : "Banyak yang gagal di tahap ini karena belum tahu pola rahasianya!",
                 angle: "Edukatif & Solutif",
                 format: "Reels Video",
                 objective: "Engagement & Edukasi",
                 cta: "Simpan video ini & share ke pejuang lainnya!",
+                strategicReason: "Topik spesifik dengan minat pencarian dan interaksi tertinggi.",
                 strategicReasoning:
                   "Topik ini memiliki tingkat pencarian tinggi menjelang pembukaan seleksi resmi.",
               },
               {
-                title: isPolri
-                  ? "3 Kesalahan Fatal Saat Uji Kesamaptaan Jasmani yang Bikin Nilai Drop"
-                  : isSekdin
-                  ? "Syarat Nilai Rapor & Mata Minus Masuk Sekolah Kedinasan 2026"
-                  : "Cara Manajemen Waktu 100 Menit 110 Soal CAT BKN Tanpa Panik",
+                title: topic2,
                 hook: "Jangan sampai persiapan berbulan-bulan gugur gara-gara hal sepele ini!",
                 angle: "Pencegahan Kesalahan (FOMO)",
                 format: "Carousel 5 Slide",
                 objective: "Simpan & Edukasi",
-                cta: "Ketik 'MAU' di komentar untuk dapat PDF panduan lengkapnya!",
+                cta: "Ketik 'MAU' di komentar untuk dapat panduan lengkapnya!",
+                strategicReason: "Membangun rasa urgensi dan kebutuhan bimbingan intensif.",
                 strategicReasoning: "Memanfaatkan psikologi pencegahan kegagalan calon pendaftar.",
+              },
+              {
+                title: topic3,
+                hook: "Ini alasan kenapa siswa Prima RIB jauh lebih tenang saat hari H ujian!",
+                angle: "Social Proof & Fasilitas",
+                format: "Reels Video",
+                objective: "Brand Awareness",
+                cta: "Kunjungi bio kami untuk booking jadwal simulasi gratis!",
+                strategicReason: "Meningkatkan kredibilitas bimbel dan rasa percaya calon siswa.",
+                strategicReasoning: "Meningkatkan kredibilitas bimbel dan rasa percaya calon siswa.",
+              },
+              {
+                title: topic4,
+                hook: "Siapa cepat dia dapat, kuota kelas intensif terbatas untuk angkatan ini!",
+                angle: "Penawaran Khusus & Promo",
+                format: "Single Post",
+                objective: "Konversi Siswa Baru",
+                cta: "Klik link di bio untuk klaim potongan harga spesial hari ini!",
+                strategicReason: "Mendorong konversi langsung menjadi pendaftar bimbingan.",
+                strategicReasoning: "Mendorong konversi langsung menjadi pendaftar bimbingan.",
               },
             ],
           },
@@ -72,7 +130,7 @@ export class MockFallbackAdapter implements AiProviderAdapter {
           2
         );
       } else {
-        generatedOutput = `💡 **Rekomendasi Ide Konten Prima RIB:**\n\n1. **${topic}**\n- Hook: "Banyak yang gagal di tahap ini karena belum tahu pola rahasianya!"\n- Format: Reels Video 45s\n- CTA: "Simpan video ini & share ke sesama pejuang!"`;
+        generatedOutput = `💡 **Rekomendasi Ide Konten Prima RIB:**\n\n1. **${topic1}**\n- Hook: "Banyak yang gagal di tahap ini karena belum tahu pola rahasianya!"\n- Format: Reels Video 45s\n- CTA: "Simpan video ini & share ke sesama pejuang!"`;
       }
     } else if (task === "SCRIPT_WRITING" || task === "COPYWRITING") {
       const isCarousel = promptLower.includes("carousel") || promptLower.includes("karusel") || promptLower.includes("slide");

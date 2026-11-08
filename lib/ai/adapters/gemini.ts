@@ -22,15 +22,20 @@ export class GeminiAdapter implements AiProviderAdapter {
 
   async generate(
     request: UnifiedAiRequest,
-    modelCode = "gemini-1.5-flash"
+    modelCode = "gemini-flash-latest"
   ): Promise<UnifiedAiResponse> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
       throw new Error("GEMINI_API_KEY tidak dikonfigurasi di server environment.");
     }
 
+    const effectiveModel =
+      modelCode.includes("1.5") || !modelCode
+        ? "gemini-flash-latest"
+        : modelCode;
+
     const startTime = Date.now();
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelCode}:generateContent?key=${apiKey}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${effectiveModel}:generateContent?key=${apiKey}`;
 
     const contents: any[] = [];
     if (request.prompt) {

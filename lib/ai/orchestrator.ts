@@ -97,14 +97,14 @@ export class AiOrchestrator {
       case "QUALITY_CHECK":
         return {
           primaryProvider: "GEMINI",
-          primaryModel: "gemini-1.5-pro",
+          primaryModel: "gemini-flash-latest",
           fallbackProvider: "OPENAI",
           fallbackModel: "gpt-4o",
         };
       case "SCRIPT_WRITING":
         return {
           primaryProvider: "GEMINI",
-          primaryModel: "gemini-1.5-pro",
+          primaryModel: "gemini-flash-latest",
           fallbackProvider: "CLAUDE",
           fallbackModel: "claude-3-5-sonnet-20241022",
         };
@@ -114,7 +114,7 @@ export class AiOrchestrator {
       default:
         return {
           primaryProvider: "GEMINI",
-          primaryModel: "gemini-1.5-flash",
+          primaryModel: "gemini-flash-latest",
           fallbackProvider: "OPENAI",
           fallbackModel: "gpt-4o-mini",
         };

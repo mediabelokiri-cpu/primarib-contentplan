@@ -143,16 +143,22 @@ Output format HARUS JSON valid dengan struktur:
       });
 
       const json = await res.json();
-      if (json.success && json.data?.content) {
+      const rawText = json.content || json.data?.content || "";
+
+      if (json.success && rawText) {
         let parsed: any = null;
         try {
-          parsed = JSON.parse(json.data.content);
+          parsed = JSON.parse(rawText);
         } catch {
-          const cleaned = json.data.content
-            .replace(/```json/g, "")
-            .replace(/```/g, "")
-            .trim();
-          parsed = JSON.parse(cleaned);
+          try {
+            const cleaned = rawText
+              .replace(/```json/gi, "")
+              .replace(/```/g, "")
+              .trim();
+            parsed = JSON.parse(cleaned);
+          } catch {
+            parsed = null;
+          }
         }
 
         if (parsed && Array.isArray(parsed.ideas) && parsed.ideas.length > 0) {
@@ -166,6 +172,7 @@ Output format HARUS JSON valid dengan struktur:
               formatLabel: item.formatLabel || formatName,
               strategicReason:
                 item.strategicReason ||
+                item.strategicReasoning ||
                 "Relevan dengan kendala utama pejuang ujian CAT.",
             })
           );
@@ -192,78 +199,107 @@ Output format HARUS JSON valid dengan struktur:
     const fmtObj = state.formats.find((f) => f.id === fmtId);
     const isPolri = progObj?.code === "POLRI";
     const isSekdin = progObj?.code === "SEKDIN";
+    const progLabel = isPolri ? "Polri" : isSekdin ? "Sekolah Kedinasan" : "CPNS";
     const formatName = fmtObj?.name || "Reels / Video";
+    const cleanKw = keyword.trim();
 
-    const baseList: GeneratedIdeaOption[] = [
-      {
-        id: `fb-1-${Date.now()}`,
-        title: isPolri
-          ? "Strategi Menghindari Kesalahan Fatal Tes Angka Hilang Polri"
-          : isSekdin
-          ? "Cara Tembus Skor SKD 430+ di PKN STAN Tanpa Belajar Dadakan"
-          : "Bongkar Trik TIU Silogisme HOTS 15 Detik Langsung Ketemu Jawaban",
-        hook: "Banyak yang gagal bukan karena kurang pintar, tapi karena nggak tahu pola eliminasi kilat ini!",
-        angle: "Trik Cepat & Efisiensi Waktu CAT",
-        formatId: fmtId,
-        formatLabel: formatName,
-        strategicReason:
-          "Memanfaatkan ketakutan umum pejuang tes terhadap limit waktu ujian CAT.",
-      },
-      {
-        id: `fb-2-${Date.now()}`,
-        title: isPolri
-          ? "Standar Penilaian Uji Jasmani A & B Penerimaan Polri 2026"
-          : isSekdin
-          ? "Peta Rasio Keketatan IPDN vs STIS vs STAN: Mana Peluang Terbesarmu?"
-          : "Aturan Nilai Ambang Batas & Bobot Poin 5 TKP Integritas BKN",
-        hook: "Jangan sampai persiapan berbulan-bulan gugur cuma gara-gara salah paham aturan resmi ini!",
-        angle: "Regulasi & Ceklis Resmi",
-        formatId: fmtId,
-        formatLabel: formatName,
-        strategicReason:
-          "Konten regulasi resmi memiliki rasio save dan share 3x lebih tinggi.",
-      },
-      {
-        id: `fb-3-${Date.now()}`,
-        title: isPolri
-          ? "Tes Ketelitian Huruf Hilang: Bisa Temukan Jawaban dalam 10 Detik?"
-          : isSekdin
-          ? "This or That Kedinasan: Ikatan Dinas Kemenkeu vs Kemenkumham?"
-          : "Kuis Kilat TWK: Pasal Pengamalan Sila ke-2 atau ke-5?",
-        hook: "Coba jawab soal ini dalam 5 detik tanpa nyontek!",
-        angle: "Interaktif & Kuis Cepat",
-        formatId: fmtId,
-        formatLabel: formatName,
-        strategicReason:
-          "Memancing komentar masif sehingga algoritma mendongkrak jangkauan akun.",
-      },
-      {
-        id: `fb-4-${Date.now()}`,
-        title: isPolri
-          ? "Simulasi CAT Psikotes Polri di Lab Prima RIB: Seperti Apa Rasanya?"
-          : isSekdin
-          ? "Real Testimonial: Dari Siswa Ragu Sampai Lolos Ranking 1 Sekdin"
-          : "Fasilitas Lab CAT Prima RIB Mirip 100% Sistem BKN: Intip Dalamnya!",
-        hook: "Ini alasan kenapa siswa Prima RIB jauh lebih tenang saat hadapi hari H ujian!",
-        angle: "Social Proof & Fasilitas Lab CAT",
-        formatId: fmtId,
-        formatLabel: formatName,
-        strategicReason:
-          "Membangun kredibilitas dan mengonversi penonton menjadi calon siswa.",
-      },
-    ];
-
-    if (keyword.trim()) {
-      baseList.unshift({
-        id: `fb-custom-${Date.now()}`,
-        title: `Panduan Khusus ${keyword.trim()}: Strategi Lolos & Tips Praktis`,
-        hook: `Lagi bingung persiapkan ${keyword.trim()}? Simak panduan langsung dari mentor Prima RIB!`,
-        angle: "Topik Khusus Permintaan",
-        formatId: fmtId,
-        formatLabel: formatName,
-        strategicReason: "Menjawab kebutuhan spesifik audiens secara to-the-point.",
-      });
-    }
+    const baseList: GeneratedIdeaOption[] = cleanKw
+      ? [
+          {
+            id: `fb-kw-1-${Date.now()}`,
+            title: `${cleanKw}: Solusi Tembus Seleksi ${progLabel} Tanpa Panik`,
+            hook: `Masih bingung persiapan ${progLabel}? Simak panduan langsung dari mentor Prima RIB!`,
+            angle: "Solutif & Edukasi",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason: "Menjawab langsung kebutuhan spesifik pencarian audiens pejuang tes.",
+          },
+          {
+            id: `fb-kw-2-${Date.now()}`,
+            title: `Keunggulan Program ${cleanKw} Prima RIB Dibanding Belajar Mandiri`,
+            hook: "Jangan buang waktu belajar metode lama kalau sistem ujian CAT sekarang sudah berubah!",
+            angle: "Perbandingan & Edukasi",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason: "Membangun rasa urgensi dan kepercayaan terhadap bimbingan intensif.",
+          },
+          {
+            id: `fb-kw-3-${Date.now()}`,
+            title: `Review Fasilitas Simulasi Lab CAT Mirip BKN untuk ${cleanKw}`,
+            hook: "Ini alasan kenapa siswa Prima RIB jauh lebih tenang saat hari H ujian CAT!",
+            angle: "Social Proof & Fasilitas",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason: "Meningkatkan kredibilitas bimbel dan rasa percaya calon siswa.",
+          },
+          {
+            id: `fb-kw-4-${Date.now()}`,
+            title: `Bongkar Syarat & Jadwal Resmi Pembukaan Seleksi Terkait ${cleanKw}`,
+            hook: "Jangan sampai ketinggalan info penting yang sering terlewat oleh pendaftar lain!",
+            angle: "Ceklis Regulasi Resmi",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason: "Konten informasi regulasi resmi selalu memicu share dan save tinggi.",
+          },
+        ]
+      : [
+          {
+            id: `fb-1-${Date.now()}`,
+            title: isPolri
+              ? "Strategi Menghindari Kesalahan Fatal Tes Angka Hilang Polri"
+              : isSekdin
+              ? "Cara Tembus Skor SKD 430+ di PKN STAN Tanpa Belajar Dadakan"
+              : "Bongkar Trik TIU Silogisme HOTS 15 Detik Langsung Ketemu Jawaban",
+            hook: "Banyak yang gagal bukan karena kurang pintar, tapi karena nggak tahu pola eliminasi kilat ini!",
+            angle: "Trik Cepat & Efisiensi Waktu CAT",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason:
+              "Memanfaatkan ketakutan umum pejuang tes terhadap limit waktu ujian CAT.",
+          },
+          {
+            id: `fb-2-${Date.now()}`,
+            title: isPolri
+              ? "Standar Penilaian Uji Jasmani A & B Penerimaan Polri 2026"
+              : isSekdin
+              ? "Peta Rasio Keketatan IPDN vs STIS vs STAN: Mana Peluang Terbesarmu?"
+              : "Aturan Nilai Ambang Batas & Bobot Poin 5 TKP Integritas BKN",
+            hook: "Jangan sampai persiapan berbulan-bulan gugur cuma gara-gara salah paham aturan resmi ini!",
+            angle: "Regulasi & Ceklis Resmi",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason:
+              "Konten regulasi resmi memiliki rasio save dan share 3x lebih tinggi.",
+          },
+          {
+            id: `fb-3-${Date.now()}`,
+            title: isPolri
+              ? "Tes Ketelitian Huruf Hilang: Bisa Temukan Jawaban dalam 10 Detik?"
+              : isSekdin
+              ? "This or That Kedinasan: Ikatan Dinas Kemenkeu vs Kemenkumham?"
+              : "Kuis Kilat TWK: Pasal Pengamalan Sila ke-2 atau ke-5?",
+            hook: "Coba jawab soal ini dalam 5 detik tanpa nyontek!",
+            angle: "Interaktif & Kuis Cepat",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason:
+              "Memancing komentar masif sehingga algoritma mendongkrak jangkauan akun.",
+          },
+          {
+            id: `fb-4-${Date.now()}`,
+            title: isPolri
+              ? "Simulasi CAT Psikotes Polri di Lab Prima RIB: Seperti Apa Rasanya?"
+              : isSekdin
+              ? "Real Testimonial: Dari Siswa Ragu Sampai Lolos Ranking 1 Sekdin"
+              : "Fasilitas Lab CAT Prima RIB Mirip 100% Sistem BKN: Intip Dalamnya!",
+            hook: "Ini alasan kenapa siswa Prima RIB jauh lebih tenang saat hadapi hari H ujian!",
+            angle: "Social Proof & Fasilitas Lab CAT",
+            formatId: fmtId,
+            formatLabel: formatName,
+            strategicReason:
+              "Membangun kredibilitas dan mengonversi penonton menjadi calon siswa.",
+          },
+        ];
 
     setGeneratedIdeas(baseList);
   };
@@ -362,7 +398,13 @@ Output format HARUS JSON valid dengan struktur:
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-2 pt-1">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleTriggerGenerate();
+            }}
+            className="flex flex-col sm:flex-row items-center gap-2 pt-1"
+          >
             <div className="flex-1 w-full">
               <input
                 type="text"
@@ -370,20 +412,13 @@ Output format HARUS JSON valid dengan struktur:
                 onChange={(e) => setCustomKeyword(e.target.value)}
                 placeholder="Kata kunci spesifik (opsional, contoh: Silogisme HOTS, Passing Grade SKD, Lab CAT)"
                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:border-[#284078] focus:outline-none"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleTriggerGenerate();
-                  }
-                }}
               />
             </div>
 
             <button
-              type="button"
+              type="submit"
               disabled={isGenerating}
-              onClick={handleTriggerGenerate}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#284078] hover:bg-[#1e305a] px-4 py-2 text-xs font-bold text-white transition disabled:opacity-50 shadow-xs"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#284078] hover:bg-[#1e305a] px-4 py-2 text-xs font-bold text-white transition disabled:opacity-50 shadow-xs shrink-0"
             >
               {isGenerating ? (
                 <>
@@ -397,7 +432,7 @@ Output format HARUS JSON valid dengan struktur:
                 </>
               )}
             </button>
-          </div>
+          </form>
         </div>
 
         {/* Error Notification */}
