@@ -148,7 +148,7 @@ ${cleanContent.slice(0, 3000)}
 
 PARAMETER TARGET:
 - Wilayah Seleksi: ${programName} (${progObj?.code || "CPNS"})
-- Format Konten: ${selectedFormat} (REELS / CAROUSEL / SINGLE_POST)
+- Format Konten yang Diminta: ${selectedFormat}
 ${customAngle.trim() ? `- Sudut Pandang Khusus: "${customAngle.trim()}"` : ""}
 
 BRAND IDENTITY & ATURAN PRIMA RIB:
@@ -156,6 +156,14 @@ BRAND IDENTITY & ATURAN PRIMA RIB:
 - Keunggulan: Fasilitas Lab Simulasi CAT standar BKN, metode hitung cepat Fast-Think, modul resmi akurat.
 - Dilarang membuat klaim hoaks seperti "pasti lolos 100% tanpa belajar".
 - Buat Hook 0-3 detik yang menyengat rasa penasaran pejuang seleksi.
+- PERHATIAN KHUSUS FORMAT: Format yang WAJIB dihasilkan adalah ${selectedFormat}.
+${
+  selectedFormat === "REELS"
+    ? '- HANYA sertakan array "scenes". JANGAN membuat array slides dan DILARANG menyebut "Slide 1" pada hook maupun caption!'
+    : selectedFormat === "CAROUSEL"
+    ? '- HANYA sertakan array "slides" berstruktur cover, poin materi, dan CTA.'
+    : '- HANYA sertakan string "single_post_body" yang padat dan informatif.'
+}
 
 OUTPUT WAJIB FORMAT JSON VALID PERSIS DENGAN STRUKTUR INI:
 {
@@ -232,7 +240,7 @@ OUTPUT WAJIB FORMAT JSON VALID PERSIS DENGAN STRUKTUR INI:
             relevantKnowledge: state.brandKnowledge?.slice(0, 3),
           },
         }),
-        signal: AbortSignal.timeout(10000), // Max 10 detik agar UI tidak menggantung
+        signal: AbortSignal.timeout(20000), // Max 20 detik agar proses LLM generasi naskah tuntas
       });
 
       const aiJson = await aiRes.json();
@@ -254,17 +262,45 @@ OUTPUT WAJIB FORMAT JSON VALID PERSIS DENGAN STRUKTUR INI:
       }
 
       if (parsed && parsed.title) {
+        let finalHook = parsed.hook || "Info penting yang wajib kamu tahu hari ini!";
+        let finalCaption = parsed.caption || "";
+        let scenes = parsed.scenes || [];
+        let slides = parsed.slides || [];
+
+        // Normalisasi format jika model menghasilkan struktur silang
+        if (selectedFormat === "REELS") {
+          finalHook = finalHook.replace(/^Slide\s*\d+:\s*/i, "");
+          finalCaption = finalCaption.replace(/carousel/gi, "video");
+          if (scenes.length === 0 && slides.length > 0) {
+            scenes = slides.map((sl: any, idx: number) => ({
+              timecode: `00:${String(idx * 15).padStart(2, "0")} - 00:${String((idx + 1) * 15).padStart(2, "0")}`,
+              visual_direction: sl.visual_direction || "Talent mentor berdiri di depan Lab CAT Prima RIB",
+              audio_dialogue: `${sl.headline}. ${sl.body}`,
+              text_on_screen: sl.headline || "POIN PENTING",
+            }));
+          }
+        } else if (selectedFormat === "CAROUSEL") {
+          if (slides.length === 0 && scenes.length > 0) {
+            slides = scenes.map((sc: any, idx: number) => ({
+              slide_number: idx + 1,
+              slide_type: idx === 0 ? "COVER" : idx === scenes.length - 1 ? "CTA" : "CONTENT",
+              headline: sc.text_on_screen || `Poin ${idx + 1}`,
+              body: sc.audio_dialogue || "",
+            }));
+          }
+        }
+
         setGeneratedResult({
           title: parsed.title,
-          hook: parsed.hook || "Info penting yang wajib kamu tahu hari ini!",
+          hook: finalHook,
           formatType: selectedFormat,
           sourceTitle,
           sourceUrl: extractedData.sourceUrl || "",
           sourceType: extractedData.sourceType || "NEWS_ARTICLE",
-          scenes: parsed.scenes || [],
-          slides: parsed.slides || [],
+          scenes,
+          slides,
           single_post_body: parsed.single_post_body || "",
-          caption: parsed.caption || "",
+          caption: finalCaption,
           cta: parsed.cta || "Klik link di bio untuk info kelas intensif!",
           hashtags: parsed.hashtags || "#PrimaRIB #CPNS",
         });

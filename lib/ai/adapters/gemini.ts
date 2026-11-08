@@ -22,7 +22,7 @@ export class GeminiAdapter implements AiProviderAdapter {
 
   async generate(
     request: UnifiedAiRequest,
-    modelCode = "gemini-flash-latest"
+    modelCode = "gemini-3.5-flash-lite"
   ): Promise<UnifiedAiResponse> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
@@ -30,8 +30,11 @@ export class GeminiAdapter implements AiProviderAdapter {
     }
 
     const effectiveModel =
-      modelCode.includes("1.5") || !modelCode
-        ? "gemini-flash-latest"
+      !modelCode ||
+      modelCode.includes("1.5") ||
+      modelCode.includes("2.5") ||
+      modelCode === "gemini-flash-latest"
+        ? "gemini-3.5-flash-lite"
         : modelCode;
 
     const startTime = Date.now();
@@ -70,7 +73,7 @@ export class GeminiAdapter implements AiProviderAdapter {
         "x-goog-api-key": apiKey,
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(6000), // Max 6s agar tidak menggantung jika API Google antre
+      signal: AbortSignal.timeout(15000), // 15 detik agar proses LLM generasi naskah tuntas
     });
 
     const durationMs = Date.now() - startTime;

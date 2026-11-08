@@ -178,11 +178,16 @@ Pilar: "${initialPillarName}"
 Format yang diinginkan: "${formatType}"
 Target Tone: "${tone}"
 
-Instruksi Khusus Format:
-1. Jika REELS: sertakan hook 0-3s, breakdown scenes (timecode, visual_direction, audio_dialogue, text_on_screen), caption, dan CTA.
-2. Jika CAROUSEL: sertakan slide 1 cover hook, slide 2-4 materi daging/ceklis, slide 5 CTA konsultasi, caption, dan CTA.
-3. Jika SINGLE_POST: sertakan headline hook, body edukasi padat, visual_direction, caption, dan CTA.
-Brand Context: Prima RIB adalah bimbel persiapan tes CPNS, Sekolah Kedinasan, dan Polri dengan fasilitas Lab CAT mirip BKN dan metode Fast-Think.`;
+Instruksi Format:
+- Format yang diminta adalah ${formatType}.
+${
+  formatType === "REELS"
+    ? 'HANYA hasilkan array "scenes" (timecode, visual_direction, audio_dialogue, text_on_screen). JANGAN hasilkan array slides dan DILARANG gunakan kata "slide" pada hook maupun naskah!'
+    : formatType === "CAROUSEL"
+    ? 'HANYA hasilkan array "slides" (slide_number, slide_type, headline, body, visual_direction).'
+    : 'HANYA hasilkan "single_post_body" yang padat dan informatif.'
+}
+Brand Context: Bimbel Prima RIB spesialis persiapan ujian CPNS, Sekolah Kedinasan, dan Polri dengan fasilitas Lab Simulasi CAT standar BKN dan metode Fast-Think.`;
 
       const res = await fetch("/api/ai/generate", {
         method: "POST",
@@ -194,6 +199,7 @@ Brand Context: Prima RIB adalah bimbel persiapan tes CPNS, Sekolah Kedinasan, da
           responseFormat: "json",
           userRole: "ADMIN",
         }),
+        signal: AbortSignal.timeout(20000), // Max 20 detik
       });
 
       if (!res.ok) {
@@ -219,50 +225,82 @@ Brand Context: Prima RIB adalah bimbel persiapan tes CPNS, Sekolah Kedinasan, da
       }
 
       if (parsedOutput) {
-        if (parsedOutput.hook) setHook(parsedOutput.hook);
-        if (parsedOutput.caption) setCaption(parsedOutput.caption);
+        if (parsedOutput.hook) {
+          let h = parsedOutput.hook;
+          if (formatType === "REELS") {
+            h = h.replace(/^Slide\s*\d+:\s*/i, "");
+          }
+          setHook(h);
+        }
+        if (parsedOutput.caption) {
+          let c = parsedOutput.caption;
+          if (formatType === "REELS") {
+            c = c.replace(/carousel/gi, "video");
+          }
+          setCaption(c);
+        }
         if (parsedOutput.cta) setCta(parsedOutput.cta);
         if (parsedOutput.hashtags) setHashtags(parsedOutput.hashtags);
 
-        if (formatType === "REELS" && Array.isArray(parsedOutput.scenes)) {
-          setReelsScenes(
-            parsedOutput.scenes.map((sc: any, idx: number) => ({
-              id: `sc-gen-${Date.now()}-${idx}`,
-              timecode: sc.timecode || `00:${idx * 15} - 00:${(idx + 1) * 15}`,
-              visual_direction:
-                sc.visual ||
-                sc.visual_direction ||
-                "Talent mentor menjelaskan di depan Lab CAT",
-              audio_dialogue:
-                sc.audio || sc.audio_dialogue || "Penjelasan materi soal ujian",
-              text_on_screen:
-                sc.text_on_screen || sc.tos || "KATA KUNCI TRIK CEPAT",
-            }))
-          );
-        } else if (
-          formatType === "CAROUSEL" &&
-          Array.isArray(parsedOutput.slides)
-        ) {
-          setCarouselSlides(
-            parsedOutput.slides.map((sl: any, idx: number) => ({
-              id: `sl-gen-${Date.now()}-${idx}`,
-              slide_number: sl.slide_number || idx + 1,
-              slide_type:
-                sl.slide_type ||
-                (idx === 0
-                  ? "COVER"
-                  : idx === parsedOutput.slides.length - 1
-                  ? "CTA"
-                  : "CONTENT"),
-              headline: sl.headline || `Poin Penting ${idx + 1}`,
-              body: sl.body || "Penjelasan detail poin materi untuk peserta.",
-              visual_direction:
-                sl.visual_direction || "Infografis berlatar Navy & Gold.",
-            }))
-          );
+        if (formatType === "REELS") {
+          let scenesArr = Array.isArray(parsedOutput.scenes) ? parsedOutput.scenes : [];
+          if (scenesArr.length === 0 && Array.isArray(parsedOutput.slides)) {
+            scenesArr = parsedOutput.slides.map((sl: any) => ({
+              timecode: "00:00 - 00:15",
+              visual_direction: sl.visual_direction || "Talent mentor menjelaskan di depan Lab CAT",
+              audio_dialogue: `${sl.headline}. ${sl.body}`,
+              text_on_screen: sl.headline || "POIN PENTING",
+            }));
+          }
+          if (scenesArr.length > 0) {
+            setReelsScenes(
+              scenesArr.map((sc: any, idx: number) => ({
+                id: `sc-gen-${Date.now()}-${idx}`,
+                timecode: sc.timecode || `00:${String(idx * 15).padStart(2, "0")} - 00:${String((idx + 1) * 15).padStart(2, "0")}`,
+                visual_direction:
+                  sc.visual ||
+                  sc.visual_direction ||
+                  "Talent mentor menjelaskan di depan Lab CAT",
+                audio_dialogue:
+                  sc.audio || sc.audio_dialogue || "Penjelasan materi soal ujian",
+                text_on_screen:
+                  sc.text_on_screen || sc.tos || "KATA KUNCI TRIK CEPAT",
+              }))
+            );
+          }
+        } else if (formatType === "CAROUSEL") {
+          let slidesArr = Array.isArray(parsedOutput.slides) ? parsedOutput.slides : [];
+          if (slidesArr.length === 0 && Array.isArray(parsedOutput.scenes)) {
+            slidesArr = parsedOutput.scenes.map((sc: any, idx: number) => ({
+              slide_number: idx + 1,
+              slide_type: idx === 0 ? "COVER" : idx === parsedOutput.scenes.length - 1 ? "CTA" : "CONTENT",
+              headline: sc.text_on_screen || `Poin ${idx + 1}`,
+              body: sc.audio_dialogue || "",
+              visual_direction: sc.visual_direction || "Infografis berlatar Navy & Gold.",
+            }));
+          }
+          if (slidesArr.length > 0) {
+            setCarouselSlides(
+              slidesArr.map((sl: any, idx: number) => ({
+                id: `sl-gen-${Date.now()}-${idx}`,
+                slide_number: sl.slide_number || idx + 1,
+                slide_type:
+                  sl.slide_type ||
+                  (idx === 0
+                    ? "COVER"
+                    : idx === slidesArr.length - 1
+                    ? "CTA"
+                    : "CONTENT"),
+                headline: sl.headline || `Poin Penting ${idx + 1}`,
+                body: sl.body || "Penjelasan detail poin materi untuk peserta.",
+                visual_direction:
+                  sl.visual_direction || "Infografis berlatar Navy & Gold.",
+              }))
+            );
+          }
         } else if (formatType === "SINGLE_POST") {
           setSinglePostBody(
-            parsedOutput.body || parsedOutput.main_content || title
+            parsedOutput.single_post_body || parsedOutput.body || parsedOutput.main_content || title
           );
         }
 
