@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const taskCode = (body.taskCode || body.task) as any;
     const {
-      taskCode,
       prompt,
       systemInstruction,
       context,
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     if (!taskCode || !prompt) {
       return NextResponse.json(
-        { error: "Parameter 'taskCode' dan 'prompt' wajib disertakan." },
+        { error: "Parameter 'taskCode' (atau 'task') dan 'prompt' wajib disertakan." },
         { status: 400 }
       );
     }
@@ -39,8 +39,11 @@ export async function POST(req: Request) {
     const result = await aiOrchestrator.execute(aiRequest);
 
     return NextResponse.json({
+      ...result,
       success: true,
       data: result,
+      provider: result.providerCode,
+      model: result.modelCode,
     });
   } catch (err: any) {
     console.error("[API AI Generate Error]:", err);

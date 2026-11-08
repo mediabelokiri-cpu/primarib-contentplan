@@ -180,6 +180,7 @@ Brand Context: Prima RIB adalah bimbel persiapan tes CPNS, Sekolah Kedinasan, da
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          taskCode: "SCRIPT_WRITING",
           task: "SCRIPT_WRITING",
           prompt,
           responseFormat: "json",
@@ -193,12 +194,20 @@ Brand Context: Prima RIB adalah bimbel persiapan tes CPNS, Sekolah Kedinasan, da
 
       const data = await res.json();
       let parsedOutput: any = null;
+      const rawContent = data.content || data.data?.content || "";
 
       try {
-        parsedOutput = JSON.parse(data.content);
+        parsedOutput = JSON.parse(rawContent);
       } catch {
-        // Fallback parse
-        parsedOutput = null;
+        try {
+          const cleaned = rawContent
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
+          parsedOutput = JSON.parse(cleaned);
+        } catch {
+          parsedOutput = null;
+        }
       }
 
       if (parsedOutput) {
@@ -295,6 +304,7 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          taskCode: "COPYWRITING",
           task: "COPYWRITING",
           prompt,
           userRole: "ADMIN",
@@ -303,7 +313,8 @@ Berikan hasil rewrite langsung tanpa basa-basi.`;
 
       if (!res.ok) throw new Error("Gagal melakukan rewrite");
       const data = await res.json();
-      setRewriteResult(data.content.trim());
+      const contentText = data.content || data.data?.content || "";
+      setRewriteResult(contentText.trim());
     } catch (err: any) {
       setRewriteResult(`Error: ${err.message}`);
     } finally {

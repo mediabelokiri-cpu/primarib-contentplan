@@ -94,6 +94,7 @@ Tolong evaluasi:
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          taskCode: "QUALITY_CHECK",
           task: "QUALITY_CHECK",
           prompt,
           responseFormat: "json",
@@ -104,10 +105,19 @@ Tolong evaluasi:
       let parsed: any = null;
       if (res.ok) {
         const data = await res.json();
+        const rawContent = data.content || data.data?.content || "";
         try {
-          parsed = JSON.parse(data.content);
+          parsed = JSON.parse(rawContent);
         } catch {
-          parsed = null;
+          try {
+            const cleaned = rawContent
+              .replace(/```json/gi, "")
+              .replace(/```/g, "")
+              .trim();
+            parsed = JSON.parse(cleaned);
+          } catch {
+            parsed = null;
+          }
         }
       }
 

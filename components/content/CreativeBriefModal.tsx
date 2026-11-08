@@ -128,6 +128,7 @@ Format JSON:
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          taskCode: "CREATIVE_BRIEF",
           task: "CREATIVE_BRIEF",
           prompt,
           responseFormat: "json",
@@ -138,10 +139,19 @@ Format JSON:
       if (res.ok) {
         const data = await res.json();
         let parsed: any = null;
+        const rawContent = data.content || data.data?.content || "";
         try {
-          parsed = JSON.parse(data.content);
+          parsed = JSON.parse(rawContent);
         } catch {
-          parsed = null;
+          try {
+            const cleaned = rawContent
+              .replace(/```json/gi, "")
+              .replace(/```/g, "")
+              .trim();
+            parsed = JSON.parse(cleaned);
+          } catch {
+            parsed = null;
+          }
         }
 
         if (parsed) {
