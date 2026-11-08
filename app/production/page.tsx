@@ -127,6 +127,9 @@ export default function ProductionBoardPage() {
   const [selectedQueueId, setSelectedQueueId] = useState<string | null>(null);
 
   const [filterProgram, setFilterProgram] = useState("ALL");
+  const [filterSource, setFilterSource] = useState<
+    "ALL" | "AI_ASSISTED" | "MANUAL"
+  >("ALL");
   const [filterQueueMode, setFilterQueueMode] = useState<"UNSCHEDULED" | "ALL">(
     "UNSCHEDULED"
   );
@@ -146,6 +149,10 @@ export default function ProductionBoardPage() {
   const queueContents = activeContents.filter((c) => {
     if (filterQueueMode === "UNSCHEDULED" && c.scheduled_at) return false;
     if (filterProgram !== "ALL" && c.program_id !== filterProgram) return false;
+    if (filterSource === "AI_ASSISTED" && c.source_type !== "AI_ASSISTED")
+      return false;
+    if (filterSource === "MANUAL" && c.source_type === "AI_ASSISTED")
+      return false;
     return true;
   });
 
@@ -460,6 +467,16 @@ export default function ProductionBoardPage() {
                     </option>
                   ))}
               </select>
+
+              <select
+                value={filterSource}
+                onChange={(e) => setFilterSource(e.target.value as any)}
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 focus:border-[#7E60FF] focus:outline-none"
+              >
+                <option value="ALL">Semua Metode (Manual & AI)</option>
+                <option value="AI_ASSISTED">✨ Hanya AI-Assisted</option>
+                <option value="MANUAL">✍️ Hanya Manual</option>
+              </select>
             </div>
 
             {/* Draggable Content Cards */}
@@ -511,6 +528,12 @@ export default function ProductionBoardPage() {
                           )}
                           <span>{colorMeta.label}</span>
                         </span>
+
+                        {item.source_type === "AI_ASSISTED" && (
+                          <span className="inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-bold bg-[#DDB02E]/25 text-[#284078] border border-[#DDB02E]/40">
+                            ✨ AI
+                          </span>
+                        )}
                       </div>
 
                       <button
@@ -710,11 +733,19 @@ export default function ProductionBoardPage() {
                                 >
                                   {/* Top Row: Badge + Remove/Delete Card Buttons */}
                                   <div className="flex items-center justify-between gap-1">
-                                    <span
-                                      className={`truncate rounded-md px-1.5 py-0.5 text-[9px] font-extrabold ${colorMeta.badge}`}
-                                    >
-                                      {colorMeta.label}
-                                    </span>
+                                    <div className="flex items-center gap-1">
+                                      <span
+                                        className={`truncate rounded-md px-1.5 py-0.5 text-[9px] font-extrabold ${colorMeta.badge}`}
+                                      >
+                                        {colorMeta.label}
+                                      </span>
+
+                                      {item.source_type === "AI_ASSISTED" && (
+                                        <span className="inline-flex items-center gap-0.5 rounded px-1 py-0.2 text-[8px] font-bold bg-[#DDB02E]/30 text-[#284078] border border-[#DDB02E]/50">
+                                          ✨ AI
+                                        </span>
+                                      )}
+                                    </div>
 
                                     <div className="flex items-center gap-0.5">
                                       <button

@@ -1,0 +1,1272 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+## PRIMA RIB CONTENT PLAN
+### AI-Powered Content Management & Production Platform
+
+**Document Version:** 1.0  
+**Product:** Prima RIB Content Plan  
+**Document Type:** Product Requirements Document  
+**Development Environment:** Antigravity  
+**Architecture:** Existing Application Extension  
+**Status:** Development Specification
+
+---
+
+# 1. PRODUCT OVERVIEW
+
+## 1.1 Product Description
+
+Prima RIB Content Plan merupakan platform manajemen konten dan produksi konten digital untuk brand Prima RIB.
+
+Aplikasi yang saat ini berfungsi sebagai sistem perencanaan konten manual akan dikembangkan menjadi AI-Powered Content Management & Production Platform.
+
+Sistem akan mengintegrasikan kecerdasan buatan untuk membantu proses:
+
+1. Pengelolaan identitas dan pengetahuan brand.
+2. Perencanaan strategi konten.
+3. Pengembangan ide konten.
+4. Penulisan script dan copywriting.
+5. Pembuatan creative brief.
+6. Pemeriksaan kualitas konten.
+7. Pengelolaan produksi dan persetujuan konten.
+8. Evaluasi dan pengembangan strategi konten.
+
+AI harus memahami karakteristik, produk, layanan, audiens, gaya komunikasi, dan tujuan pemasaran Prima RIB berdasarkan data pengetahuan brand yang dikelola secara terpusat.
+
+## 1.2 Product Vision
+
+Menjadi platform manajemen dan produksi konten berbasis AI yang mampu membantu tim Prima RIB menghasilkan konten secara lebih strategis, konsisten, efisien, dan berkualitas.
+
+## 1.3 Product Mission
+
+- Memusatkan seluruh aktivitas perencanaan dan produksi konten.
+- Mengintegrasikan brand knowledge ke dalam proses kerja AI.
+- Mempercepat pengembangan ide dan penulisan script.
+- Menjaga konsistensi komunikasi brand.
+- Mengurangi pekerjaan repetitif dalam produksi konten.
+- Mempertahankan kontrol kreatif dan keputusan akhir pada manusia.
+
+## 1.4 Product Positioning
+
+AI-powered internal content management platform untuk kebutuhan pemasaran dan komunikasi brand Prima RIB.
+
+---
+
+# 2. PRODUCT DEVELOPMENT PRINCIPLES
+
+Pengembangan wajib mengikuti prinsip berikut:
+
+1. Single Brand: sistem hanya digunakan untuk Prima RIB.
+2. Hybrid AI: mendukung beberapa provider AI melalui arsitektur terpusat.
+3. Script-Based Production: AI menghasilkan ide, script, copywriting, dan creative brief, bukan gambar atau video.
+4. Human-in-the-Loop: seluruh keputusan dan persetujuan akhir tetap dilakukan manusia.
+5. Backward Compatibility: seluruh fitur dan data aplikasi existing harus tetap berfungsi.
+6. Incremental Development: pengembangan dilakukan bertahap.
+7. Data Integrity: tidak boleh menghapus, mereset, atau merusak data existing.
+8. Extensible Architecture: provider, model, prompt, dan modul AI dapat dikembangkan tanpa membangun ulang sistem.
+
+---
+
+# 3. DEVELOPMENT SCOPE
+
+## 3.1 In Scope
+
+- Existing Content Planning System.
+- Brand Studio.
+- Brand Knowledge Base.
+- AI Provider Management.
+- AI Model Management.
+- AI Orchestration.
+- AI Content Strategist.
+- AI Script Builder.
+- Creative Brief Generator.
+- AI Content Quality Checker.
+- Content Review and Approval.
+- AI Control Center.
+- AI Usage and Cost Monitoring.
+- Content Version Management.
+- Existing Production Board Integration.
+- Existing Content Calendar Integration.
+- Reporting and Analytics Integration.
+
+## 3.2 Out of Scope
+
+Untuk versi ini, sistem tidak mencakup:
+
+- AI image generation.
+- AI video generation.
+- AI voice generation.
+- Automatic social media publishing.
+- Automatic advertisement deployment.
+- Multi-brand management.
+- Autonomous content approval.
+- Autonomous marketing decisions.
+- Automatic claims about current CPNS, Sekdin, or Polri regulations without verified sources.
+
+---
+
+# 4. USER ROLES AND ACCESS
+
+Role berikut merupakan target pemetaan. Audit aplikasi existing terlebih dahulu sebelum mengubah role atau permission.
+
+## 4.1 Admin
+
+Hak akses:
+- Mengakses seluruh modul.
+- Mengelola Brand Studio.
+- Mengelola Brand Knowledge.
+- Mengelola provider dan model AI.
+- Mengelola prompt templates.
+- Mengelola pengguna dan permission.
+- Mengakses AI Control Center.
+- Mengelola seluruh konten.
+- Melakukan approval akhir.
+- Melihat laporan dan penggunaan AI.
+
+## 4.2 Content Manager
+
+Hak akses:
+- Mengelola Content Planner.
+- Mengelola Content Strategy.
+- Mengakses AI Content Strategist.
+- Mengakses AI Script Builder.
+- Mengelola Production Board.
+- Melakukan review konten.
+- Memberikan revisi.
+- Mengatur jadwal konten sesuai permission.
+
+## 4.3 Content Creator
+
+Hak akses:
+- Membuat ide konten.
+- Menggunakan AI Script Builder.
+- Mengedit script.
+- Membuat creative brief.
+- Mengirim konten untuk review.
+- Melihat tugas produksi yang diberikan.
+- Tidak dapat mengubah konfigurasi sistem AI.
+
+Pemetaan role harus mempertahankan kompatibilitas dengan sistem autentikasi dan otorisasi existing.
+
+---
+
+# 5. EXISTING SYSTEM PRESERVATION
+
+Sebelum implementasi, lakukan audit menyeluruh terhadap:
+
+- Struktur aplikasi dan routing.
+- Seluruh halaman dan komponen.
+- Database schema.
+- Authentication.
+- User roles dan permissions.
+- Content Planner.
+- Idea Bank.
+- Production Board.
+- Content Calendar.
+- Review and Approval.
+- Published Content.
+- Reporting.
+- Existing API dan integrations.
+
+Ketentuan:
+
+1. Jangan membangun ulang aplikasi.
+2. Jangan mengganti framework tanpa alasan teknis yang kuat.
+3. Jangan menghapus fitur existing.
+4. Jangan mengganti desain existing secara menyeluruh.
+5. Jangan menghapus atau mereset tabel database.
+6. Jangan mengganti struktur data existing tanpa migration plan.
+7. Pertahankan seluruh workflow manual.
+8. Tambahkan workflow AI sebagai pilihan baru.
+
+Sistem harus mendukung dua metode produksi:
+
+- Manual Content Creation.
+- AI-Assisted Content Creation.
+
+Keduanya harus terintegrasi ke workflow konten yang sama.
+
+---
+
+# 6. MODULE REQUIREMENTS
+
+## MODULE 01 — BRAND STUDIO
+
+### Tujuan
+
+Menjadi pusat identitas, informasi, dan pengetahuan brand Prima RIB yang digunakan sebagai referensi AI.
+
+### FR-001 Brand Profile
+
+Admin dapat mengelola:
+- Brand name.
+- Brand description.
+- Brand positioning.
+- Brand vision.
+- Brand mission.
+- Brand values.
+- Brand tagline.
+- Brand objectives.
+- Brand website.
+- Social media accounts.
+
+### FR-002 Brand Personality
+
+Admin dapat menentukan karakter brand, seperti:
+- Professional.
+- Credible.
+- Educational.
+- Motivational.
+- Persuasive.
+- Friendly.
+- Authoritative.
+
+Karakter harus dapat diedit.
+
+### FR-003 Tone of Voice
+
+Admin dapat menentukan:
+- Formality level.
+- Communication style.
+- Language preference.
+- Sentence style.
+- Vocabulary preference.
+- Words to use.
+- Words to avoid.
+- CTA style.
+- Communication boundaries.
+
+### FR-004 Writing Guidelines
+
+Menyimpan pedoman penulisan:
+- Caption guidelines.
+- Headline guidelines.
+- Hook guidelines.
+- Script guidelines.
+- Carousel copywriting guidelines.
+- Video script guidelines.
+- CTA guidelines.
+- Hashtag guidelines.
+
+### FR-005 Audience Profiles
+
+Admin dapat membuat profil target audiens:
+- Audience name.
+- Age range.
+- Occupation.
+- Interests.
+- Problems.
+- Needs.
+- Motivations.
+- Objections.
+- Content preferences.
+- Buying behavior.
+
+### FR-006 Product and Service Knowledge
+
+Admin dapat mengelola informasi produk dan layanan Prima RIB.
+
+Setiap produk memiliki:
+- Product name.
+- Product category.
+- Description.
+- Features.
+- Benefits.
+- Target audience.
+- Price, jika tersedia.
+- Promotion, jika tersedia.
+- Registration information.
+- CTA.
+- Official reference.
+- Active/inactive status.
+
+Informasi produk tidak boleh dibuat berdasarkan asumsi AI.
+
+### FR-007 Content Pillars
+
+Admin dapat mengelola:
+- Pillar name.
+- Description.
+- Objectives.
+- Target audience.
+- Topics.
+- Recommended formats.
+- Active status.
+
+### FR-008 Visual Guidelines
+
+Menyimpan:
+- Brand color palette.
+- Typography guidelines.
+- Visual references.
+- Design direction.
+- Layout guidelines.
+- Visual do and don't.
+
+Modul ini berfungsi sebagai referensi creative brief, bukan generator gambar.
+
+### FR-009 Brand Documents
+
+Admin dapat mengunggah:
+- PDF.
+- DOCX.
+- TXT.
+- File referensi lain yang didukung.
+
+### FR-010 Document Processing
+
+Sistem memproses dokumen menjadi informasi yang dapat dicari AI.
+
+Proses mencakup:
+- Upload.
+- Text extraction.
+- Content parsing.
+- Chunking.
+- Metadata assignment.
+- Indexing.
+- Processing status.
+
+### FR-011 Knowledge Retrieval
+
+AI dapat mengambil informasi relevan dari:
+- Brand Profile.
+- Product Knowledge.
+- Audience Profiles.
+- Content Pillars.
+- Writing Guidelines.
+- Uploaded Documents.
+
+### FR-012 Knowledge References
+
+AI harus dapat memberikan referensi sumber untuk informasi faktual yang berasal dari Brand Knowledge.
+
+Jika sumber tidak ditemukan atau bertentangan, AI harus menyatakan ketidakpastian.
+
+---
+
+## MODULE 02 — HYBRID AI INFRASTRUCTURE
+
+### Tujuan
+
+Membangun arsitektur AI terpusat yang mendukung beberapa provider dan model.
+
+### FR-013 AI Provider Management
+
+Mendukung provider yang dapat dikonfigurasi, dengan kandidat awal:
+- OpenAI.
+- Google Gemini.
+- Anthropic Claude.
+
+Provider tambahan harus dapat diintegrasikan melalui adapter.
+
+### FR-014 Provider Credentials
+
+Admin dapat mengatur API credentials.
+
+Ketentuan keamanan:
+- Credentials disimpan secara aman di server.
+- Tidak boleh dikirim ke browser.
+- Tidak boleh ditampilkan dalam plaintext setelah disimpan.
+- Tidak boleh masuk ke client-side logs.
+- Mendukung rotasi credentials.
+
+### FR-015 Model Management
+
+Admin dapat:
+- Menambahkan model.
+- Mengaktifkan atau menonaktifkan model.
+- Menentukan default model.
+- Menentukan model untuk task tertentu.
+- Mengatur model fallback.
+- Mengatur parameter yang didukung provider.
+
+### FR-016 AI Task Routing
+
+Sistem dapat menentukan model berdasarkan jenis pekerjaan.
+
+Contoh:
+- Content Strategy.
+- Idea Generation.
+- Script Writing.
+- Copywriting.
+- Creative Brief.
+- Content Quality Check.
+- Text Analysis.
+
+### FR-017 Manual Model Override
+
+User yang memiliki permission dapat memilih provider/model untuk proses tertentu jika diizinkan Admin.
+
+### FR-018 Automatic Fallback
+
+Jika provider utama gagal, sistem dapat mencoba provider alternatif yang telah dikonfigurasi.
+
+Fallback harus:
+- Mencatat kegagalan provider awal.
+- Mencatat provider pengganti.
+- Mempertahankan konteks request.
+- Tidak menghasilkan konten duplikat tanpa alasan.
+- Menghentikan retry berlebihan.
+
+### FR-019 AI Orchestration
+
+Seluruh request AI diproses melalui satu lapisan orchestration.
+
+Lapisan ini bertanggung jawab atas:
+- Authentication.
+- Permission validation.
+- Context preparation.
+- Knowledge retrieval.
+- Prompt assembly.
+- Model routing.
+- Request execution.
+- Output validation.
+- Usage logging.
+- Error handling.
+
+### FR-020 Context Injection
+
+Setiap AI request yang membutuhkan pemahaman brand harus menerima konteks relevan dari Brand Studio.
+
+### FR-021 Prompt Assembly
+
+Prompt dibangun dari:
+- System instruction.
+- Brand context.
+- Task instruction.
+- User input.
+- Retrieved knowledge.
+- Output schema.
+
+### FR-022 Structured Output
+
+Output AI harus divalidasi sesuai format yang diminta.
+
+Jika output tidak valid, sistem dapat melakukan perbaikan terbatas atau meminta regenerasi.
+
+### FR-023 Request Status
+
+Setiap request memiliki status:
+- Pending.
+- Processing.
+- Completed.
+- Failed.
+- Cancelled.
+
+### FR-024 Usage Logging
+
+Mencatat:
+- User.
+- Provider.
+- Model.
+- Task type.
+- Token usage jika tersedia.
+- Estimated cost jika tersedia.
+- Duration.
+- Request status.
+- Error details.
+- Timestamp.
+
+### FR-025 Usage Limits
+
+Admin dapat mengatur batas penggunaan AI berdasarkan kemampuan provider dan arsitektur sistem.
+
+---
+
+## MODULE 03 — AI CONTENT STRATEGIST
+
+### Tujuan
+
+Membantu tim menyusun strategi dan ide konten berdasarkan Brand Knowledge dan kebutuhan pemasaran.
+
+### FR-026 Content Idea Generation
+
+AI dapat menghasilkan ide berdasarkan:
+- Content pillar.
+- Target audience.
+- Campaign objective.
+- Product/service.
+- Platform.
+- Content format.
+- Topic.
+- User instruction.
+
+### FR-027 Idea Output
+
+Setiap ide berisi:
+- Title.
+- Hook.
+- Content angle.
+- Description.
+- Content pillar.
+- Objective.
+- Target audience.
+- Recommended platform.
+- Recommended format.
+- CTA.
+- Strategic reasoning.
+
+### FR-028 Idea Refinement
+
+User dapat:
+- Mengembangkan ide.
+- Mengubah angle.
+- Mengganti hook.
+- Mengubah target audiens.
+- Mengubah format.
+- Mengubah objective.
+
+### FR-029 Content Gap Analysis
+
+AI menganalisis peluang topik yang belum cukup terwakili dalam perencanaan konten.
+
+### FR-030 Content Pillar Analysis
+
+AI menganalisis distribusi konten berdasarkan pillar.
+
+### FR-031 Content Repetition Analysis
+
+AI memberikan indikasi topik, angle, atau hook yang terlalu sering digunakan berdasarkan data yang tersedia.
+
+### FR-032 Content Strategy Recommendation
+
+AI memberikan rekomendasi pengembangan konten berdasarkan:
+- Tujuan marketing.
+- Audience.
+- Produk.
+- Content pillar.
+- Kalender konten.
+- Riwayat konten.
+
+### FR-033 Campaign Planning
+
+User dapat membuat brief campaign yang berisi:
+- Campaign name.
+- Objective.
+- Target audience.
+- Product/service.
+- Duration.
+- Key message.
+- CTA.
+
+### FR-034 Campaign Idea Generation
+
+AI dapat menghasilkan ide konten untuk mendukung campaign.
+
+### FR-035 Calendar Suggestion
+
+AI dapat memberikan rekomendasi distribusi konten pada kalender.
+
+### FR-036 Calendar Preview
+
+Rekomendasi AI harus ditampilkan sebagai preview sebelum disimpan.
+
+### FR-037 Save to Content Planner
+
+User dapat menyimpan ide AI ke Content Planner atau Idea Bank existing.
+
+---
+
+## MODULE 04 — AI SCRIPT BUILDER
+
+### Tujuan
+
+Menjadi workspace utama untuk membuat script dan copywriting berbasis AI.
+
+### FR-038 Script Builder Workspace
+
+Menyediakan ruang kerja khusus untuk:
+- Membuat script.
+- Memilih format.
+- Mengatur brief.
+- Menghasilkan draft.
+- Mengedit hasil.
+- Melakukan revisi.
+- Menyimpan versi.
+
+### FR-039 Supported Content Formats
+
+Format yang didukung:
+1. Single Image Post.
+2. Carousel.
+3. Instagram Reels.
+4. TikTok Video.
+5. Instagram Story.
+6. Advertisement Copy.
+7. Custom Format.
+
+### FR-040 Content Brief Input
+
+User dapat memasukkan:
+- Topic.
+- Objective.
+- Target audience.
+- Product/service.
+- Platform.
+- Format.
+- Tone.
+- Content pillar.
+- Key message.
+- CTA.
+- Additional instruction.
+
+### FR-041 Single Post Output
+
+Output berisi:
+- Headline.
+- Hook.
+- Main copy.
+- Supporting message.
+- CTA.
+- Caption.
+- Hashtag suggestion jika diminta.
+
+### FR-042 Carousel Output
+
+Output berisi:
+- Carousel title.
+- Slide 1 hook.
+- Slide-by-slide content.
+- Closing slide.
+- CTA.
+- Caption.
+- Hashtag suggestion jika diminta.
+
+Setiap slide memiliki nomor, headline, body, dan arahan visual.
+
+### FR-043 Reels Output
+
+Output berisi:
+- Video title.
+- Opening hook.
+- Scene sequence.
+- Voice-over/dialogue.
+- On-screen text.
+- Visual direction.
+- CTA.
+- Caption.
+
+### FR-044 TikTok Output
+
+Output berisi:
+- Opening hook.
+- Script.
+- Scene direction.
+- Dialogue.
+- On-screen text.
+- CTA.
+- Caption.
+
+### FR-045 Instagram Story Output
+
+Output berisi:
+- Story sequence.
+- Text per frame.
+- Interaction suggestion.
+- CTA.
+
+### FR-046 Advertisement Copy
+
+Output berisi:
+- Campaign angle.
+- Main headline.
+- Primary text.
+- Supporting copy.
+- CTA.
+- Alternative copy.
+
+### FR-047 Custom Format
+
+User dapat memberikan instruksi format khusus.
+
+### FR-048 Section-Level Regeneration
+
+User dapat membuat ulang bagian tertentu tanpa harus mengulang seluruh script.
+
+### FR-049 Tone Adjustment
+
+User dapat mengubah gaya komunikasi:
+- Formal.
+- Professional.
+- Educational.
+- Motivational.
+- Persuasive.
+- Friendly.
+- Urgent.
+- Custom.
+
+### FR-050 Rewrite
+
+AI dapat menulis ulang bagian yang dipilih.
+
+### FR-051 Shorten and Expand
+
+AI dapat:
+- Meringkas.
+- Memperpanjang.
+- Menyederhanakan.
+- Mengembangkan penjelasan.
+
+### FR-052 Hook Improvement
+
+AI dapat menghasilkan alternatif hook.
+
+### FR-053 Headline Improvement
+
+AI dapat memberikan alternatif headline.
+
+### FR-054 CTA Improvement
+
+AI dapat memberikan alternatif CTA.
+
+### FR-055 Manual Editing
+
+User dapat mengedit hasil AI secara langsung.
+
+### FR-056 Version History
+
+Setiap perubahan penting dapat disimpan sebagai versi script.
+
+### FR-057 Save Draft
+
+Script dapat disimpan sebagai draft.
+
+### FR-058 Connect to Existing Content
+
+Script dapat dihubungkan dengan konten existing.
+
+### FR-059 Send to Production Board
+
+User dapat mengirim script yang telah siap ke Production Board.
+
+### FR-060 Duplicate and Export
+
+User dapat:
+- Menduplikasi script.
+- Menyalin seluruh isi.
+- Mengekspor hasil ke format yang didukung.
+
+---
+
+## MODULE 05 — CREATIVE BRIEF & QUALITY CHECKER
+
+### Tujuan
+
+Membantu tim produksi memahami kebutuhan kreatif dan memastikan kualitas konten sebelum masuk tahap publikasi.
+
+### FR-061 Creative Brief Generator
+
+AI dapat membuat creative brief berdasarkan script dan content brief.
+
+### FR-062 Design Brief
+
+Berisi:
+- Design objective.
+- Main message.
+- Visual direction.
+- Layout suggestion.
+- Color guidance.
+- Typography guidance.
+- Required elements.
+
+### FR-063 Carousel Brief
+
+Berisi arahan visual per slide.
+
+### FR-064 Video Production Brief
+
+Berisi:
+- Scene direction.
+- Camera suggestion.
+- Visual reference description.
+- On-screen text.
+- Voice-over direction.
+- Editing direction.
+
+Modul ini hanya menghasilkan arahan produksi, bukan video.
+
+### FR-065 Editing Brief
+
+AI dapat memberikan arahan editing berdasarkan script.
+
+### FR-066 Brand Consistency Check
+
+Memeriksa kesesuaian dengan:
+- Brand personality.
+- Tone of voice.
+- Writing guidelines.
+- Brand positioning.
+
+### FR-067 Audience Relevance Check
+
+Menganalisis relevansi konten dengan target audiens.
+
+### FR-068 Copywriting Quality Check
+
+Mengevaluasi:
+- Hook.
+- Clarity.
+- Message.
+- Persuasiveness.
+- CTA.
+- Structure.
+- Readability.
+
+### FR-069 Factual Accuracy Check
+
+Memeriksa konsistensi informasi dengan sumber yang tersedia.
+
+Informasi yang belum memiliki sumber harus ditandai untuk verifikasi manusia.
+
+### FR-070 Originality Similarity Check
+
+Memberikan indikasi kemiripan berdasarkan data yang tersedia.
+
+Sistem tidak boleh mengklaim menjamin konten 100% original.
+
+### FR-071 Quality Report
+
+Menampilkan:
+- Overall assessment.
+- Strengths.
+- Weaknesses.
+- Issues.
+- Improvement suggestions.
+- Verification warnings.
+
+### FR-072 Human Review
+
+AI hanya memberikan rekomendasi.
+
+Keputusan final tetap dilakukan manusia.
+
+---
+
+## MODULE 06 — EXISTING WORKFLOW INTEGRATION
+
+### FR-073 Unified Content Entity
+
+Konten manual dan AI harus menggunakan sistem entitas konten yang kompatibel.
+
+### FR-074 Content Source Tracking
+
+Setiap konten memiliki informasi asal:
+- Manual.
+- AI-assisted.
+- Imported.
+
+### FR-075 Production Board Integration
+
+Script yang disetujui dapat masuk ke Production Board.
+
+### FR-076 Existing Status Preservation
+
+Seluruh status dan workflow existing harus dipertahankan setelah audit.
+
+### FR-077 Revision Workflow
+
+Konten dapat dikembalikan untuk revisi.
+
+### FR-078 Human Approval
+
+Konten yang membutuhkan approval harus disetujui oleh user berwenang.
+
+### FR-079 Calendar Integration
+
+Konten dapat dihubungkan dengan Content Calendar existing.
+
+### FR-080 Scheduling Preservation
+
+Jadwal dan mekanisme penjadwalan existing tidak boleh rusak.
+
+### FR-081 Content Validation
+
+Sebelum masuk tahap produksi atau approval, sistem memvalidasi field wajib.
+
+### FR-082 Published Content Integration
+
+Konten yang sudah dipublikasikan dapat ditandai dan dihubungkan dengan data publikasi.
+
+### FR-083 Existing Content Compatibility
+
+Data konten lama harus tetap dapat diakses dan diedit sesuai permission.
+
+### FR-084 Content History
+
+Perubahan konten harus dapat ditelusuri sesuai kemampuan sistem existing dan tambahan version history.
+
+### FR-085 Workflow Audit
+
+Setiap perpindahan status penting harus tercatat.
+
+---
+
+## MODULE 07 — AI CONTROL CENTER
+
+### Tujuan
+
+Menjadi pusat pengaturan dan pemantauan seluruh layanan AI.
+
+### FR-086 AI Dashboard
+
+Menampilkan:
+- Total AI requests.
+- Successful requests.
+- Failed requests.
+- Total usage.
+- Estimated cost.
+- Active providers.
+- Active models.
+
+### FR-087 Provider Settings
+
+Admin dapat mengatur provider.
+
+### FR-088 Model Settings
+
+Admin dapat mengatur model dan task routing.
+
+### FR-089 Prompt Templates
+
+Admin dapat membuat dan mengelola template prompt.
+
+### FR-090 Prompt Versioning
+
+Setiap perubahan prompt dapat disimpan sebagai versi.
+
+### FR-091 Usage Monitoring
+
+Admin dapat melihat penggunaan berdasarkan:
+- Provider.
+- Model.
+- User.
+- Task type.
+- Date range.
+
+### FR-092 Cost Monitoring
+
+Sistem menghitung estimasi biaya berdasarkan data harga model yang dikonfigurasi dan usage yang dilaporkan provider.
+
+Estimasi tidak boleh ditampilkan sebagai biaya final jika tarif atau usage belum tersedia.
+
+### FR-093 Error Monitoring
+
+Admin dapat melihat error dan kegagalan request.
+
+### FR-094 Request History
+
+Admin dapat melihat riwayat request sesuai kebijakan keamanan.
+
+### FR-095 AI Feedback
+
+User dapat memberikan penilaian hasil AI.
+
+### FR-096 Usage Limits
+
+Admin dapat mengatur batas penggunaan.
+
+### FR-097 Fallback Monitoring
+
+Admin dapat memantau penggunaan model fallback.
+
+---
+
+# 7. USER INTERFACE REQUIREMENTS
+
+## 7.1 Brand Studio
+
+Halaman:
+- Brand Overview.
+- Brand Identity.
+- Tone of Voice.
+- Audience.
+- Products & Services.
+- Content Pillars.
+- Writing Guidelines.
+- Visual Guidelines.
+- Knowledge Documents.
+
+## 7.2 AI Content Strategist
+
+Halaman:
+- Strategy Workspace.
+- Idea Generator.
+- Content Gap Analysis.
+- Pillar Analysis.
+- Campaign Planner.
+- Calendar Suggestions.
+
+## 7.3 AI Script Builder
+
+Halaman:
+- Script Workspace.
+- Format Selector.
+- Brief Input.
+- Generated Script.
+- Section Editor.
+- Version History.
+- Creative Brief.
+- Quality Check.
+
+## 7.4 AI Control Center
+
+Halaman:
+- AI Overview.
+- Providers.
+- Models.
+- Task Routing.
+- Prompt Templates.
+- Usage & Cost.
+- Request Logs.
+- Feedback.
+
+## 7.5 UI Principles
+
+- Pertahankan design system aplikasi existing.
+- Jangan melakukan redesign menyeluruh tanpa persetujuan.
+- Gunakan komponen yang sudah tersedia.
+- Pertahankan navigasi existing sejauh memungkinkan.
+- Pastikan responsive pada desktop, tablet, dan mobile.
+- Berikan loading, success, empty, dan error states yang jelas.
+
+---
+
+# 8. SYSTEM ARCHITECTURE
+
+Arsitektur target:
+
+1. Existing Frontend.
+2. Existing Backend/API.
+3. Authentication & Authorization.
+4. Brand Knowledge Layer.
+5. AI Orchestration Layer.
+6. Provider Adapter Layer.
+7. AI Providers.
+8. Existing Database.
+9. AI Supporting Tables.
+10. Logging and Monitoring.
+
+AI request flow:
+
+User Input → Permission Validation → Brand Context Retrieval → Prompt Assembly → Model Routing → Provider Execution → Output Validation → Save Result → Usage Logging → User Review.
+
+Semua API key dan provider credentials wajib berada di server-side.
+
+---
+
+# 9. DATABASE REQUIREMENTS
+
+Database harus mendukung:
+- Brand profile.
+- Brand knowledge.
+- Brand documents.
+- Products and services.
+- Audience profiles.
+- Content pillars.
+- AI providers.
+- AI models.
+- AI routing.
+- Prompt templates.
+- AI request logs.
+- Content scripts.
+- Script versions.
+- Creative briefs.
+- Quality checks.
+- AI feedback.
+- Integration dengan existing content entities.
+
+ERD dan migration plan harus dibuat setelah audit database existing.
+
+Jangan membuat duplikasi tabel konten apabila entitas existing sudah dapat diperluas secara aman.
+
+---
+
+# 10. NON-FUNCTIONAL REQUIREMENTS
+
+## Security
+- Server-side API credentials.
+- Role-based access control.
+- Database access policies.
+- Input validation.
+- Output validation.
+- Audit logging.
+- Secure document handling.
+
+## Performance
+- AI requests mendukung asynchronous processing bila diperlukan.
+- UI tidak boleh freeze selama proses AI.
+- Loading state harus jelas.
+- Request timeout dan retry harus dikonfigurasi.
+- Target performa frontend ditentukan melalui pengujian aplikasi existing.
+
+## Reliability
+- Provider failure handling.
+- Fallback mechanism.
+- Error logging.
+- Retry limits.
+- Request cancellation jika didukung.
+
+## Scalability
+- Provider adapter architecture.
+- Modular AI task routing.
+- Extensible prompt management.
+- Database indexing sesuai kebutuhan.
+
+## Maintainability
+- Modular components.
+- Reusable services.
+- Clear API contracts.
+- Migration documentation.
+- Technical documentation.
+
+---
+
+# 11. AI SAFETY AND CONTENT GOVERNANCE
+
+AI tidak boleh:
+- Mengarang harga produk.
+- Mengarang promo.
+- Mengarang jadwal pendaftaran.
+- Mengarang passing grade.
+- Mengarang syarat seleksi.
+- Mengarang peraturan CPNS, Sekdin, atau Polri.
+- Mengarang testimoni.
+- Mengarang hasil atau klaim keberhasilan.
+- Menyatakan informasi tidak terverifikasi sebagai fakta.
+
+Untuk informasi yang sensitif terhadap waktu, AI harus meminta sumber terbaru atau menandai kebutuhan verifikasi.
+
+AI tidak boleh mempublikasikan atau menyetujui konten secara otomatis.
+
+---
+
+# 12. ERROR HANDLING
+
+Sistem harus menangani:
+- Invalid API credentials.
+- Provider unavailable.
+- Rate limit.
+- Timeout.
+- Invalid model.
+- Empty AI output.
+- Malformed output.
+- Knowledge retrieval failure.
+- Document processing failure.
+- Conflicting brand information.
+- Cancelled request.
+- Save failure.
+- Duplicate content linking.
+
+Pesan error harus informatif dan tidak menampilkan informasi sensitif.
+
+---
+
+# 13. ACCEPTANCE CRITERIA
+
+Sistem dianggap memenuhi kebutuhan apabila:
+
+1. Semua fitur existing tetap berjalan.
+2. Brand Studio dapat menyimpan dan mengelola informasi Prima RIB.
+3. AI dapat mengambil konteks dari Brand Knowledge.
+4. Provider dan model dapat dikonfigurasi oleh Admin.
+5. API credentials tidak terekspos ke browser.
+6. AI Content Strategist dapat menghasilkan ide terstruktur.
+7. AI Script Builder mendukung seluruh format yang ditentukan.
+8. User dapat mengedit dan menyimpan script.
+9. Version history dapat diakses.
+10. Creative Brief dapat dihasilkan.
+11. Quality Checker dapat memberikan evaluasi.
+12. Konten AI dapat terhubung ke workflow existing.
+13. Human approval tetap berlaku.
+14. AI usage dan error dapat dimonitor.
+15. Tidak ada data existing yang hilang atau rusak.
+
+---
+
+# 14. DEVELOPMENT PHASES
+
+## Phase 0 — Existing System Audit
+Audit frontend, backend, database, auth, role, dan seluruh workflow existing.
+
+Deliverables:
+- Existing System Audit.
+- Existing Database Schema.
+- Existing Workflow Documentation.
+- Integration Risk Report.
+
+## Phase 1 — Brand Studio
+Membangun Brand Profile, Brand Knowledge, Audience, Product Knowledge, Content Pillars, dan Writing Guidelines.
+
+## Phase 2 — AI Infrastructure
+Membangun Provider Management, Model Management, AI Router, Orchestration, Prompt Management, dan Logging.
+
+## Phase 3 — AI Content Strategist
+Membangun Idea Generation, Strategy Analysis, Content Gap, dan Calendar Suggestions.
+
+## Phase 4 — AI Script Builder
+Membangun Script Workspace dan seluruh format produksi.
+
+## Phase 5 — Creative Brief & Quality Checker
+Membangun Creative Brief Generator dan Content Quality Checker.
+
+## Phase 6 — Existing Workflow Integration
+Integrasi dengan Content Planner, Idea Bank, Production Board, Calendar, dan Approval.
+
+## Phase 7 — AI Control Center
+Membangun monitoring, usage, cost, error, feedback, dan konfigurasi AI.
+
+## Phase 8 — Final QA & Deployment
+Regression testing, security testing, data integrity testing, dan deployment.
+
+---
+
+# 15. DEFINITION OF DONE
+
+Setiap phase dinyatakan selesai apabila:
+- Implementasi sesuai requirement.
+- Tidak merusak fitur existing.
+- Tidak ada error kritis.
+- Permission telah diuji.
+- Database migration telah diuji.
+- Dokumentasi diperbarui.
+- Hasil pengujian tersedia.
+- Perubahan dapat di-review.
+
+---
+
+# 16. ANTIGRAVITY DEVELOPMENT INSTRUCTIONS
+
+Antigravity wajib mengikuti instruksi berikut:
+
+1. Audit aplikasi existing sebelum coding.
+2. Baca seluruh dokumentasi PRD dan ERD.
+3. Petakan tabel existing sebelum membuat tabel baru.
+4. Jangan melakukan rebuild aplikasi.
+5. Jangan menghapus atau mereset database.
+6. Jangan menghapus fitur existing.
+7. Jangan mengganti desain aplikasi secara menyeluruh.
+8. Jangan membuat data dummy sebagai pengganti integrasi produksi.
+9. Jangan mengekspos API key di frontend.
+10. Jangan mengubah role atau permission tanpa audit.
+11. Lakukan implementasi bertahap.
+12. Lakukan regression testing setiap phase.
+13. Dokumentasikan seluruh perubahan.
+14. Jika ada konflik antara PRD dan kondisi aplikasi existing, dokumentasikan konflik dan ajukan solusi sebelum melakukan perubahan destruktif.
+
+---
+
+# 17. FINAL PRODUCT DEFINITION
+
+Prima RIB Content Plan merupakan platform yang mengintegrasikan:
+
+- Brand Intelligence.
+- Content Intelligence.
+- AI Script Production.
+- Creative Intelligence.
+- Content Production Management.
+- Content Performance Monitoring.
+
+AI bertindak sebagai asisten strategis dan kreatif.
+
+Manusia tetap memegang kendali atas ide akhir, keputusan, revisi, persetujuan, dan publikasi konten.
+
+**END OF PRD V1.0**

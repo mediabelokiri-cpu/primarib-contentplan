@@ -20,6 +20,8 @@ import {
   FileText,
   MessageSquare,
   Sparkles,
+  Palette,
+  ShieldCheck,
 } from "lucide-react";
 import {
   useAppStore,
@@ -65,6 +67,9 @@ import {
   AiAssistantModal,
   AiContentPatch,
 } from "@/components/content/AiAssistantModal";
+import { AiScriptBuilderModal } from "@/components/content/AiScriptBuilderModal";
+import { CreativeBriefModal } from "@/components/content/CreativeBriefModal";
+import { QualityCheckerModal } from "@/components/content/QualityCheckerModal";
 
 export default function ContentDetailPage({
   params,
@@ -92,6 +97,9 @@ export default function ContentDetailPage({
   // Modals state
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAiOpen, setIsAiOpen] = useState(false);
+  const [isScriptBuilderOpen, setIsScriptBuilderOpen] = useState(false);
+  const [isBriefOpen, setIsBriefOpen] = useState(false);
+  const [isQualityOpen, setIsQualityOpen] = useState(false);
   const [isAssignOpen, setIsAssignOpen] = useState(false);
   const [isRevisionOpen, setIsRevisionOpen] = useState(false);
   const [isPublishOpen, setIsPublishOpen] = useState(false);
@@ -353,11 +361,38 @@ export default function ContentDetailPage({
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
+              onClick={() => setIsScriptBuilderOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#6D4AFF] bg-gradient-to-r from-primary to-[#6D4AFF] px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs transition hover:opacity-95"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-[#DDB02E]" />
+              <span>AI Script Builder</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setIsAiOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-lg border border-[#DDB02E] bg-[#DDB02E]/25 px-3 py-1.5 text-xs font-bold text-[#284078] shadow-2xs transition hover:bg-[#DDB02E]/40"
             >
               <Sparkles className="h-3.5 w-3.5 text-[#284078]" />
-              <span>✨ AI Assistant</span>
+              <span>✨ Quick AI</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsBriefOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+            >
+              <Palette className="h-3.5 w-3.5 text-primary" />
+              <span>Creative Brief</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsQualityOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-purple/30 bg-purple/10 px-3 py-1.5 text-xs font-bold text-purple hover:bg-purple/20 transition"
+            >
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>Quality Check</span>
             </button>
 
             <button
@@ -619,9 +654,19 @@ export default function ContentDetailPage({
                 </pre>
               </div>
               <div>
-                <p className="text-xs font-bold uppercase text-slate-500">
-                  Visual / Video Direction
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold uppercase text-slate-500">
+                    Visual / Video Direction
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsBriefOpen(true)}
+                    className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
+                  >
+                    <Palette className="w-3.5 h-3.5" />
+                    AI Creative Brief →
+                  </button>
+                </div>
                 <pre className="mt-1.5 whitespace-pre-wrap rounded-lg bg-slate-50 p-3 font-sans text-xs leading-relaxed text-slate-800">
                   {content.creative_brief || "Belum ada arahan visual."}
                 </pre>
@@ -1342,6 +1387,35 @@ export default function ContentDetailPage({
             ...(patch.script !== undefined ? { script: patch.script } : {}),
           });
         }}
+      />
+
+      {/* MODAL: AI SCRIPT BUILDER SUITE */}
+      <AiScriptBuilderModal
+        isOpen={isScriptBuilderOpen}
+        onClose={() => setIsScriptBuilderOpen(false)}
+        contentId={content.id}
+        initialTitle={content.title}
+        initialFormat={content.format?.id || "fmt-reels"}
+        initialProgramName={content.program?.name || "CPNS"}
+        initialPillarName={content.pillar?.name || "Edukatif"}
+        onSaved={() => {
+          setIsScriptBuilderOpen(false);
+        }}
+      />
+
+      {/* MODAL: CREATIVE BRIEF GENERATOR */}
+      <CreativeBriefModal
+        isOpen={isBriefOpen}
+        onClose={() => setIsBriefOpen(false)}
+        content={content}
+        onSaved={() => setIsBriefOpen(false)}
+      />
+
+      {/* MODAL: QUALITY CHECKER */}
+      <QualityCheckerModal
+        isOpen={isQualityOpen}
+        onClose={() => setIsQualityOpen(false)}
+        content={content}
       />
     </div>
   );

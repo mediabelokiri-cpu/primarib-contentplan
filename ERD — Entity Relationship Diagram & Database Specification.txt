@@ -1,0 +1,943 @@
+# ENTITY RELATIONSHIP DIAGRAM (ERD)
+## PRIMA RIB CONTENT PLAN
+### AI-Powered Content Management & Production Platform
+
+**Document Version:** 1.0  
+**Database Specification:** Target Logical ERD  
+**Development Environment:** Antigravity  
+**Status:** Provisional — Requires Existing Database Audit
+
+---
+
+# 1. DATABASE DESIGN OBJECTIVES
+
+Database dirancang untuk mendukung pengembangan Prima RIB Content Plan menjadi AI-powered content management platform.
+
+Tujuan:
+
+1. Menyimpan identitas dan pengetahuan brand.
+2. Menyediakan sumber pengetahuan terstruktur untuk AI.
+3. Mendukung berbagai provider dan model AI.
+4. Mendukung AI orchestration dan task routing.
+5. Menyimpan hasil AI Content Strategist.
+6. Menyimpan script dan version history.
+7. Menyimpan creative brief.
+8. Menyimpan hasil quality check.
+9. Menyimpan usage, cost, error, dan feedback.
+10. Terintegrasi dengan database content management existing.
+
+## 1.1 Critical Database Rule
+
+ERD ini merupakan logical target model, bukan instruksi untuk langsung membuat seluruh tabel.
+
+Sebelum migration:
+- Audit semua tabel existing.
+- Identifikasi entitas yang sudah tersedia.
+- Gunakan tabel existing apabila fungsinya sudah sesuai.
+- Tambahkan kolom apabila lebih aman daripada membuat tabel duplikat.
+- Hindari duplicate content entities.
+- Pertahankan seluruh data dan relasi existing.
+
+Nama tabel dan kolom existing harus menjadi acuan final physical ERD.
+
+---
+
+# 2. DATABASE DOMAIN
+
+Target database dibagi menjadi 9 domain:
+
+1. Brand Management.
+2. Brand Knowledge Management.
+3. AI Provider Management.
+4. AI Prompt Management.
+5. AI Request and Monitoring.
+6. Content Strategy.
+7. AI Script Production.
+8. Creative Brief and Quality Control.
+9. Existing Content Integration.
+
+---
+
+# 3. BRAND MANAGEMENT DOMAIN
+
+## 3.1 brand_profiles
+
+Menyimpan identitas utama Prima RIB.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_name | VARCHAR | Brand name |
+| description | TEXT | Brand description |
+| positioning | TEXT | Brand positioning |
+| vision | TEXT | Brand vision |
+| mission | TEXT | Brand mission |
+| values | JSONB | Brand values |
+| tagline | VARCHAR | Brand tagline |
+| website_url | TEXT | Website |
+| social_links | JSONB | Social media links |
+| brand_status | VARCHAR | Active/inactive |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 3.2 brand_personalities
+
+Menyimpan karakter komunikasi brand.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| personality_name | VARCHAR | Personality |
+| description | TEXT | Description |
+| priority | INTEGER | Priority |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+
+## 3.3 brand_tone_guidelines
+
+Menyimpan tone of voice.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| tone_name | VARCHAR | Tone name |
+| formality_level | VARCHAR | Formality |
+| description | TEXT | Description |
+| writing_rules | JSONB | Writing rules |
+| preferred_words | JSONB | Preferred words |
+| prohibited_words | JSONB | Words to avoid |
+| is_default | BOOLEAN | Default tone |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 3.4 brand_audiences
+
+Menyimpan target audiens.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| audience_name | VARCHAR | Audience name |
+| description | TEXT | Description |
+| age_range | VARCHAR | Age range |
+| occupation | JSONB | Occupation |
+| interests | JSONB | Interests |
+| problems | JSONB | Problems |
+| needs | JSONB | Needs |
+| motivations | JSONB | Motivations |
+| objections | JSONB | Objections |
+| preferences | JSONB | Content preferences |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 3.5 brand_products
+
+Menyimpan produk dan layanan Prima RIB.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| product_name | VARCHAR | Product name |
+| category | VARCHAR | Product category |
+| description | TEXT | Description |
+| features | JSONB | Features |
+| benefits | JSONB | Benefits |
+| target_audience_id | UUID | FK → brand_audiences.id, nullable |
+| price | NUMERIC | Price, nullable |
+| promotion_details | JSONB | Promotion, nullable |
+| registration_info | JSONB | Registration information |
+| cta | TEXT | CTA |
+| official_reference | TEXT | Official source |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+Catatan: harga, promosi, jadwal, dan informasi produk harus dapat diperbarui oleh Admin.
+
+## 3.6 content_pillars
+
+Menyimpan content pillars.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| pillar_name | VARCHAR | Pillar name |
+| description | TEXT | Description |
+| objectives | JSONB | Objectives |
+| recommended_topics | JSONB | Topics |
+| recommended_formats | JSONB | Formats |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 3.7 brand_writing_guidelines
+
+Menyimpan pedoman penulisan.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| guideline_type | VARCHAR | Guideline category |
+| title | VARCHAR | Title |
+| content | TEXT | Guideline content |
+| rules | JSONB | Structured rules |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 3.8 brand_visual_guidelines
+
+Menyimpan pedoman visual brand.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| guideline_name | VARCHAR | Name |
+| color_palette | JSONB | Colors |
+| typography | JSONB | Typography |
+| visual_direction | TEXT | Direction |
+| do_rules | JSONB | Do |
+| dont_rules | JSONB | Don't |
+| references | JSONB | References |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+---
+
+# 4. BRAND KNOWLEDGE MANAGEMENT DOMAIN
+
+## 4.1 brand_documents
+
+Menyimpan metadata dokumen referensi.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| file_name | VARCHAR | File name |
+| file_path | TEXT | Storage path |
+| file_type | VARCHAR | File type |
+| file_size | BIGINT | File size |
+| processing_status | VARCHAR | Processing status |
+| uploaded_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Upload time |
+| processed_at | TIMESTAMPTZ | Processing time |
+
+## 4.2 brand_knowledge
+
+Menyimpan informasi pengetahuan terstruktur.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| brand_id | UUID | FK → brand_profiles.id |
+| category | VARCHAR | Knowledge category |
+| title | VARCHAR | Knowledge title |
+| content | TEXT | Knowledge content |
+| source_type | VARCHAR | Manual/document/import |
+| source_id | UUID | Related source ID, nullable |
+| metadata | JSONB | Additional metadata |
+| verification_status | VARCHAR | Verification status |
+| valid_from | TIMESTAMPTZ | Validity start |
+| valid_until | TIMESTAMPTZ | Validity end |
+| created_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 4.3 brand_document_chunks
+
+Menyimpan potongan teks hasil pemrosesan dokumen.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| document_id | UUID | FK → brand_documents.id |
+| chunk_index | INTEGER | Chunk sequence |
+| content | TEXT | Chunk text |
+| token_count | INTEGER | Token count |
+| metadata | JSONB | Metadata |
+| embedding | VECTOR | Embedding, optional |
+| created_at | TIMESTAMPTZ | Creation time |
+
+Catatan:
+- VECTOR hanya digunakan jika database dan extension mendukungnya.
+- Jika belum tersedia, gunakan pendekatan pencarian teks yang kompatibel.
+- Jangan memasang extension atau mengubah konfigurasi database produksi tanpa pemeriksaan.
+
+---
+
+# 5. AI PROVIDER MANAGEMENT DOMAIN
+
+## 5.1 ai_providers
+
+Menyimpan konfigurasi provider.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| provider_name | VARCHAR | Provider name |
+| provider_code | VARCHAR | Unique provider code |
+| adapter_key | VARCHAR | Adapter identifier |
+| api_base_url | TEXT | API endpoint |
+| credential_reference | TEXT | Secret reference |
+| is_active | BOOLEAN | Active status |
+| configuration | JSONB | Provider configuration |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+API key tidak boleh disimpan sebagai plaintext pada tabel biasa.
+
+credential_reference hanya menunjuk ke secret management yang aman.
+
+## 5.2 ai_models
+
+Menyimpan daftar model.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| provider_id | UUID | FK → ai_providers.id |
+| model_name | VARCHAR | Model name |
+| model_code | VARCHAR | Model identifier |
+| capabilities | JSONB | Capabilities |
+| context_window | INTEGER | Context capacity |
+| input_price | NUMERIC | Input price |
+| output_price | NUMERIC | Output price |
+| pricing_currency | VARCHAR | Currency |
+| is_active | BOOLEAN | Status |
+| model_config | JSONB | Model configuration |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+Harga harus dapat diperbarui karena tarif provider dapat berubah.
+
+## 5.3 ai_task_routes
+
+Menentukan model untuk setiap jenis task.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| task_code | VARCHAR | Task code |
+| task_name | VARCHAR | Task name |
+| primary_model_id | UUID | FK → ai_models.id |
+| fallback_model_id | UUID | FK → ai_models.id, nullable |
+| configuration | JSONB | Routing configuration |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+Contoh task_code:
+- CONTENT_STRATEGY.
+- IDEA_GENERATION.
+- SCRIPT_WRITING.
+- COPYWRITING.
+- CREATIVE_BRIEF.
+- QUALITY_CHECK.
+- CONTENT_ANALYSIS.
+
+---
+
+# 6. AI PROMPT MANAGEMENT DOMAIN
+
+## 6.1 ai_prompt_templates
+
+Menyimpan template prompt.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| prompt_code | VARCHAR | Unique code |
+| prompt_name | VARCHAR | Prompt name |
+| task_code | VARCHAR | Related task |
+| description | TEXT | Description |
+| current_version_id | UUID | Current version, nullable |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 6.2 ai_prompt_versions
+
+Menyimpan versi prompt.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| template_id | UUID | FK → ai_prompt_templates.id |
+| version_number | INTEGER | Version |
+| system_prompt | TEXT | System prompt |
+| instruction_template | TEXT | Task instruction |
+| output_schema | JSONB | Expected output schema |
+| change_notes | TEXT | Change notes |
+| created_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+
+Setiap perubahan prompt harus menghasilkan versi baru, bukan menimpa histori sebelumnya.
+
+---
+
+# 7. AI REQUEST AND MONITORING DOMAIN
+
+## 7.1 ai_generation_logs
+
+Menyimpan seluruh request AI.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| user_id | UUID | Requesting user |
+| provider_id | UUID | FK → ai_providers.id |
+| model_id | UUID | FK → ai_models.id |
+| task_code | VARCHAR | Task type |
+| prompt_version_id | UUID | FK → ai_prompt_versions.id, nullable |
+| request_status | VARCHAR | Request status |
+| input_summary | TEXT | Safe input summary |
+| output_summary | TEXT | Safe output summary |
+| input_tokens | INTEGER | Input tokens |
+| output_tokens | INTEGER | Output tokens |
+| estimated_cost | NUMERIC | Estimated cost |
+| cost_currency | VARCHAR | Currency |
+| duration_ms | INTEGER | Processing duration |
+| error_code | VARCHAR | Error code |
+| error_message | TEXT | Sanitized error |
+| fallback_used | BOOLEAN | Fallback indicator |
+| created_at | TIMESTAMPTZ | Request time |
+| completed_at | TIMESTAMPTZ | Completion time |
+
+Hindari menyimpan informasi sensitif atau API credentials dalam request log.
+
+## 7.2 ai_usage_limits
+
+Mengatur batas penggunaan AI.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| limit_scope | VARCHAR | Scope |
+| scope_reference | UUID | Scope reference, nullable |
+| max_requests | INTEGER | Request limit |
+| max_tokens | BIGINT | Token limit |
+| max_cost | NUMERIC | Cost limit |
+| period_type | VARCHAR | Daily/monthly |
+| is_active | BOOLEAN | Status |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 7.3 ai_feedback
+
+Menyimpan evaluasi user terhadap output AI.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| generation_log_id | UUID | FK → ai_generation_logs.id |
+| user_id | UUID | User ID |
+| rating | INTEGER | Rating |
+| feedback_type | VARCHAR | Feedback category |
+| feedback_text | TEXT | Feedback |
+| created_at | TIMESTAMPTZ | Creation time |
+
+---
+
+# 8. CONTENT STRATEGY DOMAIN
+
+## 8.1 content_ideas
+
+Menyimpan ide konten hasil AI maupun manual.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| title | VARCHAR | Idea title |
+| hook | TEXT | Hook |
+| content_angle | TEXT | Angle |
+| description | TEXT | Description |
+| pillar_id | UUID | FK → content_pillars.id, nullable |
+| audience_id | UUID | FK → brand_audiences.id, nullable |
+| product_id | UUID | FK → brand_products.id, nullable |
+| objective | VARCHAR | Objective |
+| platform | VARCHAR | Platform |
+| format | VARCHAR | Format |
+| cta | TEXT | CTA |
+| strategic_reasoning | TEXT | Reasoning |
+| source_type | VARCHAR | Manual/AI |
+| generation_log_id | UUID | FK → ai_generation_logs.id, nullable |
+| status | VARCHAR | Idea status |
+| created_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 8.2 content_campaigns
+
+Menyimpan campaign.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| campaign_name | VARCHAR | Campaign name |
+| objective | TEXT | Objective |
+| audience_id | UUID | FK → brand_audiences.id, nullable |
+| product_id | UUID | FK → brand_products.id, nullable |
+| key_message | TEXT | Key message |
+| start_date | DATE | Start date |
+| end_date | DATE | End date |
+| status | VARCHAR | Campaign status |
+| created_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 8.3 campaign_ideas
+
+Tabel penghubung campaign dengan ide konten.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| campaign_id | UUID | FK → content_campaigns.id |
+| idea_id | UUID | FK → content_ideas.id |
+| created_at | TIMESTAMPTZ | Creation time |
+
+---
+
+# 9. AI SCRIPT PRODUCTION DOMAIN
+
+## 9.1 content_scripts
+
+Menyimpan script utama.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| title | VARCHAR | Script title |
+| content_format | VARCHAR | Content format |
+| platform | VARCHAR | Platform |
+| objective | VARCHAR | Objective |
+| topic | TEXT | Topic |
+| brief_data | JSONB | Original brief |
+| script_content | JSONB | Structured script |
+| caption | TEXT | Caption |
+| cta | TEXT | CTA |
+| hashtag_data | JSONB | Hashtags |
+| source_type | VARCHAR | Manual/AI |
+| generation_log_id | UUID | FK → ai_generation_logs.id, nullable |
+| linked_content_id | UUID | Existing content ID, nullable |
+| status | VARCHAR | Script status |
+| created_by | UUID | User ID |
+| updated_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+linked_content_id harus disesuaikan dengan primary key dan struktur content entity existing.
+
+## 9.2 script_versions
+
+Menyimpan riwayat versi script.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| script_id | UUID | FK → content_scripts.id |
+| version_number | INTEGER | Version |
+| script_content | JSONB | Script snapshot |
+| caption | TEXT | Caption snapshot |
+| change_type | VARCHAR | Edit/regenerate/rewrite |
+| change_summary | TEXT | Change description |
+| generation_log_id | UUID | FK → ai_generation_logs.id, nullable |
+| created_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+
+Setiap versi harus menyimpan snapshot yang tidak berubah.
+
+## 9.3 script_sections
+
+Opsional jika aplikasi membutuhkan pengelolaan dan regenerasi bagian script secara independen.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| script_id | UUID | FK → content_scripts.id |
+| section_key | VARCHAR | Section key |
+| section_title | VARCHAR | Section title |
+| section_content | JSONB | Section data |
+| sort_order | INTEGER | Display order |
+| updated_at | TIMESTAMPTZ | Update time |
+
+Jika JSONB pada content_scripts sudah cukup, tabel ini tidak perlu dibuat.
+
+---
+
+# 10. CREATIVE BRIEF AND QUALITY CONTROL DOMAIN
+
+## 10.1 creative_briefs
+
+Menyimpan creative brief.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| script_id | UUID | FK → content_scripts.id |
+| brief_type | VARCHAR | Brief type |
+| brief_title | VARCHAR | Title |
+| brief_content | JSONB | Structured brief |
+| generation_log_id | UUID | FK → ai_generation_logs.id, nullable |
+| status | VARCHAR | Status |
+| created_by | UUID | User ID |
+| created_at | TIMESTAMPTZ | Creation time |
+| updated_at | TIMESTAMPTZ | Update time |
+
+## 10.2 content_quality_checks
+
+Menyimpan hasil evaluasi AI.
+
+| Field | Type | Description |
+|---|---|---|
+| id | UUID | Primary Key |
+| script_id | UUID | FK → content_scripts.id |
+| generation_log_id | UUID | FK → ai_generation_logs.id, nullable |
+| overall_score | NUMERIC | Overall score |
+| brand_consistency_score | NUMERIC | Brand score |
+| audience_relevance_score | NUMERIC | Audience score |
+| copywriting_score | NUMERIC | Copywriting score |
+| factual_accuracy_status | VARCHAR | Fact status |
+| issues | JSONB | Detected issues |
+| strengths | JSONB | Strengths |
+| recommendations | JSONB | Recommendations |
+| verification_warnings | JSONB | Warnings |
+| created_at | TIMESTAMPTZ | Evaluation time |
+
+Score harus disimpan sebagai hasil evaluasi AI, bukan jaminan kualitas objektif.
+
+---
+
+# 11. EXISTING CONTENT INTEGRATION
+
+Bagian ini sangat penting.
+
+Sistem existing kemungkinan telah memiliki tabel untuk:
+- Content Planner.
+- Idea Bank.
+- Production Board.
+- Content Calendar.
+- Review and Approval.
+- Published Content.
+- User Management.
+
+Jangan membuat tabel duplikat sebelum audit.
+
+## 11.1 Integration Strategy
+
+Target integrasi:
+
+| Existing Module | Target Integration |
+|---|---|
+| Content Planner | Menyimpan ide dan konten AI |
+| Idea Bank | Menerima hasil AI Strategist |
+| Production Board | Menerima script siap produksi |
+| Content Calendar | Menerima rekomendasi jadwal |
+| Review & Approval | Menjalankan human approval |
+| Published Content | Menghubungkan hasil publikasi |
+| User Management | Menggunakan user dan role existing |
+
+## 11.2 Content Source Tracking
+
+Jika belum tersedia pada tabel konten existing, pertimbangkan field:
+
+- source_type.
+- ai_generation_log_id.
+- script_id.
+
+Tambahkan hanya setelah memastikan tidak terjadi konflik dengan struktur existing.
+
+---
+
+# 12. ENTITY RELATIONSHIP SUMMARY
+
+Relasi utama:
+
+1. brand_profiles memiliki banyak brand_personalities.
+2. brand_profiles memiliki banyak brand_tone_guidelines.
+3. brand_profiles memiliki banyak brand_audiences.
+4. brand_profiles memiliki banyak brand_products.
+5. brand_profiles memiliki banyak content_pillars.
+6. brand_profiles memiliki banyak brand_writing_guidelines.
+7. brand_profiles memiliki banyak brand_visual_guidelines.
+8. brand_profiles memiliki banyak brand_documents.
+9. brand_profiles memiliki banyak brand_knowledge.
+10. brand_documents memiliki banyak brand_document_chunks.
+11. ai_providers memiliki banyak ai_models.
+12. ai_models dapat digunakan pada banyak ai_task_routes.
+13. ai_prompt_templates memiliki banyak ai_prompt_versions.
+14. ai_generation_logs terhubung dengan provider, model, dan prompt version.
+15. content_ideas dapat berasal dari ai_generation_logs.
+16. content_campaigns memiliki banyak campaign_ideas.
+17. content_ideas dapat menjadi bagian dari campaign.
+18. content_scripts dapat berasal dari ai_generation_logs.
+19. content_scripts memiliki banyak script_versions.
+20. content_scripts dapat memiliki banyak creative_briefs.
+21. content_scripts dapat memiliki banyak content_quality_checks.
+22. ai_generation_logs dapat memiliki banyak ai_feedback.
+23. content_scripts dapat terhubung ke content entity existing.
+
+---
+
+# 13. RELATIONSHIP DIAGRAM
+
+```mermaid
+erDiagram
+
+    brand_profiles ||--o{ brand_personalities : has
+    brand_profiles ||--o{ brand_tone_guidelines : defines
+    brand_profiles ||--o{ brand_audiences : targets
+    brand_profiles ||--o{ brand_products : owns
+    brand_profiles ||--o{ content_pillars : defines
+    brand_profiles ||--o{ brand_writing_guidelines : defines
+    brand_profiles ||--o{ brand_visual_guidelines : defines
+    brand_profiles ||--o{ brand_documents : owns
+    brand_profiles ||--o{ brand_knowledge : contains
+
+    brand_documents ||--o{ brand_document_chunks : contains
+
+    brand_audiences ||--o{ brand_products : targets
+
+    ai_providers ||--o{ ai_models : provides
+    ai_models ||--o{ ai_task_routes : assigned
+    ai_prompt_templates ||--o{ ai_prompt_versions : versions
+
+    ai_models ||--o{ ai_generation_logs : executes
+    ai_providers ||--o{ ai_generation_logs : handles
+    ai_prompt_versions ||--o{ ai_generation_logs : uses
+
+    ai_generation_logs ||--o{ ai_feedback : receives
+
+    content_pillars ||--o{ content_ideas : categorizes
+    brand_audiences ||--o{ content_ideas : targets
+    brand_products ||--o{ content_ideas : promotes
+    ai_generation_logs ||--o{ content_ideas : generates
+
+    content_campaigns ||--o{ campaign_ideas : contains
+    content_ideas ||--o{ campaign_ideas : included
+
+    ai_generation_logs ||--o{ content_scripts : generates
+    content_scripts ||--o{ script_versions : versions
+    content_scripts ||--o{ script_sections : contains
+    content_scripts ||--o{ creative_briefs : has
+    content_scripts ||--o{ content_quality_checks : evaluated_by
+```
+
+---
+
+# 14. DATABASE CONSTRAINTS
+
+Ketentuan:
+
+1. Semua primary key baru menggunakan UUID, kecuali database existing menggunakan standar lain yang harus dipertahankan.
+2. Foreign key harus memiliki referential integrity.
+3. Field wajib harus memiliki NOT NULL.
+4. Field unik harus memiliki UNIQUE constraint.
+5. Status harus menggunakan nilai yang tervalidasi.
+6. Tanggal menggunakan timezone-aware timestamp jika didukung.
+7. Harga menggunakan NUMERIC, bukan floating point.
+8. Metadata fleksibel dapat menggunakan JSONB jika database mendukung.
+9. Index ditambahkan pada foreign keys dan kolom pencarian yang sering digunakan.
+10. Soft delete hanya diterapkan jika sesuai dengan pola database existing.
+11. Riwayat versi script tidak boleh tertimpa.
+12. Penghapusan data harus mempertimbangkan relasi dan audit trail.
+
+---
+
+# 15. SECURITY AND PERMISSION
+
+Database harus mengikuti permission model existing.
+
+Target akses:
+
+| Data | Admin | Content Manager | Content Creator |
+|---|---|---|---|
+| Brand Profile | Full | Read | Read |
+| Brand Knowledge | Full | Read | Read |
+| Provider Config | Full | No Access | No Access |
+| Model Config | Full | Read | No Access |
+| Prompt Templates | Full | Read | No Access |
+| Content Ideas | Full | Full | Create/Edit |
+| Content Scripts | Full | Full | Create/Edit |
+| Creative Brief | Full | Full | Create/Edit |
+| Quality Check | Full | Full | Read |
+| AI Logs | Full | Limited | Own Requests |
+
+Permission final harus disesuaikan dengan kebutuhan organisasi dan role existing.
+
+Jangan mengandalkan frontend untuk keamanan. Validasi permission wajib dilakukan di backend dan database policies yang relevan.
+
+---
+
+# 16. INDEXING RECOMMENDATIONS
+
+Pertimbangkan index pada:
+
+- brand_profiles.brand_status.
+- brand_documents.brand_id.
+- brand_documents.processing_status.
+- brand_knowledge.brand_id.
+- brand_knowledge.category.
+- ai_models.provider_id.
+- ai_generation_logs.user_id.
+- ai_generation_logs.model_id.
+- ai_generation_logs.task_code.
+- ai_generation_logs.request_status.
+- ai_generation_logs.created_at.
+- content_ideas.pillar_id.
+- content_ideas.status.
+- content_campaigns.status.
+- content_scripts.status.
+- content_scripts.created_by.
+- script_versions.script_id.
+- creative_briefs.script_id.
+- content_quality_checks.script_id.
+
+Index final ditentukan melalui query patterns dan audit performa.
+
+---
+
+# 17. DATABASE MIGRATION PLAN
+
+Migration tidak boleh dilakukan langsung sebelum audit.
+
+## Phase 0 — Existing Database Audit
+
+Antigravity harus:
+1. Membaca seluruh migration existing.
+2. Membaca database schema.
+3. Mengidentifikasi semua tabel.
+4. Mengidentifikasi primary key dan foreign key.
+5. Memeriksa constraints dan indexes.
+6. Memeriksa database policies.
+7. Memeriksa storage configuration.
+8. Mengidentifikasi tabel yang memiliki fungsi sama dengan target ERD.
+
+Deliverables:
+- EXISTING_DATABASE_SCHEMA.md.
+- EXISTING_TABLE_INVENTORY.md.
+- EXISTING_RELATIONSHIP_MAP.md.
+- EXISTING_RLS_AUDIT.md.
+- DATABASE_CONFLICT_REPORT.md.
+
+## Phase 1 — Database Mapping
+
+Buat pemetaan:
+
+| Target Entity | Existing Entity | Action |
+|---|---|---|
+| brand_profiles | Audit | Create/Reuse |
+| brand_audiences | Audit | Create/Reuse |
+| brand_products | Audit | Create/Reuse |
+| content_pillars | Audit | Create/Reuse |
+| brand_documents | Audit | Create/Reuse |
+| brand_knowledge | Audit | Create/Reuse |
+| ai_providers | Audit | Create |
+| ai_models | Audit | Create |
+| ai_task_routes | Audit | Create |
+| ai_prompt_templates | Audit | Create |
+| ai_prompt_versions | Audit | Create |
+| ai_generation_logs | Audit | Create |
+| content_ideas | Audit | Extend/Reuse |
+| content_campaigns | Audit | Extend/Reuse |
+| content_scripts | Audit | Create/Reuse |
+| script_versions | Audit | Create |
+| creative_briefs | Audit | Create |
+| content_quality_checks | Audit | Create |
+
+## Phase 2 — Migration Design
+
+Buat migration secara incremental.
+
+Ketentuan:
+- Tidak boleh DROP existing tables.
+- Tidak boleh TRUNCATE existing tables.
+- Tidak boleh reset production database.
+- Tidak boleh mengubah primary key existing tanpa justifikasi dan approval.
+- Tidak boleh menghapus existing relationships.
+- Semua perubahan harus terdokumentasi.
+- Migration harus dapat diuji di environment development terlebih dahulu.
+
+## Phase 3 — Migration Testing
+
+Uji:
+- Migration up.
+- Migration rollback jika memungkinkan.
+- Foreign key integrity.
+- Existing data integrity.
+- RLS policies.
+- Authentication.
+- Existing application workflows.
+
+## Phase 4 — Deployment
+
+Sebelum production:
+- Backup database.
+- Review migration.
+- Jalankan staging test.
+- Verifikasi data.
+- Siapkan rollback procedure.
+
+---
+
+# 18. ANTIGRAVITY DATABASE IMPLEMENTATION INSTRUCTIONS
+
+Antigravity harus:
+
+1. Memperlakukan dokumen ini sebagai target logical ERD.
+2. Tidak langsung membuat seluruh tabel.
+3. Melakukan audit database existing terlebih dahulu.
+4. Menggunakan struktur database existing sebagai acuan.
+5. Mengidentifikasi tabel yang dapat digunakan ulang.
+6. Menghindari duplikasi entitas.
+7. Membuat physical ERD final berdasarkan kondisi aktual.
+8. Membuat migration plan sebelum menjalankan migration.
+9. Menunggu persetujuan sebelum melakukan perubahan destruktif.
+10. Menguji migration pada development environment.
+11. Memastikan seluruh fitur existing tetap berfungsi.
+12. Memperbarui dokumentasi setelah implementasi.
+
+Jika terdapat perbedaan antara logical ERD dan database existing, jangan memaksakan struktur baru. Buat rekomendasi mapping dan dokumentasikan keputusan teknisnya.
+
+---
+
+# 19. EXPECTED DELIVERABLES
+
+Antigravity harus menghasilkan:
+
+1. EXISTING_DATABASE_SCHEMA.md
+2. EXISTING_TABLE_INVENTORY.md
+3. EXISTING_RELATIONSHIP_MAP.md
+4. EXISTING_RLS_AUDIT.md
+5. DATABASE_CONFLICT_REPORT.md
+6. DATABASE_MAPPING.md
+7. ERD_FINAL.md
+8. DATABASE_MIGRATION_PLAN.md
+9. MIGRATION_SQL_FILES
+10. DATABASE_TEST_REPORT.md
+
+---
+
+# 20. FINAL DATABASE PRINCIPLE
+
+Database Prima RIB Content Plan harus berkembang secara modular, aman, dan kompatibel dengan aplikasi existing.
+
+Tidak boleh ada pembuatan ulang database hanya untuk menyesuaikan ERD.
+
+Prioritas utama:
+- Existing data integrity.
+- Existing workflow compatibility.
+- Secure AI integration.
+- Maintainable database structure.
+- Future extensibility.
+
+**END OF ERD V1.0**

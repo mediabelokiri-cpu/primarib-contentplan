@@ -12,6 +12,7 @@ import {
   LogOut,
   X,
   Plus,
+  Sparkles,
 } from "lucide-react";
 import { Profile } from "@/types/database";
 
@@ -59,6 +60,13 @@ export function Sidebar({
       href: "/calendar",
       icon: CalendarDays,
       active: pathname.startsWith("/calendar"),
+    },
+    {
+      label: "Brand Studio",
+      description: "Identitas & knowledge AI",
+      href: "/brand-studio",
+      icon: Sparkles,
+      active: pathname.startsWith("/brand-studio"),
     },
     {
       label: "Settings",

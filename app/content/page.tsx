@@ -21,6 +21,7 @@ import {
   UserCheck,
   GraduationCap,
   Users,
+  Sparkles,
 } from "lucide-react";
 import {
   useAppStore,
@@ -33,6 +34,7 @@ import {
 } from "@/lib/store";
 import { REEL_TALENT_CATEGORIES } from "@/lib/constants";
 import { ContentWithRelations, IdeaWithRelations } from "@/types/database";
+import { AiScriptBuilderModal } from "@/components/content/AiScriptBuilderModal";
 
 function parsePointsFromText(raw: string, defaultCount = 3): string[] {
   const trimmed = (raw || "").trim();
@@ -97,6 +99,7 @@ function InputKontenInner() {
   const [captionText, setCaptionText] = useState("");
 
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [isScriptBuilderOpen, setIsScriptBuilderOpen] = useState(false);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
@@ -407,16 +410,27 @@ function InputKontenInner() {
             </div>
           </div>
 
-          {editingId && (
+          <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={resetForm}
-              className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+              onClick={() => setIsScriptBuilderOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary to-[#6D4AFF] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:opacity-95 transition"
             >
-              <X className="h-3.5 w-3.5" />
-              <span>Batal Edit</span>
+              <Sparkles className="h-3.5 w-3.5 text-[#DDB02E]" />
+              <span>AI Script Builder</span>
             </button>
-          )}
+
+            {editingId && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+              >
+                <X className="h-3.5 w-3.5" />
+                <span>Batal Edit</span>
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
@@ -1161,6 +1175,44 @@ function InputKontenInner() {
           </div>
         </div>
       )}
+
+      {/* AI SCRIPT BUILDER MODAL */}
+      <AiScriptBuilderModal
+        isOpen={isScriptBuilderOpen}
+        onClose={() => setIsScriptBuilderOpen(false)}
+        contentId={editingId || "new-content-draft"}
+        initialTitle={title}
+        initialFormat={formatId}
+        initialProgramName={
+          activePrograms.find((p) => p.id === programId)?.name || "CPNS"
+        }
+        initialPillarName={
+          activePillars.find((p) => p.id === pillarId)?.name || "Edukatif"
+        }
+        onSaved={(script) => {
+          setTitle(script.title);
+          if (script.format_type === "REELS" && script.reels_scenes) {
+            setFormatId("fmt-reels");
+            setReelPoints(script.reels_scenes.map((s) => s.audio_dialogue));
+          } else if (
+            script.format_type === "CAROUSEL" &&
+            script.carousel_slides
+          ) {
+            setFormatId("fmt-carousel");
+            setCarouselSlides(
+              script.carousel_slides.map((s) => `${s.headline}: ${s.body}`)
+            );
+          } else if (script.single_post_body) {
+            setFormatId("fmt-feed");
+            setSinglePostBody(script.single_post_body);
+          }
+          setCaptionText(
+            `${script.caption}\n\nCTA: ${script.cta}\n\n${script.hashtags}`
+          );
+          showToast("✨ Naskah AI berhasil disinkronkan ke formulir!");
+          setIsScriptBuilderOpen(false);
+        }}
+      />
     </div>
   );
 }

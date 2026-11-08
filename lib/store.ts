@@ -15,6 +15,7 @@ import {
   ContentPillar,
   ContentPlatform,
   ContentReview,
+  ContentSourceType,
   ContentStatus,
   ContentWithRelations,
   Idea,
@@ -26,6 +27,28 @@ import {
   Program,
   ReviewDecision,
   RoleName,
+  BrandProfile,
+  BrandPersonality,
+  BrandToneGuideline,
+  BrandAudience,
+  BrandProduct,
+  BrandWritingGuideline,
+  BrandVisualGuideline,
+  BrandDocument,
+  BrandKnowledge,
+  AiProvider,
+  AiModel,
+  AiTaskRoute,
+  AiPromptTemplate,
+  AiPromptVersion,
+  AiGenerationLog,
+  ContentScript,
+  ScriptVersion,
+  ReelsScene,
+  CarouselSlide,
+  ScriptFormatType,
+  CreativeBrief,
+  ContentQualityCheck,
 } from "@/types/database";
 import {
   SEED_CAMPAIGNS,
@@ -34,6 +57,18 @@ import {
   SEED_PLATFORMS,
   SEED_PROGRAMS,
   SEED_USERS,
+  DEFAULT_BRAND_PROFILE,
+  DEFAULT_BRAND_PERSONALITIES,
+  DEFAULT_BRAND_TONE_GUIDELINES,
+  DEFAULT_BRAND_AUDIENCES,
+  DEFAULT_BRAND_PRODUCTS,
+  DEFAULT_BRAND_WRITING_GUIDELINES,
+  DEFAULT_BRAND_VISUAL_GUIDELINES,
+  DEFAULT_BRAND_KNOWLEDGE,
+  DEFAULT_BRAND_DOCUMENTS,
+  DEFAULT_AI_PROVIDERS,
+  DEFAULT_AI_MODELS,
+  DEFAULT_AI_TASK_ROUTES,
 } from "@/lib/constants";
 import { getLocalCurrentUser } from "@/lib/auth";
 import { calculateEngagementRate } from "@/lib/utils";
@@ -62,6 +97,33 @@ export interface AppDatabaseState {
   contentAnalytics: ContentAnalytics[];
   contentActivities: ContentActivity[];
   nextSequence: number;
+
+  // Module 01: Brand Studio Collections
+  brandProfile?: BrandProfile;
+  brandPersonalities?: BrandPersonality[];
+  brandToneGuidelines?: BrandToneGuideline[];
+  brandAudiences?: BrandAudience[];
+  brandProducts?: BrandProduct[];
+  brandWritingGuidelines?: BrandWritingGuideline[];
+  brandVisualGuidelines?: BrandVisualGuideline;
+  brandKnowledge?: BrandKnowledge[];
+  brandDocuments?: BrandDocument[];
+
+  // Module 02: Hybrid AI Infrastructure Collections
+  aiProviders?: AiProvider[];
+  aiModels?: AiModel[];
+  aiTaskRoutes?: AiTaskRoute[];
+  aiPromptTemplates?: AiPromptTemplate[];
+  aiPromptVersions?: AiPromptVersion[];
+  aiGenerationLogs?: AiGenerationLog[];
+
+  // Module 04: AI Script Builder Collections
+  contentScripts?: ContentScript[];
+  scriptVersions?: ScriptVersion[];
+
+  // Module 05: Creative Brief & Quality Checker Collections
+  creativeBriefs?: CreativeBrief[];
+  contentQualityChecks?: ContentQualityCheck[];
 }
 
 // ============================================================================
@@ -1350,6 +1412,23 @@ function getDefaultState(): AppDatabaseState {
     contentAnalytics: INITIAL_ANALYTICS,
     contentActivities: INITIAL_ACTIVITIES,
     nextSequence: 21,
+    brandProfile: DEFAULT_BRAND_PROFILE,
+    brandPersonalities: DEFAULT_BRAND_PERSONALITIES,
+    brandToneGuidelines: DEFAULT_BRAND_TONE_GUIDELINES,
+    brandAudiences: DEFAULT_BRAND_AUDIENCES,
+    brandProducts: DEFAULT_BRAND_PRODUCTS,
+    brandWritingGuidelines: DEFAULT_BRAND_WRITING_GUIDELINES,
+    brandVisualGuidelines: DEFAULT_BRAND_VISUAL_GUIDELINES,
+    brandKnowledge: DEFAULT_BRAND_KNOWLEDGE,
+    brandDocuments: DEFAULT_BRAND_DOCUMENTS,
+    aiProviders: DEFAULT_AI_PROVIDERS,
+    aiModels: DEFAULT_AI_MODELS,
+    aiTaskRoutes: DEFAULT_AI_TASK_ROUTES,
+    aiGenerationLogs: [],
+    contentScripts: [],
+    scriptVersions: [],
+    creativeBriefs: [],
+    contentQualityChecks: [],
   };
 }
 
@@ -1387,6 +1466,76 @@ export function loadStore(): AppDatabaseState {
         return cnt;
       });
     }
+    // Pastikan Brand Studio collections terisi di state
+    if (!parsed.brandProfile) {
+      parsed.brandProfile = DEFAULT_BRAND_PROFILE;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandPersonalities) || parsed.brandPersonalities.length === 0) {
+      parsed.brandPersonalities = DEFAULT_BRAND_PERSONALITIES;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandToneGuidelines) || parsed.brandToneGuidelines.length === 0) {
+      parsed.brandToneGuidelines = DEFAULT_BRAND_TONE_GUIDELINES;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandAudiences) || parsed.brandAudiences.length === 0) {
+      parsed.brandAudiences = DEFAULT_BRAND_AUDIENCES;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandProducts) || parsed.brandProducts.length === 0) {
+      parsed.brandProducts = DEFAULT_BRAND_PRODUCTS;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandWritingGuidelines) || parsed.brandWritingGuidelines.length === 0) {
+      parsed.brandWritingGuidelines = DEFAULT_BRAND_WRITING_GUIDELINES;
+      needsMigration = true;
+    }
+    if (!parsed.brandVisualGuidelines) {
+      parsed.brandVisualGuidelines = DEFAULT_BRAND_VISUAL_GUIDELINES;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandKnowledge) || parsed.brandKnowledge.length === 0) {
+      parsed.brandKnowledge = DEFAULT_BRAND_KNOWLEDGE;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.brandDocuments) || parsed.brandDocuments.length === 0) {
+      parsed.brandDocuments = DEFAULT_BRAND_DOCUMENTS;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.aiProviders) || parsed.aiProviders.length === 0) {
+      parsed.aiProviders = DEFAULT_AI_PROVIDERS;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.aiModels) || parsed.aiModels.length === 0) {
+      parsed.aiModels = DEFAULT_AI_MODELS;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.aiTaskRoutes) || parsed.aiTaskRoutes.length === 0) {
+      parsed.aiTaskRoutes = DEFAULT_AI_TASK_ROUTES;
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.aiGenerationLogs)) {
+      parsed.aiGenerationLogs = [];
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.contentScripts)) {
+      parsed.contentScripts = [];
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.scriptVersions)) {
+      parsed.scriptVersions = [];
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.creativeBriefs)) {
+      parsed.creativeBriefs = [];
+      needsMigration = true;
+    }
+    if (!Array.isArray(parsed.contentQualityChecks)) {
+      parsed.contentQualityChecks = [];
+      needsMigration = true;
+    }
+
     if (needsMigration) {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
     }
@@ -1440,6 +1589,23 @@ export async function pullStateFromSupabaseCloud(): Promise<AppDatabaseState | n
     }
     if (data?.state_json) {
       const cloudState = data.state_json as AppDatabaseState;
+      if (!cloudState.brandProfile) cloudState.brandProfile = DEFAULT_BRAND_PROFILE;
+      if (!cloudState.brandPersonalities) cloudState.brandPersonalities = DEFAULT_BRAND_PERSONALITIES;
+      if (!cloudState.brandToneGuidelines) cloudState.brandToneGuidelines = DEFAULT_BRAND_TONE_GUIDELINES;
+      if (!cloudState.brandAudiences) cloudState.brandAudiences = DEFAULT_BRAND_AUDIENCES;
+      if (!cloudState.brandProducts) cloudState.brandProducts = DEFAULT_BRAND_PRODUCTS;
+      if (!cloudState.brandWritingGuidelines) cloudState.brandWritingGuidelines = DEFAULT_BRAND_WRITING_GUIDELINES;
+      if (!cloudState.brandVisualGuidelines) cloudState.brandVisualGuidelines = DEFAULT_BRAND_VISUAL_GUIDELINES;
+      if (!cloudState.brandKnowledge) cloudState.brandKnowledge = DEFAULT_BRAND_KNOWLEDGE;
+      if (!cloudState.brandDocuments) cloudState.brandDocuments = DEFAULT_BRAND_DOCUMENTS;
+      if (!cloudState.aiProviders) cloudState.aiProviders = DEFAULT_AI_PROVIDERS;
+      if (!cloudState.aiModels) cloudState.aiModels = DEFAULT_AI_MODELS;
+      if (!cloudState.aiTaskRoutes) cloudState.aiTaskRoutes = DEFAULT_AI_TASK_ROUTES;
+      if (!cloudState.aiGenerationLogs) cloudState.aiGenerationLogs = [];
+      if (!cloudState.contentScripts) cloudState.contentScripts = [];
+      if (!cloudState.scriptVersions) cloudState.scriptVersions = [];
+      if (!cloudState.creativeBriefs) cloudState.creativeBriefs = [];
+      if (!cloudState.contentQualityChecks) cloudState.contentQualityChecks = [];
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudState));
       return cloudState;
     }
@@ -1586,6 +1752,8 @@ export function createIdeaAction(input: {
   format_id?: string | null;
   talent_category?: string | null;
   source?: string;
+  source_type?: "MANUAL" | "AI_ASSISTED" | null;
+  generation_log_id?: string | null;
   priority: PriorityLevel;
 }): Idea {
   const state = loadStore();
@@ -1600,6 +1768,8 @@ export function createIdeaAction(input: {
     format_id: input.format_id || null,
     talent_category: input.talent_category || null,
     source: input.source || "Input Konten",
+    source_type: input.source_type || "MANUAL",
+    generation_log_id: input.generation_log_id || null,
     priority: input.priority,
     status: "NEW",
     created_by: currentUser.id,
@@ -1609,6 +1779,45 @@ export function createIdeaAction(input: {
   state.ideas = [newIdea, ...state.ideas];
   saveStore(state);
   return newIdea;
+}
+
+export function batchCreateIdeasAction(
+  items: Array<{
+    title: string;
+    description?: string;
+    program_id?: string;
+    pillar_id?: string;
+    format_id?: string | null;
+    talent_category?: string | null;
+    source?: string;
+    source_type?: "MANUAL" | "AI_ASSISTED" | null;
+    generation_log_id?: string | null;
+    priority: PriorityLevel;
+  }>
+): Idea[] {
+  const state = loadStore();
+  const currentUser = getLocalCurrentUser();
+  const now = new Date().toISOString();
+  const newIdeas: Idea[] = items.map((item, idx) => ({
+    id: `idea-${Date.now()}-${idx}`,
+    title: item.title,
+    description: item.description || "",
+    program_id: item.program_id || state.programs[0]?.id || null,
+    pillar_id: item.pillar_id || state.pillars[0]?.id || null,
+    format_id: item.format_id || null,
+    talent_category: item.talent_category || null,
+    source: item.source || "Batch AI Planner",
+    source_type: item.source_type || "AI_ASSISTED",
+    generation_log_id: item.generation_log_id || null,
+    priority: item.priority,
+    status: "NEW",
+    created_by: currentUser.id,
+    created_at: now,
+    updated_at: now,
+  }));
+  state.ideas = [...newIdeas, ...state.ideas];
+  saveStore(state);
+  return newIdeas;
 }
 
 export function updateIdeaStatusAction(ideaId: string, status: IdeaStatus) {
@@ -1669,6 +1878,9 @@ export function createContentAction(input: {
   script?: string;
   creative_brief?: string;
   source_idea_id?: string | null;
+  source_type?: ContentSourceType;
+  generation_log_id?: string | null;
+  active_script_id?: string | null;
   assignments?: Partial<Record<AssignmentType, string>>;
 }): Content {
   const state = loadStore();
@@ -1701,6 +1913,9 @@ export function createContentAction(input: {
     creative_brief: input.creative_brief || "",
     scheduled_at: input.scheduled_at || null,
     source_idea_id: input.source_idea_id || null,
+    source_type: input.source_type || "MANUAL",
+    generation_log_id: input.generation_log_id || null,
+    active_script_id: input.active_script_id || null,
     created_by: currentUser.id,
     created_at: now,
     updated_at: now,
@@ -2389,6 +2604,519 @@ export function clearAllScheduledCalendarAction() {
     updated_at: now,
   }));
   saveStore(state);
+}
+
+// ============================================================================
+// BRAND STUDIO ACTIONS (Module 01 — PRD FR-001 s/d FR-012)
+// ============================================================================
+
+export function updateBrandProfileAction(updates: Partial<BrandProfile>) {
+  const state = loadStore();
+  const current = state.brandProfile || DEFAULT_BRAND_PROFILE;
+  state.brandProfile = {
+    ...current,
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+  saveStore(state);
+}
+
+export function addBrandPersonalityAction(
+  personality: Omit<BrandPersonality, "id" | "brand_id" | "created_at">
+) {
+  const state = loadStore();
+  const list = state.brandPersonalities || [...DEFAULT_BRAND_PERSONALITIES];
+  const newPersonality: BrandPersonality = {
+    id: `bp-${Date.now()}`,
+    brand_id: state.brandProfile?.id || "brand-primarib-main",
+    ...personality,
+    created_at: new Date().toISOString(),
+  };
+  state.brandPersonalities = [newPersonality, ...list];
+  saveStore(state);
+}
+
+export function updateBrandPersonalityAction(
+  id: string,
+  updates: Partial<BrandPersonality>
+) {
+  const state = loadStore();
+  const list = state.brandPersonalities || [...DEFAULT_BRAND_PERSONALITIES];
+  state.brandPersonalities = list.map((item) =>
+    item.id === id ? { ...item, ...updates } : item
+  );
+  saveStore(state);
+}
+
+export function deleteBrandPersonalityAction(id: string) {
+  const state = loadStore();
+  const list = state.brandPersonalities || [...DEFAULT_BRAND_PERSONALITIES];
+  state.brandPersonalities = list.filter((item) => item.id !== id);
+  saveStore(state);
+}
+
+export function updateBrandToneAction(updates: Partial<BrandToneGuideline>) {
+  const state = loadStore();
+  const list = state.brandToneGuidelines || [...DEFAULT_BRAND_TONE_GUIDELINES];
+  const current = list[0] || DEFAULT_BRAND_TONE_GUIDELINES[0];
+  const updatedTone: BrandToneGuideline = {
+    ...current,
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+  state.brandToneGuidelines = [updatedTone];
+  saveStore(state);
+}
+
+export function addBrandAudienceAction(
+  audience: Omit<BrandAudience, "id" | "brand_id" | "created_at" | "updated_at">
+) {
+  const state = loadStore();
+  const list = state.brandAudiences || [...DEFAULT_BRAND_AUDIENCES];
+  const now = new Date().toISOString();
+  const newAudience: BrandAudience = {
+    id: `aud-${Date.now()}`,
+    brand_id: state.brandProfile?.id || "brand-primarib-main",
+    ...audience,
+    created_at: now,
+    updated_at: now,
+  };
+  state.brandAudiences = [newAudience, ...list];
+  saveStore(state);
+}
+
+export function updateBrandAudienceAction(
+  id: string,
+  updates: Partial<BrandAudience>
+) {
+  const state = loadStore();
+  const list = state.brandAudiences || [...DEFAULT_BRAND_AUDIENCES];
+  state.brandAudiences = list.map((item) =>
+    item.id === id
+      ? { ...item, ...updates, updated_at: new Date().toISOString() }
+      : item
+  );
+  saveStore(state);
+}
+
+export function deleteBrandAudienceAction(id: string) {
+  const state = loadStore();
+  const list = state.brandAudiences || [...DEFAULT_BRAND_AUDIENCES];
+  state.brandAudiences = list.filter((item) => item.id !== id);
+  saveStore(state);
+}
+
+export function addBrandProductAction(
+  product: Omit<BrandProduct, "id" | "brand_id" | "created_at" | "updated_at">
+) {
+  const state = loadStore();
+  const list = state.brandProducts || [...DEFAULT_BRAND_PRODUCTS];
+  const now = new Date().toISOString();
+  const newProduct: BrandProduct = {
+    id: `prod-${Date.now()}`,
+    brand_id: state.brandProfile?.id || "brand-primarib-main",
+    ...product,
+    created_at: now,
+    updated_at: now,
+  };
+  state.brandProducts = [newProduct, ...list];
+  saveStore(state);
+}
+
+export function updateBrandProductAction(
+  id: string,
+  updates: Partial<BrandProduct>
+) {
+  const state = loadStore();
+  const list = state.brandProducts || [...DEFAULT_BRAND_PRODUCTS];
+  state.brandProducts = list.map((item) =>
+    item.id === id
+      ? { ...item, ...updates, updated_at: new Date().toISOString() }
+      : item
+  );
+  saveStore(state);
+}
+
+export function deleteBrandProductAction(id: string) {
+  const state = loadStore();
+  const list = state.brandProducts || [...DEFAULT_BRAND_PRODUCTS];
+  state.brandProducts = list.filter((item) => item.id !== id);
+  saveStore(state);
+}
+
+export function addBrandWritingGuidelineAction(
+  guideline: Omit<
+    BrandWritingGuideline,
+    "id" | "brand_id" | "created_at" | "updated_at"
+  >
+) {
+  const state = loadStore();
+  const list =
+    state.brandWritingGuidelines || [...DEFAULT_BRAND_WRITING_GUIDELINES];
+  const now = new Date().toISOString();
+  const newGuideline: BrandWritingGuideline = {
+    id: `bwg-${Date.now()}`,
+    brand_id: state.brandProfile?.id || "brand-primarib-main",
+    ...guideline,
+    created_at: now,
+    updated_at: now,
+  };
+  state.brandWritingGuidelines = [newGuideline, ...list];
+  saveStore(state);
+}
+
+export function updateBrandWritingGuidelineAction(
+  id: string,
+  updates: Partial<BrandWritingGuideline>
+) {
+  const state = loadStore();
+  const list =
+    state.brandWritingGuidelines || [...DEFAULT_BRAND_WRITING_GUIDELINES];
+  state.brandWritingGuidelines = list.map((item) =>
+    item.id === id
+      ? { ...item, ...updates, updated_at: new Date().toISOString() }
+      : item
+  );
+  saveStore(state);
+}
+
+export function deleteBrandWritingGuidelineAction(id: string) {
+  const state = loadStore();
+  const list =
+    state.brandWritingGuidelines || [...DEFAULT_BRAND_WRITING_GUIDELINES];
+  state.brandWritingGuidelines = list.filter((item) => item.id !== id);
+  saveStore(state);
+}
+
+export function updateBrandVisualGuidelineAction(
+  updates: Partial<BrandVisualGuideline>
+) {
+  const state = loadStore();
+  const current =
+    state.brandVisualGuidelines || DEFAULT_BRAND_VISUAL_GUIDELINES;
+  state.brandVisualGuidelines = {
+    ...current,
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+  saveStore(state);
+}
+
+export function addBrandKnowledgeAction(
+  knowledge: Omit<
+    BrandKnowledge,
+    "id" | "brand_id" | "created_at" | "updated_at"
+  >
+) {
+  const state = loadStore();
+  const list = state.brandKnowledge || [...DEFAULT_BRAND_KNOWLEDGE];
+  const now = new Date().toISOString();
+  const newKnowledge: BrandKnowledge = {
+    id: `bk-${Date.now()}`,
+    brand_id: state.brandProfile?.id || "brand-primarib-main",
+    ...knowledge,
+    created_at: now,
+    updated_at: now,
+  };
+  state.brandKnowledge = [newKnowledge, ...list];
+  saveStore(state);
+}
+
+export function updateBrandKnowledgeAction(
+  id: string,
+  updates: Partial<BrandKnowledge>
+) {
+  const state = loadStore();
+  const list = state.brandKnowledge || [...DEFAULT_BRAND_KNOWLEDGE];
+  state.brandKnowledge = list.map((item) =>
+    item.id === id
+      ? { ...item, ...updates, updated_at: new Date().toISOString() }
+      : item
+  );
+  saveStore(state);
+}
+
+export function deleteBrandKnowledgeAction(id: string) {
+  const state = loadStore();
+  const list = state.brandKnowledge || [...DEFAULT_BRAND_KNOWLEDGE];
+  state.brandKnowledge = list.filter((item) => item.id !== id);
+  saveStore(state);
+}
+
+export function addBrandDocumentAction(
+  doc: Omit<BrandDocument, "id" | "brand_id" | "created_at">
+) {
+  const state = loadStore();
+  const list = state.brandDocuments || [...DEFAULT_BRAND_DOCUMENTS];
+  const newDoc: BrandDocument = {
+    id: `doc-${Date.now()}`,
+    brand_id: state.brandProfile?.id || "brand-primarib-main",
+    ...doc,
+    created_at: new Date().toISOString(),
+  };
+  state.brandDocuments = [newDoc, ...list];
+  saveStore(state);
+}
+
+export function deleteBrandDocumentAction(id: string) {
+  const state = loadStore();
+  const list = state.brandDocuments || [...DEFAULT_BRAND_DOCUMENTS];
+  state.brandDocuments = list.filter((item) => item.id !== id);
+  saveStore(state);
+}
+
+// ============================================================================
+// MODULE 02: AI INFRASTRUCTURE & ROUTING ACTIONS
+// ============================================================================
+
+export function recordAiGenerationLogAction(log: AiGenerationLog) {
+  const state = loadStore();
+  const list = state.aiGenerationLogs || [];
+  state.aiGenerationLogs = [log, ...list.slice(0, 99)]; // Simpan 100 log terbaru
+  saveStore(state);
+}
+
+export function updateAiTaskRouteAction(
+  routeId: string,
+  updates: Partial<AiTaskRoute>
+) {
+  const state = loadStore();
+  const list = state.aiTaskRoutes || [...DEFAULT_AI_TASK_ROUTES];
+  state.aiTaskRoutes = list.map((r) =>
+    r.id === routeId
+      ? { ...r, ...updates, updated_at: new Date().toISOString() }
+      : r
+  );
+  saveStore(state);
+}
+
+// ============================================================================
+// MODULE 04 & MODULE 05: SCRIPT BUILDER, BRIEF & QUALITY ACTIONS
+// ============================================================================
+
+export function saveContentScriptAction(input: {
+  content_id: string;
+  format_type: ScriptFormatType;
+  title: string;
+  hook: string;
+  reels_scenes?: ReelsScene[];
+  carousel_slides?: CarouselSlide[];
+  single_post_body?: string;
+  caption: string;
+  cta: string;
+  hashtags: string;
+  tone?: string;
+  change_summary?: string;
+}): ContentScript {
+  const state = loadStore();
+  const currentUser = getLocalCurrentUser();
+  const now = new Date().toISOString();
+
+  const scripts = state.contentScripts || [];
+  const existingScript = scripts.find((s) => s.content_id === input.content_id);
+  const nextVer = (existingScript?.version_number || 0) + 1;
+  const scriptId = existingScript?.id || `scr-${Date.now()}`;
+
+  const savedScript: ContentScript = {
+    id: scriptId,
+    content_id: input.content_id,
+    format_type: input.format_type,
+    title: input.title,
+    hook: input.hook,
+    reels_scenes: input.reels_scenes,
+    carousel_slides: input.carousel_slides,
+    single_post_body: input.single_post_body,
+    caption: input.caption,
+    cta: input.cta,
+    hashtags: input.hashtags,
+    tone: input.tone || "Semi Formal",
+    version_number: nextVer,
+    status: "READY_FOR_REVIEW",
+    created_by: currentUser.id,
+    created_at: existingScript?.created_at || now,
+    updated_at: now,
+  };
+
+  // Build formatted text representations for backward compatibility
+  let formattedMain = "";
+  let formattedScript = "";
+
+  if (input.format_type === "REELS" && input.reels_scenes) {
+    formattedScript = input.reels_scenes
+      .map(
+        (sc, i) =>
+          `[Scene ${i + 1}: ${sc.timecode}]\nVisual: ${sc.visual_direction}\nAudio/Dialogue: ${sc.audio_dialogue}\nText on Screen: ${sc.text_on_screen}`
+      )
+      .join("\n\n");
+    formattedMain = input.reels_scenes
+      .map((sc, i) => `Poin ${i + 1}: ${sc.audio_dialogue}`)
+      .join("\n\n");
+  } else if (input.format_type === "CAROUSEL" && input.carousel_slides) {
+    formattedMain = input.carousel_slides
+      .map(
+        (sl) =>
+          `Slide ${sl.slide_number} (${sl.slide_type}): ${sl.headline}\n${sl.body}\n(Visual: ${sl.visual_direction})`
+      )
+      .join("\n\n");
+    formattedScript = formattedMain;
+  } else {
+    formattedMain = input.single_post_body || "";
+    formattedScript = input.single_post_body || "";
+  }
+
+  // Update target Content
+  state.contents = state.contents.map((c) =>
+    c.id === input.content_id
+      ? {
+          ...c,
+          hook: input.hook,
+          main_content: formattedMain,
+          script: formattedScript,
+          caption: input.caption,
+          cta: input.cta,
+          hashtags: input.hashtags,
+          active_script_id: scriptId,
+          source_type: "AI_ASSISTED",
+          updated_at: now,
+        }
+      : c
+  );
+
+  // Update scripts collection
+  const otherScripts = scripts.filter((s) => s.id !== scriptId);
+  state.contentScripts = [savedScript, ...otherScripts];
+
+  // Append to scriptVersions
+  const versions = state.scriptVersions || [];
+  const newVersion: ScriptVersion = {
+    id: `ver-${Date.now()}`,
+    script_id: scriptId,
+    content_id: input.content_id,
+    version_number: nextVer,
+    format_type: input.format_type,
+    snapshot: {
+      title: input.title,
+      hook: input.hook,
+      reels_scenes: input.reels_scenes,
+      carousel_slides: input.carousel_slides,
+      single_post_body: input.single_post_body,
+      caption: input.caption,
+      cta: input.cta,
+      hashtags: input.hashtags,
+      tone: input.tone || "Semi Formal",
+    },
+    change_summary:
+      input.change_summary ||
+      `Versi ${nextVer}: Pembaruan Naskah (${input.format_type})`,
+    created_by: currentUser.id,
+    created_at: now,
+  };
+  state.scriptVersions = [newVersion, ...versions];
+
+  saveStore(state);
+  return savedScript;
+}
+
+export function rollbackScriptVersionAction(versionId: string): boolean {
+  const state = loadStore();
+  const versions = state.scriptVersions || [];
+  const targetVer = versions.find((v) => v.id === versionId);
+  if (!targetVer) return false;
+
+  const script = (state.contentScripts || []).find(
+    (s) => s.id === targetVer.script_id
+  );
+  if (!script) return false;
+
+  saveContentScriptAction({
+    content_id: targetVer.content_id,
+    format_type: targetVer.format_type,
+    title: targetVer.snapshot.title,
+    hook: targetVer.snapshot.hook,
+    reels_scenes: targetVer.snapshot.reels_scenes,
+    carousel_slides: targetVer.snapshot.carousel_slides,
+    single_post_body: targetVer.snapshot.single_post_body,
+    caption: targetVer.snapshot.caption,
+    cta: targetVer.snapshot.cta,
+    hashtags: targetVer.snapshot.hashtags,
+    tone: targetVer.snapshot.tone,
+    change_summary: `Rollback ke Versi ${targetVer.version_number}`,
+  });
+  return true;
+}
+
+export function saveCreativeBriefAction(input: {
+  content_id: string;
+  target_role: "DESIGNER" | "VIDEO_EDITOR" | "TALENT";
+  visual_concept: string;
+  color_palette: string[];
+  typography_guidelines: string;
+  asset_requirements: string[];
+  layout_directions: string;
+  dos_and_donts: { dos: string[]; donts: string[] };
+}): CreativeBrief {
+  const state = loadStore();
+  const now = new Date().toISOString();
+  const briefs = state.creativeBriefs || [];
+  const existing = briefs.find(
+    (b) =>
+      b.content_id === input.content_id && b.target_role === input.target_role
+  );
+  const briefId = existing?.id || `brf-${Date.now()}`;
+
+  const savedBrief: CreativeBrief = {
+    id: briefId,
+    content_id: input.content_id,
+    target_role: input.target_role,
+    visual_concept: input.visual_concept,
+    color_palette: input.color_palette,
+    typography_guidelines: input.typography_guidelines,
+    asset_requirements: input.asset_requirements,
+    layout_directions: input.layout_directions,
+    dos_and_donts: input.dos_and_donts,
+    created_at: existing?.created_at || now,
+    updated_at: now,
+  };
+
+  const formattedBrief = `🎨 CREATIVE BRIEF (${input.target_role})
+Konsep Visual: ${input.visual_concept}
+Palet Warna: ${input.color_palette.join(", ")}
+Tipografi: ${input.typography_guidelines}
+Aset Dibutuhkan: ${input.asset_requirements.join("; ")}
+Panduan Layout: ${input.layout_directions}
+Do: ${input.dos_and_donts.dos.join("; ")}
+Don't: ${input.dos_and_donts.donts.join("; ")}`;
+
+  state.contents = state.contents.map((c) =>
+    c.id === input.content_id
+      ? { ...c, creative_brief: formattedBrief, updated_at: now }
+      : c
+  );
+
+  state.creativeBriefs = [
+    savedBrief,
+    ...briefs.filter((b) => b.id !== briefId),
+  ];
+  saveStore(state);
+  return savedBrief;
+}
+
+export function saveContentQualityCheckAction(
+  check: Omit<ContentQualityCheck, "id" | "created_at">
+): ContentQualityCheck {
+  const state = loadStore();
+  const now = new Date().toISOString();
+  const newCheck: ContentQualityCheck = {
+    ...check,
+    id: `qc-${Date.now()}`,
+    created_at: now,
+  };
+  state.contentQualityChecks = [
+    newCheck,
+    ...(state.contentQualityChecks || []),
+  ];
+  saveStore(state);
+  return newCheck;
 }
 
 // ============================================================================

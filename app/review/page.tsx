@@ -8,6 +8,8 @@ import {
   ExternalLink,
   RotateCcw,
   FileText,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
 import {
   useAppStore,
@@ -21,13 +23,17 @@ import {
   getStatusBadgeStyle,
 } from "@/lib/utils";
 import { Modal } from "@/components/ui/Modal";
+import { QualityCheckerModal } from "@/components/content/QualityCheckerModal";
+import { ContentWithRelations } from "@/types/database";
 
 export default function ReviewPage() {
-  const { enrichedContents } = useAppStore();
+  const { state, enrichedContents } = useAppStore();
 
   const [tab, setTab] = useState<"REVIEW" | "REVISION" | "ALL">("ALL");
   const [revisionTargetId, setRevisionTargetId] = useState<string | null>(null);
   const [revisionComment, setRevisionComment] = useState("");
+  const [qualityCheckContent, setQualityCheckContent] =
+    useState<ContentWithRelations | null>(null);
 
   const reviewItems = enrichedContents.filter((c) => {
     if (tab === "REVIEW") return c.status === "REVIEW";
@@ -173,6 +179,15 @@ export default function ReviewPage() {
                       <span>Buka Detail</span>
                       <ExternalLink className="h-3.5 w-3.5" />
                     </Link>
+
+                    <button
+                      type="button"
+                      onClick={() => setQualityCheckContent(cnt)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-purple/30 bg-purple/10 px-3 py-1.5 text-xs font-bold text-purple hover:bg-purple/20 transition"
+                    >
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      <span>AI Quality Check</span>
+                    </button>
 
                     {cnt.status === "REVIEW" && (
                       <>
@@ -325,6 +340,20 @@ export default function ReviewPage() {
           </div>
         </form>
       </Modal>
+
+      {/* AI QUALITY CHECKER MODAL */}
+      {qualityCheckContent && (
+        <QualityCheckerModal
+          isOpen={!!qualityCheckContent}
+          onClose={() => setQualityCheckContent(null)}
+          content={qualityCheckContent}
+          onApplyRevisionNotes={(notes) => {
+            setRevisionTargetId(qualityCheckContent.id);
+            setRevisionComment(notes);
+            setQualityCheckContent(null);
+          }}
+        />
+      )}
     </div>
   );
 }

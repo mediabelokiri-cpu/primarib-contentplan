@@ -1098,9 +1098,16 @@ export default function SchedulePostCalendarPage() {
                                   <span>{styleMeta.talentLabel}</span>
                                 </span>
 
-                                <span className="rounded-md bg-white/80 px-1.5 py-0.5 text-[10px] font-extrabold text-slate-700">
-                                  {item.program?.code || "CPNS"}
-                                </span>
+                                <div className="flex items-center gap-1">
+                                  {item.source_type === "AI_ASSISTED" && (
+                                    <span className="rounded bg-[#DDB02E]/30 px-1 py-0.5 text-[8px] font-extrabold text-[#284078]">
+                                      ✨ AI
+                                    </span>
+                                  )}
+                                  <span className="rounded-md bg-white/80 px-1.5 py-0.5 text-[10px] font-extrabold text-slate-700">
+                                    {item.program?.code || "CPNS"}
+                                  </span>
+                                </div>
                               </div>
 
                               {/* Content Title */}
